@@ -134,7 +134,7 @@ export default function Dashboard() {
                   key={r.id}
                   type="button"
                   onClick={() => setDetailId(r.id)}
-                  className="w-full text-left rounded-xl bg-app-surface-1 border border-[var(--border)] shadow-card p-4 active:scale-[0.99] min-h-[48px]"
+                  className="glass w-full text-left rounded-xl border border-[var(--border)] shadow-card p-4 active:scale-[0.99] min-h-[48px]"
                 >
                   <div className="flex justify-between items-start gap-2 mb-1">
                     <span className="text-app-primary font-medium">{r.order.orderNumber}</span>

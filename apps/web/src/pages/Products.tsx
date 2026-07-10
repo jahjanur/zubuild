@@ -326,7 +326,8 @@ export default function Products() {
             />
             {categoryDropdownOpen && categorySuggestions.length > 0 && (
               <ul
-                className="absolute z-50 mt-1 w-full rounded-xl border border-[var(--border)] bg-app-surface-2 shadow-modal max-h-48 overflow-y-auto py-1"
+                className="glass absolute z-50 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-48 overflow-y-auto py-1"
+                style={{ background: 'var(--glass-bg-strong)' }}
                 role="listbox"
               >
                 {categorySuggestions.map((c) => (

@@ -319,7 +319,7 @@ export default function CreateOrder() {
                         className="min-h-[48px]"
                       />
                       {supplierDropdownOpen && (
-                        <div className="absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] bg-app-surface-2 shadow-modal max-h-56 overflow-auto">
+                        <div className="glass absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-56 overflow-auto" style={{ background: 'var(--glass-bg-strong)' }}>
                           {filteredSuppliers.length === 0 ? (
                             <div className="p-3 text-app-muted text-sm">{t('createOrder.noResults')}</div>
                           ) : (
@@ -400,7 +400,7 @@ export default function CreateOrder() {
                       className="min-h-[48px]"
                     />
                     {searchOpen && debouncedQ.length >= 2 && (
-                      <div className="absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] bg-app-surface-2 shadow-modal max-h-56 overflow-auto">
+                      <div className="glass absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-56 overflow-auto" style={{ background: 'var(--glass-bg-strong)' }}>
                         {searchLoading ? (
                           <div className="p-3 text-app-muted text-sm">{t('common.searching')}</div>
                         ) : searchResults.length === 0 ? (
@@ -509,7 +509,8 @@ export default function CreateOrder() {
             <div className="lg:col-span-1">
               {/* Mobile: sticky summary bar above bottom nav (bottom nav is ~64px + safe area) */}
               {rows.length > 0 && (
-                <div className="md:hidden fixed left-0 right-0 z-40 bg-app-surface-1 border-t border-[var(--border)] p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.3)] bottom-20"
+                <div className="glass md:hidden fixed left-0 right-0 z-40 border-t border-[var(--border)] p-4 shadow-[0_-8px_32px_rgba(8,8,8,0.10)] bottom-20"
+                  style={{ background: 'var(--glass-bg-strong)' }}
                 >
                   <div className="page-container flex flex-col gap-3">
                     <div className="flex justify-between text-app-primary font-semibold text-base">

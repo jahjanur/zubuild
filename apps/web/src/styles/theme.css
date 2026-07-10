@@ -22,8 +22,8 @@
 
   /* Text */
   --text-primary: #080808;
-  --text-secondary: #706F70;
-  --text-muted: #ACADB1;
+  --text-secondary: #565659;   /* AA on glass (~6.8:1) */
+  --text-muted: #6E6E72;       /* AA floor on glass (~4.8:1), lighter than secondary */
 
   /* Accent = black */
   --accent: #080808;
