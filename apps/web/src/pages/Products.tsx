@@ -215,7 +215,7 @@ export default function Products() {
                 className="cursor-pointer select-none flex flex-row items-center justify-between gap-2"
                 onClick={() => toggleCategory(category)}
               >
-                <h2 className="text-sm font-semibold text-app-gold">{category}</h2>
+                <h2 className="text-sm font-semibold text-app-accent">{category}</h2>
                 <span className="text-app-secondary"><IconChevron open={isOpen} /></span>
               </CardHeader>
               {isOpen && (
@@ -234,7 +234,7 @@ export default function Products() {
                         {isAdmin && (
                           <div className="flex gap-1 shrink-0">
                             <TableActionButton onClick={() => openEdit(p)} aria-label={t('common.edit')}>
-                              <span className="text-app-gold"><IconEdit /></span>
+                              <span className="text-app-accent"><IconEdit /></span>
                             </TableActionButton>
                             <TableActionButton onClick={() => setDeleteConfirm(p)} aria-label={t('common.delete')}>
                               <span className="text-app-danger"><IconTrash /></span>
@@ -259,7 +259,7 @@ export default function Products() {
                           <TableRow key={p.id}>
                             <TableCell className="text-app-primary font-medium">{p.name}</TableCell>
                             <TableCell>{p.measurementUnit}</TableCell>
-                            <TableCell className="text-right text-app-gold">{formatMKD(Number(p.price))}</TableCell>
+                            <TableCell className="text-right text-app-accent">{formatMKD(Number(p.price))}</TableCell>
                             <TableCell>
                               <Badge variant={p.status === 'ACTIVE' ? 'success' : 'default'}>
                                 {p.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}
@@ -269,7 +269,7 @@ export default function Products() {
                             {isAdmin && (
                               <div className="flex justify-end gap-1">
                                 <TableActionButton onClick={() => openEdit(p)} aria-label={t('common.edit')}>
-                                  <span className="text-app-gold"><IconEdit /></span>
+                                  <span className="text-app-accent"><IconEdit /></span>
                                 </TableActionButton>
                                 <TableActionButton onClick={() => setDeleteConfirm(p)} aria-label={t('common.delete')}>
                                   <span className="text-app-danger"><IconTrash /></span>

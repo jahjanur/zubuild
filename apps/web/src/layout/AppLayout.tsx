@@ -60,7 +60,7 @@ export default function AppLayout() {
   const sidebarLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium transition min-h-[48px] ${
       isActive
-        ? 'bg-app-gold-muted text-app-gold border border-app-gold/30'
+        ? 'bg-app-accent-muted text-app-accent border border-app-accent/30'
         : 'text-app-secondary hover:text-app-primary hover:bg-white/5 border border-transparent'
     }`;
 
@@ -91,7 +91,7 @@ export default function AppLayout() {
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium min-h-[48px] bg-transparent border border-app-gold/40 text-app-gold hover:bg-app-gold-muted"
+            className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium min-h-[48px] bg-transparent border border-app-accent/40 text-app-accent hover:bg-app-accent-muted"
           >
             {t('nav.logout')}
           </button>
@@ -151,7 +151,7 @@ export default function AppLayout() {
                   className={({ isActive }) =>
                     `flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium transition min-h-[48px] ${
                       isActive
-                        ? 'bg-app-gold-muted text-app-gold border border-app-gold/30'
+                        ? 'bg-app-accent-muted text-app-accent border border-app-accent/30'
                         : 'text-app-secondary hover:bg-white/5'
                     }`
                   }

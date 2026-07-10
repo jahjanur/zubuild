@@ -113,7 +113,7 @@ export default function Dashboard() {
       <section>
         <div className="flex items-center justify-between gap-4 mb-3">
           <h2 className="text-lg font-semibold text-app-primary">{t('dashboard.recentDiscrepancies')}</h2>
-          <Link to="/app/control-panel" className="text-sm font-medium text-app-gold hover:text-app-gold-hover">
+          <Link to="/app/control-panel" className="text-sm font-medium text-app-accent hover:text-app-accent-hover">
             {t('dashboard.viewAll')}
           </Link>
         </div>
@@ -188,8 +188,8 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <Link to="/app/create-order" className="block min-h-[48px]">
-          <Card className="flex items-center gap-4 p-4 md:p-6 hover:border-app-gold/30 hover:shadow-card transition cursor-pointer active:scale-[0.99]">
-            <div className="w-12 h-12 rounded-xl bg-app-gold-muted flex items-center justify-center text-app-gold text-xl font-medium">+</div>
+          <Card className="flex items-center gap-4 p-4 md:p-6 hover:border-app-accent/30 hover:shadow-card transition cursor-pointer active:scale-[0.99]">
+            <div className="w-12 h-12 rounded-xl bg-app-accent-muted flex items-center justify-center text-app-accent text-xl font-medium">+</div>
             <div>
               <h2 className="font-semibold text-app-primary">{t('dashboard.createOrder')}</h2>
               <p className="text-sm text-app-secondary">{t('dashboard.newProcurementOrder')}</p>
@@ -197,8 +197,8 @@ export default function Dashboard() {
           </Card>
         </Link>
         <Link to="/app/reconciliation" className="block min-h-[48px]">
-          <Card className="flex items-center gap-4 p-4 md:p-6 hover:border-app-gold/30 hover:shadow-card transition cursor-pointer active:scale-[0.99]">
-            <div className="w-12 h-12 rounded-xl bg-app-gold-muted flex items-center justify-center text-app-gold text-xl font-medium">≡</div>
+          <Card className="flex items-center gap-4 p-4 md:p-6 hover:border-app-accent/30 hover:shadow-card transition cursor-pointer active:scale-[0.99]">
+            <div className="w-12 h-12 rounded-xl bg-app-accent-muted flex items-center justify-center text-app-accent text-xl font-medium">≡</div>
             <div>
               <h2 className="font-semibold text-app-primary">{t('dashboard.reconciliation')}</h2>
               <p className="text-sm text-app-secondary">{t('dashboard.matchDeliveredVsOrdered')}</p>

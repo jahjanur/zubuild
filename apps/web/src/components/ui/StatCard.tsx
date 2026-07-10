@@ -22,7 +22,7 @@ export function StatCard({
           <p className="text-sm text-app-secondary font-medium">{label}</p>
           <p
             className={`mt-1 text-2xl md:text-3xl font-semibold tracking-tight min-w-0 overflow-visible ${
-              accent ? 'text-app-gold' : 'text-app-primary'
+              accent ? 'text-app-accent' : 'text-app-primary'
             }`}
             style={{ wordBreak: 'break-word' }}
           >

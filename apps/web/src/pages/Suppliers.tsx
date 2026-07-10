@@ -268,11 +268,11 @@ export default function Suppliers() {
                   {phoneToTel(s.phone) ? (
                     <a
                       href={phoneToTel(s.phone)}
-                      className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-secondary hover:bg-white/10 hover:text-app-primary focus-visible:ring-2 focus-visible:ring-app-gold/50"
+                      className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-secondary hover:bg-white/10 hover:text-app-primary focus-visible:ring-2 focus-visible:ring-app-accent/50"
                       aria-label="Ara"
                       title="Ara"
                     >
-                      <span className="text-app-gold"><IconPhone /></span>
+                      <span className="text-app-accent"><IconPhone /></span>
                     </a>
                   ) : (
                     <span
@@ -286,7 +286,7 @@ export default function Suppliers() {
                   {isAdmin && (
                     <>
                       <TableActionButton onClick={() => openEdit(s)} aria-label={t('common.edit')}>
-                        <span className="text-app-gold"><IconEdit /></span>
+                        <span className="text-app-accent"><IconEdit /></span>
                       </TableActionButton>
                       <TableActionButton onClick={() => setDeleteConfirm(s)} aria-label={t('common.delete')}>
                         <span className="text-app-danger"><IconTrash /></span>
