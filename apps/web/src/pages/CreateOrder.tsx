@@ -328,7 +328,7 @@ export default function CreateOrder() {
                                 <li key={s.id}>
                                   <button
                                     type="button"
-                                    className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-white/10 flex flex-col gap-0.5"
+                                    className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-slate-900/[0.06] flex flex-col gap-0.5"
                                     onClick={() => {
                                       setSupplierId(s.id);
                                       setSupplierSearch('');
@@ -411,7 +411,7 @@ export default function CreateOrder() {
                               <li key={p.id}>
                                 <button
                                   type="button"
-                                  className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-white/10 flex justify-between items-center gap-2"
+                                  className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-slate-900/[0.06] flex justify-between items-center gap-2"
                                   onClick={() => addProduct(p)}
                                 >
                                   <span className="truncate">{p.name}</span>

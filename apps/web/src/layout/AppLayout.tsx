@@ -61,7 +61,7 @@ export default function AppLayout() {
     `flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium transition min-h-[48px] ${
       isActive
         ? 'bg-app-gold-muted text-app-gold border border-app-gold/30'
-        : 'text-app-secondary hover:text-app-primary hover:bg-white/5 border border-transparent'
+        : 'text-app-secondary hover:text-app-primary hover:bg-slate-900/[0.04] border border-transparent'
     }`;
 
   useEffect(() => {
@@ -106,7 +106,7 @@ export default function AppLayout() {
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className="flex h-12 w-12 items-center justify-center rounded-xl text-app-secondary hover:bg-white/10 hover:text-app-primary"
+            className="flex h-12 w-12 items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary"
             aria-label={t('nav.more')}
           >
             <IconMenu />
@@ -137,7 +137,7 @@ export default function AppLayout() {
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}
-                className="flex h-12 w-12 items-center justify-center rounded-xl text-app-secondary hover:bg-white/10 hover:text-app-primary"
+                className="flex h-12 w-12 items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary"
                 aria-label={t('common.close')}
               >
                 <IconClose />
@@ -152,7 +152,7 @@ export default function AppLayout() {
                     `flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium transition min-h-[48px] ${
                       isActive
                         ? 'bg-app-gold-muted text-app-gold border border-app-gold/30'
-                        : 'text-app-secondary hover:bg-white/5'
+                        : 'text-app-secondary hover:bg-slate-900/[0.04]'
                     }`
                   }
                   onClick={() => setMenuOpen(false)}

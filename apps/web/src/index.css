@@ -16,13 +16,15 @@ html {
 
 body {
   @apply bg-app-bg text-app-primary font-sans antialiased;
+  background: var(--app-bg-gradient);
+  background-attachment: fixed;
   padding-top: env(safe-area-inset-top, 0);
 }
 
-/* Focus rings for accessibility (gold ring) */
+/* Focus rings for accessibility (dark ring on light surfaces) */
 *:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #0B0F14, 0 0 0 4px rgba(212, 175, 55, 0.5);
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px rgba(8, 8, 8, 0.45);
 }
 
 /* Page container: responsive padding (mobile 4, tablet 6, desktop 8/10) */
@@ -38,10 +40,9 @@ body {
   padding-top: max(0.5rem, env(safe-area-inset-top));
 }
 
-/* Date input: make calendar picker icon visible on dark theme (bright/gold) */
+/* Date input: calendar picker icon on light grey-glass surfaces */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  opacity: 0.85;
+  opacity: 0.7;
   cursor: pointer;
   min-width: 44px;
   min-height: 44px;

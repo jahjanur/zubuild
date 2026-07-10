@@ -35,7 +35,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={() => setMessage(null)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-app-secondary hover:text-app-primary hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-app-gold/50"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-app-secondary hover:text-app-primary hover:bg-slate-900/[0.06] focus-visible:ring-2 focus-visible:ring-app-gold/50"
             aria-label="Kapat"
           >
             ×

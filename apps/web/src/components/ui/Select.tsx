@@ -128,7 +128,7 @@ export const Select = forwardRef<
               role="option"
               aria-selected={opt.value === currentValue}
               onClick={() => handleSelect(opt.value)}
-              className="min-h-[48px] flex items-center px-4 py-3 text-base text-app-primary cursor-pointer hover:bg-white/10 focus:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-app-gold/50 focus-visible:ring-inset"
+              className="min-h-[48px] flex items-center px-4 py-3 text-base text-app-primary cursor-pointer hover:bg-slate-900/[0.06] focus:bg-slate-900/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-app-gold/50 focus-visible:ring-inset"
             >
               {opt.value === currentValue && (
                 <span className="mr-2 text-app-gold" aria-hidden>✓</span>

@@ -1,11 +1,11 @@
 type Variant = 'default' | 'success' | 'warning' | 'danger' | 'outline';
 
 const variants: Record<Variant, string> = {
-  default: 'bg-white/10 text-app-secondary border border-[var(--border)]',
+  default: 'bg-slate-900/[0.06] text-app-secondary border border-[var(--border)]',
   success: 'bg-app-success-muted text-app-success border border-app-success/30',
   warning: 'bg-app-warning-muted text-app-warning border border-app-warning/30',
   danger: 'bg-app-danger-muted text-app-danger border border-app-danger/30',
-  outline: 'border border-white/20 text-app-secondary',
+  outline: 'border border-slate-900/15 text-app-secondary',
 };
 
 export function Badge({

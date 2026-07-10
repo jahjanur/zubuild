@@ -9,7 +9,7 @@ const variants: Record<ButtonVariant, string> = {
   primary:
     'bg-app-gold text-app-bg shadow-button hover:bg-app-gold-hover hover:-translate-y-0.5 active:translate-y-0 border border-app-gold/20',
   secondary:
-    'bg-transparent border border-[var(--border)] text-app-primary hover:bg-app-surface-1 hover:border-white/15',
+    'bg-transparent border border-[var(--border)] text-app-primary hover:bg-app-surface-1 hover:border-slate-900/10',
   ghost:
     'bg-transparent border border-app-gold/40 text-app-gold hover:bg-app-gold-muted',
   danger:

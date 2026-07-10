@@ -165,7 +165,7 @@ export default function Dashboard() {
                       <tr
                         key={r.id}
                         onClick={() => setDetailId(r.id)}
-                        className="border-b border-[var(--border)] hover:bg-white/[0.04] cursor-pointer transition"
+                        className="border-b border-[var(--border)] hover:bg-slate-900/[0.04] cursor-pointer transition"
                       >
                         <td className="px-4 py-3 text-app-secondary">{formatDate(r.reconciliationDate)}</td>
                         <td className="px-4 py-3 text-app-primary font-medium">{r.order.orderNumber}</td>
