@@ -104,13 +104,13 @@ export default function ControlPanel() {
         <Card>
           <CardContent>
             <p className="text-app-secondary text-sm">{t('controlPanel.incidentCount')}</p>
-            <p className="text-2xl font-semibold text-app-gold">{summary.incidentCount}</p>
+            <p className="text-2xl font-semibold text-app-accent">{summary.incidentCount}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent>
             <p className="text-app-secondary text-sm">{t('controlPanel.discrepancy')}</p>
-            <p className="text-2xl font-semibold text-app-gold">{summary.totalItemsMissing}</p>
+            <p className="text-2xl font-semibold text-app-accent">{summary.totalItemsMissing}</p>
           </CardContent>
         </Card>
         <Card>

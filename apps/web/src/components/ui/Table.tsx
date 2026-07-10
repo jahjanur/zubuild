@@ -8,7 +8,7 @@ export function Table({
   className?: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-[var(--border)]">
+    <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
       <table className={`w-full text-left text-sm ${className}`}>{children}</table>
     </div>
   );
@@ -17,7 +17,7 @@ export function Table({
 export function TableHeader({ children }: { children: ReactNode }) {
   return (
     <thead>
-      <tr className="border-b border-[var(--border)] bg-app-surface-2">
+      <tr className="border-b border-[var(--border)] bg-white/50 text-app-primary">
         {children}
       </tr>
     </thead>
@@ -53,7 +53,7 @@ export function TableRow({
 }) {
   return (
     <tr
-      className={`border-b border-[var(--border)] last:border-0 hover:bg-white/[0.04] transition ${className}`}
+      className={`border-b border-[var(--border)] last:border-0 hover:bg-slate-900/[0.04] transition ${className}`}
     >
       {children}
     </tr>
@@ -93,7 +93,7 @@ export function TableActionButton({
       type="button"
       onClick={onClick}
       aria-label={ariaLabel}
-      className={`inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-secondary hover:bg-white/10 hover:text-app-primary focus-visible:ring-2 focus-visible:ring-app-gold/50 ${className}`}
+      className={`inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] ${className}`}
     >
       {children}
     </button>

@@ -152,7 +152,7 @@ export default function Orders() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <Card className="p-4">
           <p className="text-sm font-medium text-app-secondary">{t('orders.totalSpendMkd')}</p>
-          <p className="text-2xl font-semibold text-app-gold mt-1">{formatMKD(Number(summary.totalSpendMkd))}</p>
+          <p className="text-2xl font-semibold text-app-accent mt-1">{formatMKD(Number(summary.totalSpendMkd))}</p>
         </Card>
         <Card className="p-4">
           <p className="text-sm font-medium text-app-secondary">{t('orders.orderCount')}</p>
@@ -215,7 +215,7 @@ export default function Orders() {
                         {statusTr(o.status, t)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right text-app-gold font-medium">{formatMKD(Number(o.totalAmount))}</TableCell>
+                    <TableCell className="text-right text-app-accent font-medium">{formatMKD(Number(o.totalAmount))}</TableCell>
                     <TableCell>
                       {o.hasReconciliation ? (
                         <Badge variant="success">{t('orders.reconciled')}</Badge>

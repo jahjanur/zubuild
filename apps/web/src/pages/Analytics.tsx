@@ -81,7 +81,7 @@ export default function Analytics() {
     {
       name: t('analytics.noLoss'),
       value: Math.max(0, lossRate.totalReconciled - lossRate.incidentsWithLoss),
-      color: 'var(--gold)',
+      color: 'var(--accent)',
     },
   ].filter((d) => d.value > 0);
 
@@ -95,19 +95,19 @@ export default function Analytics() {
         <Card>
           <CardContent>
             <p className="text-app-secondary text-sm">{t('analytics.totalSuppliers')}</p>
-            <p className="text-2xl font-semibold text-app-gold">{overview.totalSuppliers}</p>
+            <p className="text-2xl font-semibold text-app-accent">{overview.totalSuppliers}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent>
             <p className="text-app-secondary text-sm">{t('analytics.totalProducts')}</p>
-            <p className="text-2xl font-semibold text-app-gold">{overview.totalProducts}</p>
+            <p className="text-2xl font-semibold text-app-accent">{overview.totalProducts}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent>
             <p className="text-app-secondary text-sm">{t('analytics.pendingOrders')}</p>
-            <p className="text-2xl font-semibold text-app-gold">{overview.pendingOrders}</p>
+            <p className="text-2xl font-semibold text-app-accent">{overview.pendingOrders}</p>
           </CardContent>
         </Card>
         <Card>
@@ -133,15 +133,15 @@ export default function Analytics() {
                       backgroundColor: 'var(--surface-1)',
                       border: '1px solid var(--border-focus)',
                     }}
-                    labelStyle={{ color: 'var(--gold)' }}
+                    labelStyle={{ color: 'var(--accent)' }}
                     formatter={(value: number) => [formatMKD(value), t('dashboard.loss')]}
                   />
                   <Line
                     type="monotone"
                     dataKey="total"
-                    stroke="var(--gold)"
+                    stroke="var(--accent)"
                     strokeWidth={2}
-                    dot={{ fill: 'var(--gold)' }}
+                    dot={{ fill: 'var(--accent)' }}
                     name={t('dashboard.loss')}
                   />
                 </LineChart>
@@ -220,7 +220,7 @@ export default function Analytics() {
                 top.byMissingQty.map((it, i) => (
                   <li key={i} className="flex justify-between items-center gap-2">
                     <span className="text-app-primary truncate">{it.name}</span>
-                    <span className="text-app-gold font-medium shrink-0">
+                    <span className="text-app-accent font-medium shrink-0">
                       {it.totalMissingQty} {itemUnit(it)}
                     </span>
                   </li>

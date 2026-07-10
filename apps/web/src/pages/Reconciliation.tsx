@@ -185,7 +185,7 @@ export default function Reconciliation() {
                             [oi.id]: parseInt(e.target.value, 10) || 0,
                           }))
                         }
-                        className="w-full rounded-xl border border-[var(--border)] bg-app-bg/50 px-4 py-3 text-app-primary text-right text-base min-h-[48px] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-app-gold/20 focus:outline-none"
+                        className="w-full rounded-xl border border-[var(--border)] bg-white/60 px-4 py-3 text-app-primary text-right text-base min-h-[48px] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none"
                       />
                       <div className="mt-2 flex justify-between items-center">
                         <span className={`text-sm font-medium ${statusClass}`}>
@@ -233,7 +233,7 @@ export default function Reconciliation() {
                                   [oi.id]: parseInt(e.target.value, 10) || 0,
                                 }))
                               }
-                              className="w-20 px-2 py-1.5 rounded-lg border bg-app-bg/50 border-[var(--border)] text-app-primary text-right text-sm min-h-[44px] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-app-gold/20 focus:outline-none"
+                              className="w-20 px-2 py-1.5 rounded-lg border bg-white/60 border-[var(--border)] text-app-primary text-right text-sm min-h-[44px] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none"
                             />
                           </TableCell>
                           <TableCell className="text-right">

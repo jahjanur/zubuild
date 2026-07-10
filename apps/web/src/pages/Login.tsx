@@ -33,10 +33,10 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-app-bg px-4 py-6 safe-area-pt">
+    <div className="min-h-screen flex items-center justify-center px-4 py-6 safe-area-pt" style={{ background: 'var(--app-bg-gradient)' }}>
       <Card className="w-full max-w-md">
         <CardContent className="p-6 md:p-8">
-          <h1 className="text-xl md:text-2xl font-semibold text-app-gold mb-2">{t('login.title')}</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-app-accent mb-2">{t('login.title')}</h1>
           <p className="text-app-secondary text-sm mb-6">{t('login.signInContinue')}</p>
           {toast && (
             <div className="mb-4 p-3 rounded-xl bg-app-danger-muted border border-app-danger/30 text-app-danger text-sm" role="alert">
