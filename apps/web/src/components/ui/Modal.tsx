@@ -48,17 +48,18 @@ export function Modal({
         aria-hidden
       />
       <div
-        className={`fixed left-0 right-0 top-14 bottom-0 z-50 flex flex-col w-full bg-app-surface-2 border border-[var(--border)] border-t shadow-modal sm:relative sm:top-0 sm:left-0 sm:right-0 sm:bottom-0 ${maxWidthClass} sm:max-h-[90vh] sm:rounded-xl sm:border`}
+        className={`glass fixed left-0 right-0 top-14 bottom-0 z-50 flex flex-col w-full border-t sm:relative sm:top-0 sm:left-0 sm:right-0 sm:bottom-0 ${maxWidthClass} sm:max-h-[90vh] sm:rounded-2xl`}
+        style={{ background: 'var(--glass-bg-strong)', boxShadow: 'var(--shadow-modal)' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--border)] bg-app-surface-2 shrink-0">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--border)] bg-[var(--glass-bg)] backdrop-blur-sm shrink-0">
           <h2 id="modal-title" className="text-lg font-semibold text-app-primary truncate pr-2">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-12 w-12 min-h-[48px] min-w-[48px] items-center justify-center rounded-xl text-app-secondary hover:bg-white/10 hover:text-app-primary focus-visible:ring-2 focus-visible:ring-app-gold/50"
+            className="flex h-12 w-12 min-h-[48px] min-w-[48px] items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]"
             aria-label={t('common.close')}
           >
             <span className="text-2xl leading-none">×</span>
@@ -68,7 +69,7 @@ export function Modal({
           {children}
         </div>
         {footer != null && (
-          <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-[var(--border)] bg-app-surface-2 px-4 sm:px-6 py-3 sm:py-4 safe-area-pb shrink-0">
+          <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-[var(--border)] bg-[var(--glass-bg)] backdrop-blur-sm px-4 sm:px-6 py-3 sm:py-4 safe-area-pb shrink-0">
             {footer}
           </div>
         )}
