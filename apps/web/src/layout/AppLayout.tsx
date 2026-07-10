@@ -57,12 +57,15 @@ export default function AppLayout() {
     navigate('/login', { replace: true });
   }
 
-  const sidebarLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium transition min-h-[48px] ${
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `flex items-center gap-2 px-4 py-3 rounded-full text-base font-medium transition min-h-[48px] ${
       isActive
-        ? 'bg-app-gold-muted text-app-gold border border-app-gold/30'
-        : 'text-app-secondary hover:text-app-primary hover:bg-white/5 border border-transparent'
+        ? 'bg-app-accent text-white shadow-button'
+        : 'text-app-secondary hover:text-app-primary hover:bg-slate-900/[0.04]'
     }`;
+
+  const logoutClass =
+    'w-full flex items-center gap-2 px-4 py-3 rounded-full text-base font-medium min-h-[48px] bg-transparent border border-app-danger/40 text-app-danger hover:bg-app-danger-muted transition';
 
   useEffect(() => {
     if (menuOpen) {
@@ -76,23 +79,19 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen bg-app-bg flex">
       {/* Sidebar: desktop only (lg+). Fixed so it does NOT take layout width on any breakpoint. */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-56 lg:fixed lg:inset-y-0 left-0 border-r border-[var(--border)] bg-app-surface-1 z-20">
+      <aside className="hidden lg:flex lg:flex-col lg:w-56 lg:fixed lg:inset-y-0 left-0 glass z-20">
         <div className="p-4 border-b border-[var(--border)] flex flex-col items-center">
-          <img src={logo} alt="AEM Residence" width={120} height={120} className="h-28 w-auto object-contain" decoding="async" />
+          <img src={logo} alt="Zubuild" width={120} height={120} className="h-28 w-auto object-contain" decoding="async" />
         </div>
         <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto" aria-label="Main navigation">
           {navKeys.map((key) => (
-            <NavLink key={key} to={navToPath[key]} className={sidebarLinkClass}>
+            <NavLink key={key} to={navToPath[key]} className={navLinkClass}>
               {t(`nav.${key}`)}
             </NavLink>
           ))}
         </nav>
         <div className="p-3 border-t border-[var(--border)]">
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium min-h-[48px] bg-transparent border border-app-gold/40 text-app-gold hover:bg-app-gold-muted"
-          >
+          <button type="button" onClick={handleLogout} className={logoutClass}>
             {t('nav.logout')}
           </button>
         </div>
@@ -101,12 +100,12 @@ export default function AppLayout() {
       {/* Content wrapper: full width on mobile (no sidebar width), offset on desktop only */}
       <div className="flex-1 flex flex-col w-full min-w-0 overflow-x-hidden lg:pl-56">
         {/* Mobile: top bar — logo left, hamburger right */}
-        <header className="lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-app-surface-1 safe-area-pt">
-          <img src={logo} alt="AEM Residence" width={36} height={36} className="h-9 w-auto object-contain" decoding="async" />
+        <header className="lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 py-2 glass safe-area-pt">
+          <img src={logo} alt="Zubuild" width={36} height={36} className="h-9 w-auto object-contain" decoding="async" />
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className="flex h-12 w-12 items-center justify-center rounded-xl text-app-secondary hover:bg-white/10 hover:text-app-primary"
+            className="flex h-12 w-12 items-center justify-center rounded-full text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary transition"
             aria-label={t('nav.more')}
           >
             <IconMenu />
@@ -123,12 +122,12 @@ export default function AppLayout() {
       {menuOpen && (
         <>
           <div
-            className="lg:hidden fixed inset-0 z-40 bg-app-overlay"
+            className="lg:hidden fixed inset-0 z-40 bg-[var(--overlay)] backdrop-blur-sm"
             onClick={() => setMenuOpen(false)}
             aria-hidden
           />
           <div
-            className="lg:hidden fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-app-surface-2 border-l border-[var(--border)] shadow-modal flex flex-col safe-area-pt"
+            className="lg:hidden fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm glass shadow-modal flex flex-col safe-area-pt"
             role="dialog"
             aria-label={t('nav.more')}
           >
@@ -137,7 +136,7 @@ export default function AppLayout() {
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}
-                className="flex h-12 w-12 items-center justify-center rounded-xl text-app-secondary hover:bg-white/10 hover:text-app-primary"
+                className="flex h-12 w-12 items-center justify-center rounded-full text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary transition"
                 aria-label={t('common.close')}
               >
                 <IconClose />
@@ -148,13 +147,7 @@ export default function AppLayout() {
                 <NavLink
                   key={key}
                   to={`/app/${navToPath[key]}`}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium transition min-h-[48px] ${
-                      isActive
-                        ? 'bg-app-gold-muted text-app-gold border border-app-gold/30'
-                        : 'text-app-secondary hover:bg-white/5'
-                    }`
-                  }
+                  className={navLinkClass}
                   onClick={() => setMenuOpen(false)}
                 >
                   {t(`nav.${key}`)}
@@ -166,7 +159,7 @@ export default function AppLayout() {
                   setMenuOpen(false);
                   handleLogout();
                 }}
-                className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium min-h-[48px] bg-transparent border border-app-danger/40 text-app-danger hover:bg-app-danger-muted mt-2"
+                className={`${logoutClass} mt-2`}
               >
                 {t('nav.logout')}
               </button>
