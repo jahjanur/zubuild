@@ -1,34 +1,29 @@
 /**
- * Design system — premium black/gold, 2026 dashboard style.
+ * Design system — "Grey Glass", 2026 dashboard style.
  * Use via Tailwind: bg-app-bg, text-app-primary, border-app-border, etc.
  */
 :root {
-  /* Surfaces */
-  --app-bg: #0b0f14;
-  --surface-1: #111827;
-  --surface-2: #0f172a;
-  /* Borders */
-  --border: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(212, 175, 55, 0.35);
-  /* Text */
-  --text-primary: #f8fafc;
-  --text-secondary: rgba(248, 250, 252, 0.72);
-  --text-muted: rgba(248, 250, 252, 0.5);
-  /* Accent */
-  --gold: #d4af37;
-  --gold-hover: #e3c45f;
-  --gold-muted: rgba(212, 175, 55, 0.2);
-  /* Semantic */
-  --danger: #ef4444;
-  --danger-muted: rgba(239, 68, 68, 0.15);
-  --success: #22c55e;
-  --success-muted: rgba(34, 197, 94, 0.15);
-  --warning: #eab308;
-  --warning-muted: rgba(234, 179, 8, 0.15);
-  /* Overlay */
-  --overlay: rgba(0, 0, 0, 0.72);
-  /* Shadows */
-  --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
-  --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  --shadow-button: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+  --app-bg: #EBEDF1;
+  --app-bg-gradient: linear-gradient(135deg, #EBEDF1 0%, #D4D8DF 100%);
+  --surface-1: #D4D8DF;
+  --surface-2: #EBEDF1;
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-strong: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.60);
+  --glass-blur: blur(20px) saturate(140%);
+  --border: rgba(172, 173, 177, 0.40);
+  --border-focus: rgba(8, 8, 8, 0.55);
+  --text-primary: #080808;
+  --text-secondary: #706F70;
+  --text-muted: #ACADB1;
+  --accent: #080808;
+  --accent-hover: #353536;
+  --accent-contrast: #FFFFFF;
+  --danger: #B42318;
+  --success: #067647;
+  --warning: #B54708;
+  --overlay: rgba(53, 53, 54, 0.35);
+  --shadow-card: 0 8px 32px rgba(8, 8, 8, 0.08);
+  --shadow-modal: 0 24px 60px -12px rgba(8, 8, 8, 0.28);
+  --shadow-button: 0 1px 2px rgba(8, 8, 8, 0.10);
 }
