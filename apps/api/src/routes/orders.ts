@@ -3,7 +3,7 @@ import { customAlphabet } from 'nanoid';
 import { prisma } from '../lib/prisma';
 import { requireAuth, requireAdmin } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
-import { createOrderSchema } from '@aem/shared';
+import { createOrderSchema } from '@zubuild/shared';
 import { logError } from '../lib/logger';
 import { generateOrderPdf } from '../lib/pdf';
 const router = Router();

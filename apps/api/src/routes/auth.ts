@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
-import { loginSchema } from '@aem/shared';
+import { loginSchema } from '@zubuild/shared';
 import { logError } from '../lib/logger';
 
 const router = Router();

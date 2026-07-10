@@ -1,5 +1,5 @@
 {
-  "name": "aem-residence-ops",
+  "name": "zubuild",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -8,14 +8,14 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
     "dev:api": "cd apps/api && DOTENV_CONFIG_PATH=.env node -r dotenv/config ../../node_modules/.bin/tsx watch src/index.ts",
-    "dev:web": "npm run dev -w @aem/web",
+    "dev:web": "npm run dev -w @zubuild/web",
     "dev:kill": "lsof -ti:4000 | xargs kill -9 2>/dev/null || echo 'No process on port 4000'",
-    "build": "npm run build -w @aem/shared && npm run build -w @aem/api && npm run build -w @aem/web",
-    "start": "npm run start -w @aem/api",
-    "db:migrate": "npm run db:migrate -w @aem/api",
-    "db:seed": "npm run db:seed -w @aem/api",
-    "db:generate": "npm run db:generate -w @aem/api",
-    "test": "npm run test -w @aem/api"
+    "build": "npm run build -w @zubuild/shared && npm run build -w @zubuild/api && npm run build -w @zubuild/web",
+    "start": "npm run start -w @zubuild/api",
+    "db:migrate": "npm run db:migrate -w @zubuild/api",
+    "db:seed": "npm run db:seed -w @zubuild/api",
+    "db:generate": "npm run db:generate -w @zubuild/api",
+    "test": "npm run test -w @zubuild/api"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

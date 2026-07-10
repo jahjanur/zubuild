@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth, requireAdmin } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
-import { inventoryAdjustSchema } from '@aem/shared';
+import { inventoryAdjustSchema } from '@zubuild/shared';
 import { logError } from '../lib/logger';
 const router = Router();
 router.use(requireAuth);

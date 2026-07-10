@@ -1,5 +1,5 @@
 /**
- * Construction measurement units (must match @aem/shared).
+ * Construction measurement units (must match @zubuild/shared).
  */
 export const MEASUREMENT_UNITS = [
   'kg',

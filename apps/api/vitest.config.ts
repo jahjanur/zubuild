@@ -8,7 +8,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@aem/shared': path.resolve(__dirname, '../../packages/shared/src'),
+      '@zubuild/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
 });

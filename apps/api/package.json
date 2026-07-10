@@ -1,5 +1,5 @@
 {
-  "name": "@aem/api",
+  "name": "@zubuild/api",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -16,7 +16,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@aem/shared": "*",
+    "@zubuild/shared": "*",
     "@prisma/client": "^5.22.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
