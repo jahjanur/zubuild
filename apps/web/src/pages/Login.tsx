@@ -50,7 +50,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@aem-residence.com"
+                placeholder="you@zubuild.com"
                 required
               />
             </div>

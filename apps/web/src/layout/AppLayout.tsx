@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
-import logo from '../assets/KAKAKAK.svg';
+import logo from '../assets/zubuild-logo.svg';
 
 const navKeys = [
   'dashboard',
@@ -78,7 +78,7 @@ export default function AppLayout() {
       {/* Sidebar: desktop only (lg+). Fixed so it does NOT take layout width on any breakpoint. */}
       <aside className="hidden lg:flex lg:flex-col lg:w-56 lg:fixed lg:inset-y-0 left-0 border-r border-[var(--border)] bg-app-surface-1 z-20">
         <div className="p-4 border-b border-[var(--border)] flex flex-col items-center">
-          <img src={logo} alt="AEM Residence" width={120} height={120} className="h-28 w-auto object-contain" decoding="async" />
+          <img src={logo} alt="Zubuild" width={120} height={120} className="h-28 w-auto object-contain" decoding="async" />
         </div>
         <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto" aria-label="Main navigation">
           {navKeys.map((key) => (
@@ -102,7 +102,7 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col w-full min-w-0 overflow-x-hidden lg:pl-56">
         {/* Mobile: top bar — logo left, hamburger right */}
         <header className="lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-app-surface-1 safe-area-pt">
-          <img src={logo} alt="AEM Residence" width={36} height={36} className="h-9 w-auto object-contain" decoding="async" />
+          <img src={logo} alt="Zubuild" width={36} height={36} className="h-9 w-auto object-contain" decoding="async" />
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
