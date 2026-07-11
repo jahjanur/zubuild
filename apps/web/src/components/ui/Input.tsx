@@ -1,7 +1,7 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
 
 const inputBase =
-  'w-full rounded-xl border bg-app-bg/50 px-4 py-3 text-app-primary placeholder-app-muted transition border-[var(--border)] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-app-gold/20 focus:outline-none min-h-[44px]';
+  'w-full rounded-xl border bg-white/60 px-4 py-3 text-app-primary placeholder-app-muted transition border-[var(--border)] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none min-h-[44px]';
 
 export const Input = forwardRef<
   HTMLInputElement,

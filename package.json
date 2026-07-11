@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "postinstall": "npm run build -w @aem/shared",
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
     "dev:api": "cd apps/api && DOTENV_CONFIG_PATH=.env node -r dotenv/config ../../node_modules/.bin/tsx watch src/index.ts",
     "dev:web": "npm run dev -w @aem/web",
@@ -15,7 +16,8 @@
     "db:migrate": "npm run db:migrate -w @aem/api",
     "db:seed": "npm run db:seed -w @aem/api",
     "db:generate": "npm run db:generate -w @aem/api",
-    "test": "npm run test -w @aem/api"
+    "test": "npm run test -w @aem/api",
+    "i18n:check": "node scripts/check-i18n-parity.mjs"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

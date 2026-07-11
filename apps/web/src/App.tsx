@@ -24,8 +24,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   });
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-luxury-black">
-        <div className="text-luxury-gold">{t('common.loading')}</div>
+      <div className="min-h-screen flex items-center justify-center bg-app-bg">
+        <div className="text-app-accent">{t('common.loading')}</div>
       </div>
     );
   }

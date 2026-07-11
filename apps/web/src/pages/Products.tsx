@@ -215,7 +215,7 @@ export default function Products() {
                 className="cursor-pointer select-none flex flex-row items-center justify-between gap-2"
                 onClick={() => toggleCategory(category)}
               >
-                <h2 className="text-sm font-semibold text-app-gold">{category}</h2>
+                <h2 className="text-sm font-semibold text-app-accent">{category}</h2>
                 <span className="text-app-secondary"><IconChevron open={isOpen} /></span>
               </CardHeader>
               {isOpen && (
@@ -234,7 +234,7 @@ export default function Products() {
                         {isAdmin && (
                           <div className="flex gap-1 shrink-0">
                             <TableActionButton onClick={() => openEdit(p)} aria-label={t('common.edit')}>
-                              <span className="text-app-gold"><IconEdit /></span>
+                              <span className="text-app-accent"><IconEdit /></span>
                             </TableActionButton>
                             <TableActionButton onClick={() => setDeleteConfirm(p)} aria-label={t('common.delete')}>
                               <span className="text-app-danger"><IconTrash /></span>
@@ -259,7 +259,7 @@ export default function Products() {
                           <TableRow key={p.id}>
                             <TableCell className="text-app-primary font-medium">{p.name}</TableCell>
                             <TableCell>{p.measurementUnit}</TableCell>
-                            <TableCell className="text-right text-app-gold">{formatMKD(Number(p.price))}</TableCell>
+                            <TableCell className="text-right text-app-accent">{formatMKD(Number(p.price))}</TableCell>
                             <TableCell>
                               <Badge variant={p.status === 'ACTIVE' ? 'success' : 'default'}>
                                 {p.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}
@@ -269,7 +269,7 @@ export default function Products() {
                             {isAdmin && (
                               <div className="flex justify-end gap-1">
                                 <TableActionButton onClick={() => openEdit(p)} aria-label={t('common.edit')}>
-                                  <span className="text-app-gold"><IconEdit /></span>
+                                  <span className="text-app-accent"><IconEdit /></span>
                                 </TableActionButton>
                                 <TableActionButton onClick={() => setDeleteConfirm(p)} aria-label={t('common.delete')}>
                                   <span className="text-app-danger"><IconTrash /></span>
@@ -326,14 +326,15 @@ export default function Products() {
             />
             {categoryDropdownOpen && categorySuggestions.length > 0 && (
               <ul
-                className="absolute z-50 mt-1 w-full rounded-xl border border-[var(--border)] bg-app-surface-2 shadow-modal max-h-48 overflow-y-auto py-1"
+                className="glass absolute z-50 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-48 overflow-y-auto py-1"
+                style={{ background: 'var(--glass-bg-strong)' }}
                 role="listbox"
               >
                 {categorySuggestions.map((c) => (
                   <li
                     key={c}
                     role="option"
-                    className="px-4 py-2.5 text-app-primary cursor-pointer hover:bg-white/10 focus:bg-white/10"
+                    className="px-4 py-2.5 text-app-primary cursor-pointer hover:bg-slate-900/[0.06] focus:bg-slate-900/[0.06]"
                     onClick={() => {
                       setForm((f) => ({ ...f, category: c }));
                       setCategoryDropdownOpen(false);

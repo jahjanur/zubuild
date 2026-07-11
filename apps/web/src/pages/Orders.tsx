@@ -15,7 +15,7 @@ import {
   Badge,
   Modal,
 } from '../components/ui';
-import { formatMKD } from '../lib/formatMKD';
+import { formatMKD, formatDate } from '../lib/formatMKD';
 import { useToast } from '../context/ToastContext';
 
 
@@ -40,10 +40,6 @@ function statusTr(s: string, t: (key: string) => string): string {
   if (s === 'DELIVERED') return t('status.delivered');
   if (s === 'RECONCILED') return t('status.reconciled');
   return s;
-}
-
-function formatDate(d: string): string {
-  return new Date(d).toLocaleDateString('tr-TR', { dateStyle: 'medium' });
 }
 
 const base = import.meta.env.VITE_API_BASE ?? '/api';
@@ -152,7 +148,7 @@ export default function Orders() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <Card className="p-4">
           <p className="text-sm font-medium text-app-secondary">{t('orders.totalSpendMkd')}</p>
-          <p className="text-2xl font-semibold text-app-gold mt-1">{formatMKD(Number(summary.totalSpendMkd))}</p>
+          <p className="text-2xl font-semibold text-app-accent mt-1">{formatMKD(Number(summary.totalSpendMkd))}</p>
         </Card>
         <Card className="p-4">
           <p className="text-sm font-medium text-app-secondary">{t('orders.orderCount')}</p>
@@ -215,7 +211,7 @@ export default function Orders() {
                         {statusTr(o.status, t)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right text-app-gold font-medium">{formatMKD(Number(o.totalAmount))}</TableCell>
+                    <TableCell className="text-right text-app-accent font-medium">{formatMKD(Number(o.totalAmount))}</TableCell>
                     <TableCell>
                       {o.hasReconciliation ? (
                         <Badge variant="success">{t('orders.reconciled')}</Badge>

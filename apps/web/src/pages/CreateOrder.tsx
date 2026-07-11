@@ -263,7 +263,7 @@ export default function CreateOrder() {
         <div className="space-y-4">
           <Card>
             <CardContent>
-              <h2 className="text-lg font-semibold text-app-gold mb-2">{t('createOrder.orderCreated', { orderNumber: createdOrder.orderNumber })}</h2>
+              <h2 className="text-lg font-semibold text-app-accent mb-2">{t('createOrder.orderCreated', { orderNumber: createdOrder.orderNumber })}</h2>
               <p className="text-app-secondary mb-4">
                 {t('createOrder.supplierTotal', { supplier: createdOrder.supplierName, total: formatMKD(Number(createdOrder.totalAmount)) })}
               </p>
@@ -319,7 +319,7 @@ export default function CreateOrder() {
                         className="min-h-[48px]"
                       />
                       {supplierDropdownOpen && (
-                        <div className="absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] bg-app-surface-2 shadow-modal max-h-56 overflow-auto">
+                        <div className="glass absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-56 overflow-auto" style={{ background: 'var(--glass-bg-strong)' }}>
                           {filteredSuppliers.length === 0 ? (
                             <div className="p-3 text-app-muted text-sm">{t('createOrder.noResults')}</div>
                           ) : (
@@ -328,7 +328,7 @@ export default function CreateOrder() {
                                 <li key={s.id}>
                                   <button
                                     type="button"
-                                    className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-white/10 flex flex-col gap-0.5"
+                                    className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-slate-900/[0.06] flex flex-col gap-0.5"
                                     onClick={() => {
                                       setSupplierId(s.id);
                                       setSupplierSearch('');
@@ -400,7 +400,7 @@ export default function CreateOrder() {
                       className="min-h-[48px]"
                     />
                     {searchOpen && debouncedQ.length >= 2 && (
-                      <div className="absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] bg-app-surface-2 shadow-modal max-h-56 overflow-auto">
+                      <div className="glass absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-56 overflow-auto" style={{ background: 'var(--glass-bg-strong)' }}>
                         {searchLoading ? (
                           <div className="p-3 text-app-muted text-sm">{t('common.searching')}</div>
                         ) : searchResults.length === 0 ? (
@@ -411,11 +411,11 @@ export default function CreateOrder() {
                               <li key={p.id}>
                                 <button
                                   type="button"
-                                  className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-white/10 flex justify-between items-center gap-2"
+                                  className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-slate-900/[0.06] flex justify-between items-center gap-2"
                                   onClick={() => addProduct(p)}
                                 >
                                   <span className="truncate">{p.name}</span>
-                                  <span className="text-app-gold shrink-0">{formatMKD(Number(p.price))}</span>
+                                  <span className="text-app-accent shrink-0">{formatMKD(Number(p.price))}</span>
                                 </button>
                               </li>
                             ))}
@@ -449,10 +449,10 @@ export default function CreateOrder() {
                             inputMode="numeric"
                             value={r.quantity}
                             onChange={(e) => updateRow(i, 'quantity', parseInt(e.target.value, 10) || 0)}
-                            className="w-20 rounded-xl border border-[var(--border)] bg-app-bg/50 px-3 py-2.5 text-right text-app-primary text-base min-h-[44px] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-app-gold/20 focus:outline-none"
+                            className="w-20 rounded-xl border border-[var(--border)] bg-white/60 px-3 py-2.5 text-right text-app-primary text-base min-h-[44px] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none"
                           />
                         </div>
-                        <p className="text-app-gold font-semibold text-right">{t('createOrder.total')}: {formatMKD(r.price * r.quantity)}</p>
+                        <p className="text-app-accent font-semibold text-right">{t('createOrder.total')}: {formatMKD(r.price * r.quantity)}</p>
                       </div>
                     ))}
                   </div>
@@ -473,7 +473,7 @@ export default function CreateOrder() {
                           <TableRow key={i}>
                             <TableCell className="text-app-primary">{r.name}</TableCell>
                             <TableCell>{r.unit}</TableCell>
-                            <TableCell className="text-right text-app-gold">{formatMKD(r.price)}</TableCell>
+                            <TableCell className="text-right text-app-accent">{formatMKD(r.price)}</TableCell>
                             <TableCell className="text-right">
                               <input
                                 type="number"
@@ -481,10 +481,10 @@ export default function CreateOrder() {
                                 inputMode="numeric"
                                 value={r.quantity}
                                 onChange={(e) => updateRow(i, 'quantity', parseInt(e.target.value, 10) || 0)}
-                                className="w-16 rounded-lg border border-[var(--border)] bg-app-bg/50 px-2 py-1.5 text-right text-app-primary text-sm focus:border-app-border-focus focus:ring-2 focus:ring-app-gold/20 focus:outline-none min-h-[44px]"
+                                className="w-16 rounded-lg border border-[var(--border)] bg-white/60 px-2 py-1.5 text-right text-app-primary text-sm focus:border-app-border-focus focus:ring-2 focus:ring-black/10 focus:outline-none min-h-[44px]"
                               />
                             </TableCell>
-                            <TableCell className="text-right text-app-gold">{formatMKD(r.price * r.quantity)}</TableCell>
+                            <TableCell className="text-right text-app-accent">{formatMKD(r.price * r.quantity)}</TableCell>
                             <TableCell>
                               <TableActionButton onClick={() => removeRow(i)} aria-label={t('createOrder.remove')}>
                                 <span className="text-app-danger"><IconTrash /></span>
@@ -507,14 +507,15 @@ export default function CreateOrder() {
             </div>
 
             <div className="lg:col-span-1">
-              {/* Mobile: sticky summary bar above bottom nav (bottom nav is ~64px + safe area) */}
+              {/* Mobile: summary bar pinned to the bottom edge (no bottom nav); clears the home indicator via safe-area */}
               {rows.length > 0 && (
-                <div className="md:hidden fixed left-0 right-0 z-40 bg-app-surface-1 border-t border-[var(--border)] p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.3)] bottom-20"
+                <div className="glass md:hidden fixed left-0 right-0 bottom-0 z-30 border-t border-[var(--border)] px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-8px_32px_rgba(8,8,8,0.10)]"
+                  style={{ background: 'var(--glass-bg-strong)' }}
                 >
                   <div className="page-container flex flex-col gap-3">
                     <div className="flex justify-between text-app-primary font-semibold text-base">
                       <span>{t('createOrder.total')}</span>
-                      <span className="text-app-gold">{formatMKD(total)}</span>
+                      <span className="text-app-accent">{formatMKD(total)}</span>
                     </div>
                     <Button
                       type="submit"
@@ -547,13 +548,13 @@ export default function CreateOrder() {
                         {rows.map((r, i) => (
                           <li key={i} className="flex justify-between gap-2">
                             <span className="truncate">{r.name} × {r.quantity} {r.unit}</span>
-                            <span className="text-app-gold shrink-0">{formatMKD(r.price * r.quantity)}</span>
+                            <span className="text-app-accent shrink-0">{formatMKD(r.price * r.quantity)}</span>
                           </li>
                         ))}
                       </ul>
                       <div className="border-t border-[var(--border)] pt-3 flex justify-between text-app-primary font-semibold">
                         <span>{t('createOrder.total')}</span>
-                        <span className="text-app-gold">{formatMKD(total)}</span>
+                        <span className="text-app-accent">{formatMKD(total)}</span>
                       </div>
                       <Button
                         type="submit"

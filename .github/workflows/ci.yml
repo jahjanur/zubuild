@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  i18n-parity:
+    name: Translation key parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # No install needed — the script is dependency-free Node.
+      - name: Check translation key parity
+        run: node scripts/check-i18n-parity.mjs
