@@ -507,9 +507,9 @@ export default function CreateOrder() {
             </div>
 
             <div className="lg:col-span-1">
-              {/* Mobile: sticky summary bar above bottom nav (bottom nav is ~64px + safe area) */}
+              {/* Mobile: summary bar pinned to the bottom edge (no bottom nav); clears the home indicator via safe-area */}
               {rows.length > 0 && (
-                <div className="glass md:hidden fixed left-0 right-0 z-40 border-t border-[var(--border)] p-4 shadow-[0_-8px_32px_rgba(8,8,8,0.10)] bottom-20"
+                <div className="glass md:hidden fixed left-0 right-0 bottom-0 z-30 border-t border-[var(--border)] px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-8px_32px_rgba(8,8,8,0.10)]"
                   style={{ background: 'var(--glass-bg-strong)' }}
                 >
                   <div className="page-container flex flex-col gap-3">

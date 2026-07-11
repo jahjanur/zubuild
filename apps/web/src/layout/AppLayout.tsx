@@ -144,7 +144,7 @@ export default function AppLayout() {
                 <IconClose />
               </button>
             </div>
-            <nav className="overflow-y-auto p-4 space-y-0.5" aria-label="Main navigation">
+            <nav className="overflow-y-auto p-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-0.5" aria-label="Main navigation">
               {navKeys.map((key) => (
                 <NavLink
                   key={key}
