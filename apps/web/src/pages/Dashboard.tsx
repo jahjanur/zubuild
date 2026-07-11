@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { StatCard, Card, Modal, Button } from '../components/ui';
-import { formatMKD } from '../lib/formatMKD';
+import { formatMKD, formatDate } from '../lib/formatMKD';
 
 interface Overview {
   totalSuppliers: number;
@@ -30,10 +30,6 @@ interface RecentRecon {
   totalLossValue: number;
   order: { orderNumber: string; supplierName: string };
   items: ReconItem[];
-}
-
-function formatDate(d: string): string {
-  return new Date(d).toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
 function missingSummary(items: ReconItem[]): string {

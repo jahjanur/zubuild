@@ -15,7 +15,7 @@ import {
   TableRow,
   TableCell,
 } from '../components/ui';
-import { formatMKD } from '../lib/formatMKD';
+import { formatMKD, formatDate } from '../lib/formatMKD';
 
 interface OrderItem {
   id: string;
@@ -112,7 +112,7 @@ export default function Reconciliation() {
                   <span className="font-medium text-app-primary">{o.orderNumber}</span>
                   <span className="text-app-secondary ml-2">{o.supplierName}</span>
                   <span className="text-app-muted text-sm block sm:inline sm:ml-2">
-                    {new Date(o.orderDate).toLocaleDateString('tr-TR')} · {statusTr(o.status, t)}
+                    {formatDate(o.orderDate)} · {statusTr(o.status, t)}
                   </span>
                 </div>
                 {isAdmin && (

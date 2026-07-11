@@ -15,7 +15,7 @@ import {
   Badge,
   Modal,
 } from '../components/ui';
-import { formatMKD } from '../lib/formatMKD';
+import { formatMKD, formatDate } from '../lib/formatMKD';
 import { useToast } from '../context/ToastContext';
 
 
@@ -40,10 +40,6 @@ function statusTr(s: string, t: (key: string) => string): string {
   if (s === 'DELIVERED') return t('status.delivered');
   if (s === 'RECONCILED') return t('status.reconciled');
   return s;
-}
-
-function formatDate(d: string): string {
-  return new Date(d).toLocaleDateString('tr-TR', { dateStyle: 'medium' });
 }
 
 const base = import.meta.env.VITE_API_BASE ?? '/api';
