@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import { LanguageSwitcher } from '../components/ui';
 import logo from '../assets/KAKAKAK.svg';
 
 const navKeys = [
@@ -87,7 +88,8 @@ export default function AppLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="p-3 border-t border-[var(--border)]">
+        <div className="p-3 border-t border-[var(--border)] space-y-3">
+          <LanguageSwitcher className="justify-center" />
           <button
             type="button"
             onClick={handleLogout}
@@ -160,6 +162,7 @@ export default function AppLayout() {
                   {t(`nav.${key}`)}
                 </NavLink>
               ))}
+              <LanguageSwitcher className="justify-center pt-3 mt-2 border-t border-[var(--border)]" />
               <button
                 type="button"
                 onClick={() => {

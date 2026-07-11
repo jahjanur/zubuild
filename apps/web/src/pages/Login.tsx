@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, setApiErrorHandler } from '../lib/api';
-import { Card, CardContent, Button, Input } from '../components/ui';
+import { Card, CardContent, Button, Input, LanguageSwitcher } from '../components/ui';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -36,6 +36,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-app-bg px-4 py-6 safe-area-pt">
       <Card className="w-full max-w-md">
         <CardContent className="p-6 md:p-8">
+          <LanguageSwitcher className="justify-end mb-4" />
           <h1 className="text-xl md:text-2xl font-semibold text-app-gold mb-2">{t('login.title')}</h1>
           <p className="text-app-secondary text-sm mb-6">{t('login.signInContinue')}</p>
           {toast && (

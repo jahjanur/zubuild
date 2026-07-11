@@ -6,6 +6,7 @@ export { Modal } from './Modal';
 export { Input } from './Input';
 export { Select } from './Select';
 export { Textarea } from './Textarea';
+export { LanguageSwitcher } from './LanguageSwitcher';
 export {
   Table,
   TableHeader,
