@@ -15,7 +15,8 @@
     "db:migrate": "npm run db:migrate -w @aem/api",
     "db:seed": "npm run db:seed -w @aem/api",
     "db:generate": "npm run db:generate -w @aem/api",
-    "test": "npm run test -w @aem/api"
+    "test": "npm run test -w @aem/api",
+    "i18n:check": "node scripts/check-i18n-parity.mjs"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
