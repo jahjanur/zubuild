@@ -16,7 +16,7 @@ import {
   TableRow,
   TableCell,
 } from '../components/ui';
-import { formatMKD } from '../lib/formatMKD';
+import { formatMKD, formatDate, formatDateTime } from '../lib/formatMKD';
 
 interface ControlSummary {
   incidentCount: number;
@@ -142,7 +142,7 @@ export default function ControlPanel() {
                     <span className="font-medium text-app-primary">{r.order.orderNumber}</span>
                     <span className="text-app-danger font-medium">{formatMKD(Number(r.totalLossValue))}</span>
                   </div>
-                  <p className="text-app-secondary text-sm">{new Date(r.reconciliationDate).toLocaleDateString()}</p>
+                  <p className="text-app-secondary text-sm">{formatDate(r.reconciliationDate)}</p>
                   <Button
                     type="button"
                     variant="ghost"
@@ -176,7 +176,7 @@ export default function ControlPanel() {
                   incidents.map((r) => (
                     <TableRow key={r.id}>
                       <TableCell className="text-app-primary">{r.order.orderNumber}</TableCell>
-                      <TableCell>{new Date(r.reconciliationDate).toLocaleDateString()}</TableCell>
+                      <TableCell>{formatDate(r.reconciliationDate)}</TableCell>
                       <TableCell className="text-right text-app-danger">
                         {formatMKD(Number(r.totalLossValue))}
                       </TableCell>
@@ -217,7 +217,7 @@ export default function ControlPanel() {
                     {m.deltaQty >= 0 ? '+' : ''}{m.deltaQty}
                   </p>
                   <p className="text-app-secondary text-xs">{m.type.replace(/_/g, ' ')} · {m.reason || '—'}</p>
-                  <p className="text-app-muted text-xs mt-1">{new Date(m.createdAt).toLocaleString()}</p>
+                  <p className="text-app-muted text-xs mt-1">{formatDateTime(m.createdAt)}</p>
                 </div>
               ))
             )}
@@ -250,7 +250,7 @@ export default function ControlPanel() {
                       </TableCell>
                       <TableCell className="text-app-secondary text-xs">{m.type.replace(/_/g, ' ')}</TableCell>
                       <TableCell className="text-app-muted text-xs">{m.reason || '—'}</TableCell>
-                      <TableCell className="text-app-muted text-xs">{new Date(m.createdAt).toLocaleString()}</TableCell>
+                      <TableCell className="text-app-muted text-xs">{formatDateTime(m.createdAt)}</TableCell>
                     </TableRow>
                   ))
                 )}
@@ -272,7 +272,7 @@ export default function ControlPanel() {
               <p className="text-app-secondary text-sm mb-4">
                 {t('controlPanel.order')}: {details.order?.orderNumber ?? '—'} ·{' '}
                 {details.reconciliationDate
-                  ? new Date(details.reconciliationDate).toLocaleString('tr-TR')
+                  ? formatDateTime(details.reconciliationDate)
                   : '—'}
               </p>
               {details.notes && (
