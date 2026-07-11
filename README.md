@@ -33,7 +33,7 @@ npm run dev
 Then open the web URL (e.g. http://localhost:5173) and log in with:
 
 - **Email:** `admin@aem-residence.com`
-- **Password:** `changeMeNow!`
+- **Password:** `admin`
 
 If port 4000 is in use: `npm run dev:kill` then `npm run dev` again.
 
@@ -91,7 +91,7 @@ npm run db:migrate
 npm run db:seed
 ```
 
-Seed creates/updates the admin user (email above, password `changeMeNow!`). If the user already exists, the password hash is updated so you never get stuck.
+Seed creates/updates the admin user (email above, password `admin`). If the user already exists, the password hash is updated so you never get stuck.
 
 ### 4. Run development
 
@@ -155,7 +155,7 @@ Login returns specific errors:
 
 - **DB not reachable** — `DATABASE_URL` not set or SQLite file path wrong. Ensure `apps/api/.env` has `DATABASE_URL="file:./prisma/dev.db"` and you ran `npm run db:migrate`.
 - **User not found** — Run `npm run db:seed`.
-- **Invalid password** — Seed password is `changeMeNow!`.
+- **Invalid password** — Seed password is `admin`.
 - **Session error** — Session store (file) failed; check write access to `apps/api/prisma/sessions/`.
 
 Use `GET /debug/auth-check?email=admin@aem-residence.com` (dev only) to confirm `dbReachable: true` and `userExists: true` after seed.
