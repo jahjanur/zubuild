@@ -52,14 +52,15 @@ export function Modal({
         style={{ background: 'var(--glass-bg-strong)' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--border)] bg-white/40 shrink-0">
-          <h2 id="modal-title" className="text-lg font-semibold text-app-primary truncate pr-2">
+        <div className="sticky top-0 z-10 flex items-start justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--border)] bg-white/40 shrink-0">
+          <h2 id="modal-title" className="text-lg font-semibold text-app-primary min-w-0 break-words pr-2 self-center">
+
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-12 w-12 min-h-[48px] min-w-[48px] items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]"
+            className="flex h-12 w-12 min-h-[48px] min-w-[48px] shrink-0 items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]"
             aria-label={t('common.close')}
           >
             <span className="text-2xl leading-none">×</span>
