@@ -1,0 +1,27 @@
+# Local / staging PostgreSQL for Zubuild.
+# SQLite is the default for local dev (no Docker). Use this to run on Postgres
+# (staging parity). See docs/POSTGRES.md for the full cutover.
+#
+#   docker compose up -d db
+#   # then point apps/api/.env DATABASE_URL at it (see .env.example) and follow docs/POSTGRES.md
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: zubuild-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zubuild
+      POSTGRES_PASSWORD: zubuild
+      POSTGRES_DB: zubuild
+    ports:
+      - '5432:5432'
+    volumes:
+      - zubuild_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U zubuild -d zubuild']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  zubuild_pgdata:
