@@ -14,7 +14,8 @@
     "analytics": "Analitik",
     "logout": "Çıkış Yap",
     "operations": "Operasyonlar",
-    "more": "Diğer"
+    "more": "Diğer",
+    "team": "Ekip"
   },
   "common": {
     "loading": "Yükleniyor…",
@@ -256,5 +257,32 @@
     "passwordMismatch": "Şifreler eşleşmiyor.",
     "registerFailed": "Kuruluş oluşturulamadı.",
     "newHere": "Yeni şirket mi?"
+  },
+  "team": {
+    "title": "Ekip",
+    "adminOnly": "Yalnızca yöneticiler ekibi yönetebilir.",
+    "inviteTeammate": "Bir iş arkadaşı davet et",
+    "role": "Rol",
+    "roleAdmin": "Yönetici",
+    "roleViewer": "Görüntüleyici",
+    "createInvite": "Davet oluştur",
+    "inviting": "Oluşturuluyor…",
+    "inviteReady": "Davet hazır — paylaşmak için bağlantıyı kopyalayın.",
+    "pendingInvites": "Bekleyen davetler",
+    "noInvites": "Bekleyen davet yok.",
+    "copyLink": "Bağlantıyı kopyala",
+    "copied": "Kopyalandı!",
+    "revoke": "İptal et",
+    "expires": "Sona erme {{date}}",
+    "members": "Üyeler",
+    "you": "siz"
+  },
+  "acceptInvite": {
+    "invitedAs": "{{org}} kuruluşuna {{role}} olarak katılmaya davet edildiniz.",
+    "join": "Katıl",
+    "joining": "Katılınıyor…",
+    "invalidTitle": "Davet kullanılamıyor",
+    "invalidBody": "Bu davet geçersiz veya süresi dolmuş.",
+    "backToLogin": "Girişe dön"
   }
 }

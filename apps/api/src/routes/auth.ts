@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
-import { loginSchema, registerSchema } from '@aem/shared';
+import { loginSchema, registerSchema, acceptInviteSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
 
 const router = Router();
@@ -175,6 +175,72 @@ router.post('/register', registerLimiter, validateBody(registerSchema), async (r
     }
     logError('POST /auth/register', err);
     res.status(500).json({ success: false, error: 'Registration failed' });
+  }
+});
+
+/**
+ * GET /auth/invitation/:token (public)
+ * Invite details for the accept page. Invitation lookup is unscoped here because
+ * the invitee isn't logged in yet.
+ */
+router.get('/invitation/:token', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const invite = await prisma.invitation.findUnique({
+      where: { token: req.params.token },
+      include: { organization: { select: { name: true } } },
+    });
+    if (!invite || invite.status !== 'PENDING' || invite.expiresAt < new Date()) {
+      res.status(404).json({ success: false, error: 'This invite is invalid or has expired' });
+      return;
+    }
+    res.json({ success: true, data: { email: invite.email, role: invite.role, organizationName: invite.organization.name } });
+  } catch (err) {
+    logError('GET /auth/invitation/:token', err);
+    res.status(500).json({ success: false, error: 'Failed to load invitation' });
+  }
+});
+
+/**
+ * POST /auth/invitation/:token/accept (public)
+ * Creates the invitee's user in the inviting org, marks the invite accepted, logs in.
+ */
+router.post('/invitation/:token/accept', validateBody(acceptInviteSchema), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const invite = await prisma.invitation.findUnique({ where: { token: req.params.token } });
+    if (!invite || invite.status !== 'PENDING' || invite.expiresAt < new Date()) {
+      res.status(404).json({ success: false, error: 'This invite is invalid or has expired' });
+      return;
+    }
+    const existing = await prisma.user.findUnique({ where: { email: invite.email } });
+    if (existing) {
+      res.status(409).json({ success: false, error: 'An account with this email already exists' });
+      return;
+    }
+    const passwordHash = await bcrypt.hash((req.body as { password: string }).password, 12);
+    const { user, org } = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: { email: invite.email, passwordHash, role: invite.role, organizationId: invite.organizationId },
+      });
+      await tx.invitation.update({ where: { id: invite.id }, data: { status: 'ACCEPTED', acceptedAt: new Date() } });
+      const org = await tx.organization.findUnique({ where: { id: invite.organizationId } });
+      return { user, org };
+    });
+    req.session.user = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      organizationId: invite.organizationId,
+      currency: org?.currency ?? 'MKD',
+      locale: org?.locale ?? 'mk',
+    };
+    res.status(201).json({ success: true, data: { id: user.id, email: user.email, role: user.role } });
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'code' in err && (err as { code: string }).code === 'P2002') {
+      res.status(409).json({ success: false, error: 'An account with this email already exists' });
+      return;
+    }
+    logError('POST /auth/invitation/:token/accept', err);
+    res.status(500).json({ success: false, error: 'Failed to accept invitation' });
   }
 });
 

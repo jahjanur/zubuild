@@ -157,4 +157,27 @@ describe('cross-tenant HTTP isolation', () => {
       expect(res.body.data.incidentsWithLoss).toBe(1);
     });
   });
+
+  describe('team invitations', () => {
+    it('each org only sees and can revoke its own invitations', async () => {
+      const aInv = (await agentA.post('/team/invitations').send({ email: 'newa@test.com', role: 'VIEWER' }).expect(201)).body.data;
+      const bInv = (await agentB.post('/team/invitations').send({ email: 'newb@test.com', role: 'VIEWER' }).expect(201)).body.data;
+
+      const aList = (await agentA.get('/team/invitations').expect(200)).body.data as { id: string; email: string }[];
+      expect(aList.map((i) => i.email)).toContain('newa@test.com');
+      expect(aList.map((i) => i.email)).not.toContain('newb@test.com');
+
+      // A cannot revoke B's invitation
+      await agentA.delete(`/team/invitations/${bInv.id}`).expect(404);
+      // B's invitation still pending
+      const bList = (await agentB.get('/team/invitations').expect(200)).body.data as { id: string }[];
+      expect(bList.some((i) => i.id === bInv.id)).toBe(true);
+
+      // A's members list never shows B's admin
+      const aMembers = (await agentA.get('/team/members').expect(200)).body.data as { email: string }[];
+      expect(aMembers.map((m) => m.email)).toEqual(['admin-a@test.com']);
+
+      void aInv;
+    });
+  });
 });

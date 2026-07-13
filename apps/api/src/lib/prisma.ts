@@ -19,6 +19,7 @@ const TENANT_MODELS = new Set<string>([
   'OrderItem',
   'Reconciliation',
   'InventoryMovement',
+  'Invitation',
 ]);
 
 /**

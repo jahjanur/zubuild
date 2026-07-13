@@ -19,6 +19,7 @@ import reconciliationsRoutes from './routes/reconciliations';
 import controlRoutes from './routes/control';
 import analyticsRoutes from './routes/analytics';
 import inventoryRoutes from './routes/inventory';
+import teamRoutes from './routes/team';
 import debugRoutes from './routes/debug';
 import { sanitizeBody } from './middleware/sanitize';
 import { assertPdfFontsAvailable } from './lib/pdf';
@@ -80,6 +81,7 @@ app.use('/reconciliations', reconciliationsRoutes);
 app.use('/control', controlRoutes);
 app.use('/analytics', analyticsRoutes);
 app.use('/inventory', inventoryRoutes);
+app.use('/team', teamRoutes);
 
 // Health
 app.get('/health', (_req, res) => res.json({ ok: true }));

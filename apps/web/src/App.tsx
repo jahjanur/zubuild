@@ -7,6 +7,8 @@ import AppLayout from './layout/AppLayout';
 
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
+const AcceptInvite = lazy(() => import('./pages/AcceptInvite'));
+const Team = lazy(() => import('./pages/Team'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Suppliers = lazy(() => import('./pages/Suppliers'));
 const Products = lazy(() => import('./pages/Products'));
@@ -49,6 +51,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/accept-invite/:token" element={<AcceptInvite />} />
         <Route
           path="/app"
           element={
@@ -66,6 +69,7 @@ export default function App() {
           <Route path="control-panel" element={<ControlPanel />} />
           <Route path="orders" element={<Orders />} />
           <Route path="analytics" element={<Analytics />} />
+          <Route path="team" element={<Team />} />
         </Route>
         <Route path="/" element={<Navigate to="/app" replace />} />
         <Route path="*" element={<Navigate to="/app" replace />} />

@@ -14,7 +14,8 @@
     "analytics": "Analytics",
     "logout": "Log Out",
     "operations": "Operations",
-    "more": "More"
+    "more": "More",
+    "team": "Team"
   },
   "common": {
     "loading": "Loading…",
@@ -256,5 +257,32 @@
     "passwordMismatch": "Passwords do not match.",
     "registerFailed": "Could not create the organization.",
     "newHere": "New company?"
+  },
+  "team": {
+    "title": "Team",
+    "adminOnly": "Only admins can manage the team.",
+    "inviteTeammate": "Invite a teammate",
+    "role": "Role",
+    "roleAdmin": "Admin",
+    "roleViewer": "Viewer",
+    "createInvite": "Create invite",
+    "inviting": "Creating…",
+    "inviteReady": "Invite ready — copy the link to share it.",
+    "pendingInvites": "Pending invites",
+    "noInvites": "No pending invites.",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "revoke": "Revoke",
+    "expires": "Expires {{date}}",
+    "members": "Members",
+    "you": "you"
+  },
+  "acceptInvite": {
+    "invitedAs": "You have been invited to join {{org}} as {{role}}.",
+    "join": "Join workspace",
+    "joining": "Joining…",
+    "invalidTitle": "Invite unavailable",
+    "invalidBody": "This invite is invalid or has expired.",
+    "backToLogin": "Back to sign in"
   }
 }

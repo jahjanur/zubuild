@@ -1,4 +1,5 @@
 export * from './auth';
+export * from './invitation';
 export * from './supplier';
 export * from './product';
 export * from './order';

@@ -14,7 +14,8 @@
     "analytics": "Analitika",
     "logout": "Dilni",
     "operations": "Operacionet",
-    "more": "Më shumë"
+    "more": "Më shumë",
+    "team": "Ekipi"
   },
   "common": {
     "loading": "Po ngarkohet…",
@@ -256,5 +257,32 @@
     "passwordMismatch": "Fjalëkalimet nuk përputhen.",
     "registerFailed": "Organizata nuk mund të krijohej.",
     "newHere": "Kompani e re?"
+  },
+  "team": {
+    "title": "Ekipi",
+    "adminOnly": "Vetëm administratorët mund të menaxhojnë ekipin.",
+    "inviteTeammate": "Fto një koleg",
+    "role": "Roli",
+    "roleAdmin": "Administrator",
+    "roleViewer": "Shikues",
+    "createInvite": "Krijo ftesë",
+    "inviting": "Po krijohet…",
+    "inviteReady": "Ftesa është gati — kopjoni lidhjen për ta ndarë.",
+    "pendingInvites": "Ftesa në pritje",
+    "noInvites": "Nuk ka ftesa në pritje.",
+    "copyLink": "Kopjo lidhjen",
+    "copied": "U kopjua!",
+    "revoke": "Revoko",
+    "expires": "Skadon më {{date}}",
+    "members": "Anëtarët",
+    "you": "ju"
+  },
+  "acceptInvite": {
+    "invitedAs": "Jeni ftuar të bashkoheni me {{org}} si {{role}}.",
+    "join": "Bashkohu",
+    "joining": "Po bashkohet…",
+    "invalidTitle": "Ftesa e padisponueshme",
+    "invalidBody": "Kjo ftesë është e pavlefshme ose ka skaduar.",
+    "backToLogin": "Kthehu te hyrja"
   }
 }
