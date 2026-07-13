@@ -134,7 +134,9 @@
     "tapProductToAdd": "Tap a product to add it to the order.",
     "allCategory": "All",
     "decreaseQty": "Decrease quantity",
-    "increaseQty": "Increase quantity"
+    "increaseQty": "Increase quantity",
+    "clearAll": "Clear all",
+    "itemsLabel": "items"
   },
   "reconciliation": {
     "title": "Delivery Reconciliation",

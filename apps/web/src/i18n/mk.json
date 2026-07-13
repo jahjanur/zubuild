@@ -134,7 +134,9 @@
     "tapProductToAdd": "Допрете производ за да го додадете во нарачката.",
     "allCategory": "Сите",
     "decreaseQty": "Намали количина",
-    "increaseQty": "Зголеми количина"
+    "increaseQty": "Зголеми количина",
+    "clearAll": "Исчисти сè",
+    "itemsLabel": "ставки"
   },
   "reconciliation": {
     "title": "Порамнување на испораката",

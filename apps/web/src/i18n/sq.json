@@ -134,7 +134,9 @@
     "tapProductToAdd": "Prekni një produkt për ta shtuar në porosi.",
     "allCategory": "Të gjitha",
     "decreaseQty": "Zvogëlo sasinë",
-    "increaseQty": "Rrit sasinë"
+    "increaseQty": "Rrit sasinë",
+    "clearAll": "Pastro të gjitha",
+    "itemsLabel": "artikuj"
   },
   "reconciliation": {
     "title": "Rakordimi i dorëzimit",

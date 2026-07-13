@@ -226,6 +226,10 @@ export default function CreateOrder() {
     setRows((prev) => prev.filter((_, i) => i !== index));
   }
 
+  function clearAll() {
+    setRows([]);
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
@@ -535,7 +539,18 @@ export default function CreateOrder() {
                   )}
 
                   {rows.length > 0 && (
-                    <p className="text-xs font-medium text-app-muted pt-2 border-t border-[var(--border)]">{t('createOrder.orderTable')}</p>
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-[var(--border)]">
+                      <p className="text-xs font-medium text-app-muted">
+                        {t('createOrder.orderTable')} · <span className="text-app-primary font-semibold">{rows.length}</span> {t('createOrder.itemsLabel')}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={clearAll}
+                        className="text-xs font-medium text-app-danger hover:underline px-2 py-1 min-h-[36px] focus:outline-none focus-visible:ring-2 focus-visible:ring-app-danger/40 rounded-lg"
+                      >
+                        {t('createOrder.clearAll')}
+                      </button>
+                    </div>
                   )}
 
                   {/* Mobile: item cards */}
@@ -626,6 +641,18 @@ export default function CreateOrder() {
                   style={{ background: 'var(--glass-bg-strong)' }}
                 >
                   <div className="page-container flex flex-col gap-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-app-secondary">
+                        <span className="text-app-primary font-semibold">{rows.length}</span> {t('createOrder.itemsLabel')}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={clearAll}
+                        className="text-app-danger font-medium px-2 py-1 min-h-[36px] focus:outline-none focus-visible:ring-2 focus-visible:ring-app-danger/40 rounded-lg"
+                      >
+                        {t('createOrder.clearAll')}
+                      </button>
+                    </div>
                     <div className="flex justify-between text-app-primary font-semibold text-base">
                       <span>{t('createOrder.total')}</span>
                       <span className="text-app-accent">{formatMKD(total)}</span>
@@ -649,14 +676,31 @@ export default function CreateOrder() {
               )}
               {/* Desktop: sidebar summary */}
               <Card className="lg:sticky lg:top-6 hidden md:block">
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between gap-2">
                   <h3 className="text-sm font-semibold text-app-primary">{t('createOrder.title')}</h3>
+                  {rows.length > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-app-accent/15 text-app-accent text-xs font-semibold">
+                      {rows.length}
+                    </span>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {rows.length === 0 ? (
                     <p className="text-app-secondary text-sm">{t('createOrder.tapProductToAdd')}</p>
                   ) : (
                     <>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-medium text-app-muted">
+                          <span className="text-app-primary font-semibold">{rows.length}</span> {t('createOrder.itemsLabel')}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={clearAll}
+                          className="text-xs font-medium text-app-danger hover:underline px-2 py-1 min-h-[36px] focus:outline-none focus-visible:ring-2 focus-visible:ring-app-danger/40 rounded-lg"
+                        >
+                          {t('createOrder.clearAll')}
+                        </button>
+                      </div>
                       <ul className="space-y-2 text-sm text-app-secondary">
                         {rows.map((r, i) => (
                           <li key={i} className="flex justify-between gap-2">

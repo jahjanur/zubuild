@@ -134,7 +134,9 @@
     "tapProductToAdd": "Siparişe eklemek için bir ürüne dokunun.",
     "allCategory": "Tümü",
     "decreaseQty": "Miktarı azalt",
-    "increaseQty": "Miktarı artır"
+    "increaseQty": "Miktarı artır",
+    "clearAll": "Tümünü temizle",
+    "itemsLabel": "kalem"
   },
   "reconciliation": {
     "title": "Teslimat Mutabakatı",
