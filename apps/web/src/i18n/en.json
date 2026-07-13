@@ -132,7 +132,9 @@
     "noActiveProducts": "No products available.",
     "addToOrder": "Add {{name}} to order",
     "tapProductToAdd": "Tap a product to add it to the order.",
-    "allCategory": "All"
+    "allCategory": "All",
+    "decreaseQty": "Decrease quantity",
+    "increaseQty": "Increase quantity"
   },
   "reconciliation": {
     "title": "Delivery Reconciliation",

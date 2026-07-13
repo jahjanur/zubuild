@@ -132,7 +132,9 @@
     "noActiveProducts": "Nuk ka produkte të disponueshme.",
     "addToOrder": "Shto {{name}} në porosi",
     "tapProductToAdd": "Prekni një produkt për ta shtuar në porosi.",
-    "allCategory": "Të gjitha"
+    "allCategory": "Të gjitha",
+    "decreaseQty": "Zvogëlo sasinë",
+    "increaseQty": "Rrit sasinë"
   },
   "reconciliation": {
     "title": "Rakordimi i dorëzimit",

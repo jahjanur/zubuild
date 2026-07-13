@@ -72,6 +72,56 @@ function IconPlus() {
   );
 }
 
+function IconMinus() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+
+/** −/value/+ quantity stepper. One-tap adjust with 44px touch targets; the
+ *  center field keeps manual keyboard entry. Never goes below 0. */
+function QtyStepper({
+  value,
+  onChange,
+  label,
+  decLabel,
+  incLabel,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  label: string;
+  decLabel: string;
+  incLabel: string;
+}) {
+  const stepBtn =
+    'flex items-center justify-center min-h-[44px] min-w-[44px] text-app-primary hover:bg-slate-900/[0.06] active:bg-slate-900/[0.10] transition disabled:opacity-40 disabled:pointer-events-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] focus-visible:ring-inset';
+  return (
+    <div
+      className="inline-flex items-stretch rounded-xl border border-[var(--border)] bg-white/60 overflow-hidden"
+      role="group"
+      aria-label={label}
+    >
+      <button type="button" onClick={() => onChange(Math.max(0, value - 1))} disabled={value <= 0} aria-label={decLabel} className={stepBtn}>
+        <IconMinus />
+      </button>
+      <input
+        type="number"
+        min={0}
+        inputMode="numeric"
+        value={value}
+        onChange={(e) => onChange(Math.max(0, parseInt(e.target.value, 10) || 0))}
+        aria-label={label}
+        className="w-12 text-center text-app-primary text-base bg-transparent border-x border-[var(--border)] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-black/10 focus:ring-inset [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+      />
+      <button type="button" onClick={() => onChange(value + 1)} aria-label={incLabel} className={stepBtn}>
+        <IconPlus />
+      </button>
+    </div>
+  );
+}
+
 export default function CreateOrder() {
   const [supplierId, setSupplierId] = useState('');
   const [orderDate, setOrderDate] = useState(new Date().toISOString().slice(0, 10));
@@ -505,14 +555,13 @@ export default function CreateOrder() {
                           </TableActionButton>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <label className="text-sm text-app-secondary">{t('createOrder.qty')}</label>
-                          <input
-                            type="number"
-                            min={0}
-                            inputMode="numeric"
+                          <span className="text-sm text-app-secondary">{t('createOrder.qty')}</span>
+                          <QtyStepper
                             value={r.quantity}
-                            onChange={(e) => updateRow(i, 'quantity', parseInt(e.target.value, 10) || 0)}
-                            className="w-20 rounded-xl border border-[var(--border)] bg-white/60 px-3 py-2.5 text-right text-app-primary text-base min-h-[44px] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none"
+                            onChange={(v) => updateRow(i, 'quantity', v)}
+                            label={t('createOrder.qty')}
+                            decLabel={t('createOrder.decreaseQty')}
+                            incLabel={t('createOrder.increaseQty')}
                           />
                         </div>
                         <p className="text-app-accent font-semibold text-right">{t('createOrder.total')}: {formatMKD(r.price * r.quantity)}</p>
@@ -538,14 +587,15 @@ export default function CreateOrder() {
                             <TableCell>{r.unit}</TableCell>
                             <TableCell className="text-right text-app-accent">{formatMKD(r.price)}</TableCell>
                             <TableCell className="text-right">
-                              <input
-                                type="number"
-                                min={0}
-                                inputMode="numeric"
-                                value={r.quantity}
-                                onChange={(e) => updateRow(i, 'quantity', parseInt(e.target.value, 10) || 0)}
-                                className="w-16 rounded-lg border border-[var(--border)] bg-white/60 px-2 py-1.5 text-right text-app-primary text-sm focus:border-app-border-focus focus:ring-2 focus:ring-black/10 focus:outline-none min-h-[44px]"
-                              />
+                              <div className="flex justify-end">
+                                <QtyStepper
+                                  value={r.quantity}
+                                  onChange={(v) => updateRow(i, 'quantity', v)}
+                                  label={t('createOrder.qty')}
+                                  decLabel={t('createOrder.decreaseQty')}
+                                  incLabel={t('createOrder.increaseQty')}
+                                />
+                              </div>
                             </TableCell>
                             <TableCell className="text-right text-app-accent">{formatMKD(r.price * r.quantity)}</TableCell>
                             <TableCell>
