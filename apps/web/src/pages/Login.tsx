@@ -104,6 +104,9 @@ export default function Login() {
           <Button type="submit" className="w-full min-h-[48px] rounded-full" disabled={login.isPending}>
             {login.isPending ? t('login.signingIn') : t('login.signIn')}
           </Button>
+          <div className="text-center">
+            <Link to="/forgot-password" className="text-app-secondary text-sm hover:text-app-primary hover:underline">{t('login.forgotPassword')}</Link>
+          </div>
         </form>
         <p className="text-app-secondary text-sm text-center mt-5">
           {t('register.newHere')}{' '}

@@ -15,7 +15,8 @@
     "logout": "Log Out",
     "operations": "Operations",
     "more": "More",
-    "team": "Team"
+    "team": "Team",
+    "account": "Account"
   },
   "common": {
     "loading": "Loading…",
@@ -42,7 +43,8 @@
     "password": "Password",
     "signIn": "Sign In",
     "signingIn": "Signing in…",
-    "loginFailed": "Login failed"
+    "loginFailed": "Login failed",
+    "forgotPassword": "Forgot password?"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -285,5 +287,42 @@
     "invalidTitle": "Invite unavailable",
     "invalidBody": "This invite is invalid or has expired.",
     "backToLogin": "Back to sign in"
+  },
+  "forgotPassword": {
+    "title": "Reset your password",
+    "subtitle": "Enter your email and we will create a reset link.",
+    "email": "Email",
+    "sendLink": "Send reset link",
+    "sending": "Sending…",
+    "sentTitle": "Check your email",
+    "sentBody": "If an account exists for that email, a reset link has been created.",
+    "backToLogin": "Back to sign in",
+    "devLink": "Dev link:"
+  },
+  "resetPassword": {
+    "title": "Set a new password",
+    "subtitle": "Choose a new password for your account.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "reset": "Reset password",
+    "resetting": "Resetting…",
+    "invalidTitle": "Link unavailable",
+    "invalidBody": "This reset link is invalid or has expired.",
+    "backToLogin": "Back to sign in"
+  },
+  "account": {
+    "title": "Account",
+    "subtitle": "Manage your profile and security.",
+    "profile": "Profile",
+    "email": "Email",
+    "role": "Role",
+    "security": "Security",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "changePassword": "Change password",
+    "changing": "Changing…",
+    "changed": "Password changed.",
+    "mismatch": "Passwords do not match."
   }
 }

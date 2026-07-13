@@ -15,7 +15,8 @@
     "logout": "Çıkış Yap",
     "operations": "Operasyonlar",
     "more": "Diğer",
-    "team": "Ekip"
+    "team": "Ekip",
+    "account": "Hesap"
   },
   "common": {
     "loading": "Yükleniyor…",
@@ -42,7 +43,8 @@
     "password": "Şifre",
     "signIn": "Giriş Yap",
     "signingIn": "Giriş yapılıyor…",
-    "loginFailed": "Giriş başarısız"
+    "loginFailed": "Giriş başarısız",
+    "forgotPassword": "Şifrenizi mi unuttunuz?"
   },
   "dashboard": {
     "title": "Gösterge Paneli",
@@ -285,5 +287,42 @@
     "invalidTitle": "Davet kullanılamıyor",
     "invalidBody": "Bu davet geçersiz veya süresi dolmuş.",
     "backToLogin": "Girişe dön"
+  },
+  "forgotPassword": {
+    "title": "Şifrenizi sıfırlayın",
+    "subtitle": "E-postanızı girin, size bir sıfırlama bağlantısı oluşturalım.",
+    "email": "E-posta",
+    "sendLink": "Sıfırlama bağlantısı gönder",
+    "sending": "Gönderiliyor…",
+    "sentTitle": "E-postanızı kontrol edin",
+    "sentBody": "Bu e-posta için bir hesap varsa, bir sıfırlama bağlantısı oluşturuldu.",
+    "backToLogin": "Girişe dön",
+    "devLink": "Geliştirme bağlantısı:"
+  },
+  "resetPassword": {
+    "title": "Yeni bir şifre belirleyin",
+    "subtitle": "Hesabınız için yeni bir şifre seçin.",
+    "newPassword": "Yeni şifre",
+    "confirmPassword": "Şifreyi onayla",
+    "reset": "Şifreyi sıfırla",
+    "resetting": "Sıfırlanıyor…",
+    "invalidTitle": "Bağlantı kullanılamıyor",
+    "invalidBody": "Bu sıfırlama bağlantısı geçersiz veya süresi dolmuş.",
+    "backToLogin": "Girişe dön"
+  },
+  "account": {
+    "title": "Hesap",
+    "subtitle": "Profilinizi ve güvenliğinizi yönetin.",
+    "profile": "Profil",
+    "email": "E-posta",
+    "role": "Rol",
+    "security": "Güvenlik",
+    "currentPassword": "Mevcut şifre",
+    "newPassword": "Yeni şifre",
+    "confirmPassword": "Yeni şifreyi onayla",
+    "changePassword": "Şifreyi değiştir",
+    "changing": "Değiştiriliyor…",
+    "changed": "Şifre değiştirildi.",
+    "mismatch": "Şifreler eşleşmiyor."
   }
 }

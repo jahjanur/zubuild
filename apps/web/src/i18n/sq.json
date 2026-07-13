@@ -15,7 +15,8 @@
     "logout": "Dilni",
     "operations": "Operacionet",
     "more": "Më shumë",
-    "team": "Ekipi"
+    "team": "Ekipi",
+    "account": "Llogaria"
   },
   "common": {
     "loading": "Po ngarkohet…",
@@ -42,7 +43,8 @@
     "password": "Fjalëkalimi",
     "signIn": "Identifikohuni",
     "signingIn": "Po identifikohet…",
-    "loginFailed": "Identifikimi dështoi"
+    "loginFailed": "Identifikimi dështoi",
+    "forgotPassword": "Harruat fjalëkalimin?"
   },
   "dashboard": {
     "title": "Paneli kryesor",
@@ -285,5 +287,42 @@
     "invalidTitle": "Ftesa e padisponueshme",
     "invalidBody": "Kjo ftesë është e pavlefshme ose ka skaduar.",
     "backToLogin": "Kthehu te hyrja"
+  },
+  "forgotPassword": {
+    "title": "Rivendos fjalëkalimin",
+    "subtitle": "Shkruani email-in tuaj dhe do të krijojmë një lidhje rivendosjeje.",
+    "email": "Email",
+    "sendLink": "Dërgo lidhjen",
+    "sending": "Po dërgohet…",
+    "sentTitle": "Kontrolloni email-in",
+    "sentBody": "Nëse ekziston një llogari për atë email, është krijuar një lidhje rivendosjeje.",
+    "backToLogin": "Kthehu te hyrja",
+    "devLink": "Lidhje zhvillimi:"
+  },
+  "resetPassword": {
+    "title": "Vendos një fjalëkalim të ri",
+    "subtitle": "Zgjidhni një fjalëkalim të ri për llogarinë tuaj.",
+    "newPassword": "Fjalëkalimi i ri",
+    "confirmPassword": "Konfirmo fjalëkalimin",
+    "reset": "Rivendos fjalëkalimin",
+    "resetting": "Po rivendoset…",
+    "invalidTitle": "Lidhja e padisponueshme",
+    "invalidBody": "Kjo lidhje rivendosjeje është e pavlefshme ose ka skaduar.",
+    "backToLogin": "Kthehu te hyrja"
+  },
+  "account": {
+    "title": "Llogaria",
+    "subtitle": "Menaxhoni profilin dhe sigurinë tuaj.",
+    "profile": "Profili",
+    "email": "Email",
+    "role": "Roli",
+    "security": "Siguria",
+    "currentPassword": "Fjalëkalimi aktual",
+    "newPassword": "Fjalëkalimi i ri",
+    "confirmPassword": "Konfirmo fjalëkalimin e ri",
+    "changePassword": "Ndrysho fjalëkalimin",
+    "changing": "Po ndryshohet…",
+    "changed": "Fjalëkalimi u ndryshua.",
+    "mismatch": "Fjalëkalimet nuk përputhen."
   }
 }

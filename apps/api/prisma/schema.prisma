@@ -66,7 +66,24 @@ model User {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
+  passwordResetTokens PasswordResetToken[]
+
   @@index([organizationId])
+}
+
+// Password reset token. Auth infra keyed by token (accessed while logged out),
+// so it is NOT a tenant-scoped model — it is reached via its unique token.
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([token])
 }
 
 model Supplier {

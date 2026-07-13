@@ -1,13 +1,18 @@
 import { Router, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import * as bcrypt from 'bcrypt';
+import { customAlphabet } from 'nanoid';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
-import { loginSchema, registerSchema, acceptInviteSchema } from '@aem/shared';
+import { loginSchema, registerSchema, acceptInviteSchema, forgotPasswordSchema, resetPasswordSchema, changePasswordSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
+import { config } from '../config';
 
 const router = Router();
+// Unguessable, URL-safe reset token; valid for one hour.
+const resetToken = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 40);
+const RESET_TTL_MS = 60 * 60 * 1000;
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -241,6 +246,101 @@ router.post('/invitation/:token/accept', validateBody(acceptInviteSchema), async
     }
     logError('POST /auth/invitation/:token/accept', err);
     res.status(500).json({ success: false, error: 'Failed to accept invitation' });
+  }
+});
+
+/**
+ * POST /auth/forgot-password (public)
+ * Issues a reset token for the email if an account exists. Always returns 200
+ * (never reveals whether the email is registered). No SMTP is wired, so the
+ * link is logged server-side and returned only in non-production for testing.
+ */
+router.post('/forgot-password', registerLimiter, validateBody(forgotPasswordSchema), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const email = (req.body as { email: string }).email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({ where: { email } });
+    let resetUrl: string | undefined;
+    if (user) {
+      await prisma.passwordResetToken.deleteMany({ where: { userId: user.id, usedAt: null } });
+      const token = resetToken();
+      await prisma.passwordResetToken.create({ data: { userId: user.id, token, expiresAt: new Date(Date.now() + RESET_TTL_MS) } });
+      resetUrl = `${config.corsOrigin}/reset-password/${token}`;
+      console.log(`[RESET] password reset link for ${email}: ${resetUrl}`);
+    }
+    res.json({ success: true, data: config.isProduction ? {} : { resetUrl } });
+  } catch (err) {
+    logError('POST /auth/forgot-password', err);
+    res.status(500).json({ success: false, error: 'Failed to start password reset' });
+  }
+});
+
+/** GET /auth/reset-password/:token (public) — validate a reset link before showing the form. */
+router.get('/reset-password/:token', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const row = await prisma.passwordResetToken.findUnique({
+      where: { token: req.params.token },
+      include: { user: { select: { email: true } } },
+    });
+    if (!row || row.usedAt || row.expiresAt < new Date()) {
+      res.status(404).json({ success: false, error: 'This reset link is invalid or has expired' });
+      return;
+    }
+    res.json({ success: true, data: { email: row.user.email } });
+  } catch (err) {
+    logError('GET /auth/reset-password/:token', err);
+    res.status(500).json({ success: false, error: 'Failed to validate reset link' });
+  }
+});
+
+/** POST /auth/reset-password/:token (public) — set a new password, consume the token, log in. */
+router.post('/reset-password/:token', validateBody(resetPasswordSchema), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const row = await prisma.passwordResetToken.findUnique({ where: { token: req.params.token }, include: { user: true } });
+    if (!row || row.usedAt || row.expiresAt < new Date()) {
+      res.status(404).json({ success: false, error: 'This reset link is invalid or has expired' });
+      return;
+    }
+    const passwordHash = await bcrypt.hash((req.body as { password: string }).password, 12);
+    await prisma.$transaction([
+      prisma.user.update({ where: { id: row.userId }, data: { passwordHash } }),
+      prisma.passwordResetToken.update({ where: { id: row.id }, data: { usedAt: new Date() } }),
+    ]);
+    const org = await prisma.organization.findUnique({ where: { id: row.user.organizationId } });
+    req.session.user = {
+      id: row.user.id,
+      email: row.user.email,
+      role: row.user.role,
+      organizationId: row.user.organizationId,
+      currency: org?.currency ?? 'MKD',
+      locale: org?.locale ?? 'mk',
+    };
+    res.json({ success: true, data: { id: row.user.id, email: row.user.email, role: row.user.role } });
+  } catch (err) {
+    logError('POST /auth/reset-password/:token', err);
+    res.status(500).json({ success: false, error: 'Failed to reset password' });
+  }
+});
+
+/** POST /auth/change-password (logged in) — verify current password, set a new one. */
+router.post('/change-password', requireAuth, validateBody(changePasswordSchema), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = req.body as { currentPassword: string; newPassword: string };
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
+    if (!user) {
+      res.status(404).json({ success: false, error: 'User not found' });
+      return;
+    }
+    const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!valid) {
+      res.status(400).json({ success: false, error: 'Current password is incorrect' });
+      return;
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+    res.json({ success: true });
+  } catch (err) {
+    logError('POST /auth/change-password', err);
+    res.status(500).json({ success: false, error: 'Failed to change password' });
   }
 });
 

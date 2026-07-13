@@ -16,6 +16,7 @@ const navKeys = [
   'controlPanel',
   'analytics',
   'team',
+  'account',
 ] as const;
 const navToPath: Record<(typeof navKeys)[number], string> = {
   dashboard: 'dashboard',
@@ -27,6 +28,7 @@ const navToPath: Record<(typeof navKeys)[number], string> = {
   controlPanel: 'control-panel',
   analytics: 'analytics',
   team: 'team',
+  account: 'account',
 };
 
 function IconClose() {
