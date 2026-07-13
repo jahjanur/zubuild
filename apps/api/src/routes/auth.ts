@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
-import { loginSchema } from '@aem/shared';
+import { loginSchema, registerSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
 
 const router = Router();
@@ -15,6 +15,38 @@ const loginLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  message: { success: false, error: 'Too many sign-up attempts' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/** URL-safe org slug from a company name. */
+function slugify(name: string): string {
+  return (
+    name
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '') // strip accents
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 50) || 'org'
+  );
+}
+
+/** First free slug for the base (base, base-2, base-3, …). Organization isn't tenant-scoped. */
+async function uniqueSlug(base: string): Promise<string> {
+  let slug = base;
+  let n = 1;
+  // eslint-disable-next-line no-await-in-loop
+  while (await prisma.organization.findUnique({ where: { slug } })) {
+    n += 1;
+    slug = `${base}-${n}`;
+  }
+  return slug;
+}
 
 /** Temporary diagnostic logging for login (safe: no passwords in logs) */
 function logLoginStep(step: string, detail: string): void {
@@ -88,6 +120,61 @@ router.post('/login', loginLimiter, validateBody(loginSchema), async (req: Reque
       return;
     }
     res.status(500).json({ success: false, error: 'Login failed' });
+  }
+});
+
+/**
+ * POST /auth/register
+ * Self-serve onboarding: creates a new organization + its first ADMIN user
+ * atomically, then logs the user in. Body: { companyName, email, password, currency?, locale? }.
+ */
+router.post('/register', registerLimiter, validateBody(registerSchema), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { companyName, email, password, currency, locale } = req.body as {
+      companyName: string;
+      email: string;
+      password: string;
+      currency?: string;
+      locale?: string;
+    };
+
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      res.status(409).json({ success: false, error: 'An account with this email already exists' });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const slug = await uniqueSlug(slugify(companyName));
+
+    // Org + first admin created together so a failure never leaves a half-provisioned tenant.
+    const { user, org } = await prisma.$transaction(async (tx) => {
+      const org = await tx.organization.create({
+        data: { name: companyName, slug, currency: currency || 'MKD', locale: locale || 'mk' },
+      });
+      const user = await tx.user.create({
+        data: { email, passwordHash, role: 'ADMIN', organizationId: org.id },
+      });
+      return { user, org };
+    });
+
+    // Log the new admin straight in — no manual step to start using the app.
+    req.session.user = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      organizationId: org.id,
+      currency: org.currency,
+      locale: org.locale,
+    };
+    res.status(201).json({ success: true, data: { id: user.id, email: user.email, role: user.role } });
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'code' in err && (err as { code: string }).code === 'P2002') {
+      res.status(409).json({ success: false, error: 'That email or company is already registered' });
+      return;
+    }
+    logError('POST /auth/register', err);
+    res.status(500).json({ success: false, error: 'Registration failed' });
   }
 });
 

@@ -6,6 +6,7 @@ import { api } from './lib/api';
 import AppLayout from './layout/AppLayout';
 
 const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Suppliers = lazy(() => import('./pages/Suppliers'));
 const Products = lazy(() => import('./pages/Products'));
@@ -47,6 +48,7 @@ export default function App() {
     <Suspense fallback={<PageFallback />}>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route
           path="/app"
           element={

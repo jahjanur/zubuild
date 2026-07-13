@@ -241,5 +241,20 @@
     "missing": "Eksik",
     "excess": "Fazla",
     "complete": "Tamamlandı"
+  },
+  "register": {
+    "title": "Kuruluşunuzu oluşturun",
+    "subtitle": "Şirketinizi kurun ve dakikalar içinde başlayın.",
+    "companyName": "Şirket adı",
+    "email": "Yönetici e-postası",
+    "password": "Şifre",
+    "confirmPassword": "Şifreyi onayla",
+    "currency": "Para birimi",
+    "createAccount": "Kuruluş oluştur",
+    "creating": "Oluşturuluyor…",
+    "haveAccount": "Zaten hesabınız var mı?",
+    "passwordMismatch": "Şifreler eşleşmiyor.",
+    "registerFailed": "Kuruluş oluşturulamadı.",
+    "newHere": "Yeni şirket mi?"
   }
 }

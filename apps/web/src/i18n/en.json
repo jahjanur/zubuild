@@ -241,5 +241,20 @@
     "missing": "Missing",
     "excess": "Excess",
     "complete": "Completed"
+  },
+  "register": {
+    "title": "Create your organization",
+    "subtitle": "Set up your company and start in minutes.",
+    "companyName": "Company name",
+    "email": "Admin email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "currency": "Currency",
+    "createAccount": "Create organization",
+    "creating": "Creating…",
+    "haveAccount": "Already have an account?",
+    "passwordMismatch": "Passwords do not match.",
+    "registerFailed": "Could not create the organization.",
+    "newHere": "New company?"
   }
 }

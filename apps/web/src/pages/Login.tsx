@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, setApiErrorHandler } from '../lib/api';
 import { Button, Input } from '../components/ui';
@@ -105,6 +105,10 @@ export default function Login() {
             {login.isPending ? t('login.signingIn') : t('login.signIn')}
           </Button>
         </form>
+        <p className="text-app-secondary text-sm text-center mt-5">
+          {t('register.newHere')}{' '}
+          <Link to="/register" className="text-app-accent font-medium hover:underline">{t('register.createAccount')}</Link>
+        </p>
       </div>
     </div>
   );

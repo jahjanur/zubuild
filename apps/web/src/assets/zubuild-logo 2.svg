@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none" role="img" aria-label="Zubuild">
-  <rect width="256" height="256" rx="56" fill="#080808"/>
-  <!-- Z monogram -->
-  <path fill="#FFFFFF" d="M78 78h100v26h-100z"/>
-  <path fill="#FFFFFF" d="M78 152h100v26h-100z"/>
-  <path fill="#FFFFFF" d="M152 104h26L104 152h-26z"/>
-</svg>

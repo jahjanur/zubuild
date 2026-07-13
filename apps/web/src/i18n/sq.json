@@ -241,5 +241,20 @@
     "missing": "Mungesë",
     "excess": "Tepricë",
     "complete": "E përfunduar"
+  },
+  "register": {
+    "title": "Krijoni organizatën tuaj",
+    "subtitle": "Konfiguroni kompaninë tuaj dhe filloni brenda pak minutash.",
+    "companyName": "Emri i kompanisë",
+    "email": "Email-i i administratorit",
+    "password": "Fjalëkalimi",
+    "confirmPassword": "Konfirmo fjalëkalimin",
+    "currency": "Monedha",
+    "createAccount": "Krijo organizatën",
+    "creating": "Po krijohet…",
+    "haveAccount": "Keni tashmë një llogari?",
+    "passwordMismatch": "Fjalëkalimet nuk përputhen.",
+    "registerFailed": "Organizata nuk mund të krijohej.",
+    "newHere": "Kompani e re?"
   }
 }
