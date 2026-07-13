@@ -67,11 +67,17 @@ router.post('/login', loginLimiter, validateBody(loginSchema), async (req: Reque
     }
 
     // 5) Set session (session store may use DB)
+    // Load the org's currency/locale so money/dates render per-tenant (Organization isn't tenant-scoped).
+    const org = user.organizationId
+      ? await prisma.organization.findUnique({ where: { id: user.organizationId } })
+      : null;
     req.session.user = {
       id: user.id,
       email: user.email,
       role: user.role,
       organizationId: user.organizationId,
+      currency: org?.currency ?? 'MKD',
+      locale: org?.locale ?? 'mk',
     };
     res.json({ success: true, data: { id: user.id, email: user.email, role: user.role } });
   } catch (err) {

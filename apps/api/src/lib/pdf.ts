@@ -86,10 +86,27 @@ const colors = {
   headerBg: '#f3f4f6',
 };
 
-// MKD (Makedon Denarı) — Turkish locale, no decimals, e.g. "120.000 MKD"
-function formatMKD(n: number): string {
-  const num = n.toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  return `${num} MKD`;
+// Per-organization currency + locale, set at the top of generateOrderPdf. The
+// draw phase is fully synchronous, so module-level state is safe across requests.
+let PDF_CURRENCY = 'MKD';
+let PDF_LOCALE = 'mk';
+
+/** Money in the order's org currency + locale, no decimals (e.g. "120.000 ден.", "€1,234"). */
+function formatMoney(n: number): string {
+  try {
+    return new Intl.NumberFormat(PDF_LOCALE, { style: 'currency', currency: PDF_CURRENCY, maximumFractionDigits: 0 }).format(n);
+  } catch {
+    return `${n.toLocaleString(PDF_LOCALE)} ${PDF_CURRENCY}`;
+  }
+}
+
+/** Order date in the org locale (e.g. "13 Jul 2026", "13.07.2026"). */
+function formatPdfDate(d: Date): string {
+  try {
+    return new Intl.DateTimeFormat(PDF_LOCALE, { dateStyle: 'medium' }).format(d);
+  } catch {
+    return d.toISOString().split('T')[0];
+  }
 }
 
 type Doc = InstanceType<typeof PDFDocument>;
@@ -207,7 +224,7 @@ function drawMeta(doc: Doc, order: OrderWithItems): number {
   const rightX = MARGIN_PT + CONTENT_WIDTH * 0.55;
   const lineH = 14;
   const orderDateObj = order.orderDate instanceof Date ? order.orderDate : new Date(order.orderDate);
-  const dateStr = orderDateObj.toISOString().split('T')[0].replace(/-/g, '.');
+  const dateStr = formatPdfDate(orderDateObj);
   doc.text(`${PDF_LABELS.orderNo}: ${String(order.orderNumber ?? '')}`, leftX, boxTop + 26);
   doc.text(`${PDF_LABELS.date}: ${dateStr}`, leftX, boxTop + 26 + lineH);
   doc.text(`${PDF_LABELS.supplier}: ${String(order.supplierName ?? '')}`, rightX, boxTop + 26);
@@ -290,9 +307,9 @@ function drawItemsTable(
     doc.fillColor(colors.text).font(PDF_FONT).fontSize(9);
     doc.text(ellipsize(doc, String(item.name ?? ''), COL.name - 10), x + 8, rowY + 5, { width: COL.name - 10, lineBreak: false });
     doc.text(unitToMacedonian(item.unit), x + COL.name, rowY + 5, { width: COL.unit, align: 'right' });
-    doc.text(formatMKD(price), x + COL.name + COL.unit, rowY + 5, { width: COL.price, align: 'right' });
+    doc.text(formatMoney(price), x + COL.name + COL.unit, rowY + 5, { width: COL.price, align: 'right' });
     doc.text(String(qty), x + COL.name + COL.unit + COL.price, rowY + 5, { width: COL.qty, align: 'right' });
-    doc.text(formatMKD(total), x + COL.name + COL.unit + COL.price + COL.qty, rowY + 5, { width: COL.total - 4, align: 'right' });
+    doc.text(formatMoney(total), x + COL.name + COL.unit + COL.price + COL.qty, rowY + 5, { width: COL.total - 4, align: 'right' });
     y += ROW_HEIGHT;
   }
 
@@ -309,11 +326,11 @@ function drawTotals(doc: Doc, totalAmount: number, startY: number): number {
   const lineY = startY + 18;
   doc.fillColor(colors.text).fontSize(9).font(PDF_FONT);
   doc.text(PDF_LABELS.subtotal, boxX + 8, startY + 4);
-  doc.text(formatMKD(totalAmount), boxRight - 8 - numbersWidth, startY + 4, { width: numbersWidth, align: 'right' });
+  doc.text(formatMoney(totalAmount), boxRight - 8 - numbersWidth, startY + 4, { width: numbersWidth, align: 'right' });
   doc.moveTo(boxX, lineY).lineTo(boxX + boxWidth, lineY).strokeColor(colors.border).stroke();
   doc.font(PDF_FONT_BOLD).fontSize(10);
   doc.text(PDF_LABELS.total, boxX + 8, lineY + 6);
-  doc.text(formatMKD(totalAmount), boxRight - 8 - numbersWidth, lineY + 6, { width: numbersWidth, align: 'right' });
+  doc.text(formatMoney(totalAmount), boxRight - 8 - numbersWidth, lineY + 6, { width: numbersWidth, align: 'right' });
   return lineY + 22;
 }
 
@@ -354,12 +371,19 @@ function drawFooter(doc: Doc, pageNum: number, totalPages: number): void {
   doc.text(`${PDF_LABELS.page} ${pageNum} / ${totalPages}`, PAGE_WIDTH - MARGIN_PT - 90, y, { width: 90, align: 'right' });
 }
 
-export function generateOrderPdf(order: OrderWithItems): Promise<Buffer> {
+export function generateOrderPdf(
+  order: OrderWithItems,
+  opts: { currency?: string; locale?: string } = {}
+): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
       // Guard: never draw non-Latin text with a Latin-only font. If the bundled
       // Unicode fonts are absent, fail here instead of emitting a broken/500 PDF.
       assertPdfFontsAvailable();
+
+      // Money + dates render in the order's org currency/locale.
+      PDF_CURRENCY = opts.currency || 'MKD';
+      PDF_LOCALE = opts.locale || 'mk';
 
       const doc = new PDFDocument({ margin: MARGIN_PT, size: 'A4', bufferPages: true }) as Doc;
       const chunks: Buffer[] = [];

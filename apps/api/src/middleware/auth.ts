@@ -6,6 +6,8 @@ export interface SessionUser {
   email: string;
   role: string;
   organizationId: string | null;
+  currency: string;
+  locale: string;
 }
 
 declare global {

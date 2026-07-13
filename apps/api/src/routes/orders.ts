@@ -161,7 +161,11 @@ router.get('/:id/pdf', async (req: Request, res: Response): Promise<void> => {
       res.status(404).json({ success: false, error: 'Order not found' });
       return;
     }
-    const pdfBuffer = await generateOrderPdf(order);
+    // Render money + dates in the order's org currency/locale (Organization isn't tenant-scoped).
+    const org = order.organizationId
+      ? await prisma.organization.findUnique({ where: { id: order.organizationId } })
+      : null;
+    const pdfBuffer = await generateOrderPdf(order, { currency: org?.currency, locale: org?.locale });
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="order-${order.orderNumber}.pdf"`);
     res.send(pdfBuffer);

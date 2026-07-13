@@ -46,25 +46,35 @@ function dateFormat(opts: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
   return fmt;
 }
 
-const MKD_CURRENCY: Intl.NumberFormatOptions = {
-  style: 'currency',
-  currency: 'MKD',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-};
+// Per-organization currency (ISO 4217), set once from /auth/me after login.
+// Locale still follows the active UI language (above); only the currency is
+// org-specific. Formatters are cached per (locale + options), and options
+// include the currency, so switching currency just uses a different cache key.
+let orgCurrency = 'MKD';
+
+/** Set the active org's currency. No-op if unchanged. */
+export function setOrgCurrency(code: string | null | undefined): void {
+  if (code) orgCurrency = code;
+}
+
 const PLAIN_INTEGER: Intl.NumberFormatOptions = {
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
 };
 
-/** Format a number as MKD currency (e.g. "1.234 ден." / "MKD 1,234"). */
+/** Format a number in the org's currency + active locale (e.g. "1.234 ден.", "€1,234"). */
 export function formatMKD(value: number): string {
-  return numberFormat(MKD_CURRENCY).format(value);
+  return numberFormat({
+    style: 'currency',
+    currency: orgCurrency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
-/** Format a number with a plain "MKD" suffix (e.g. "120.000 MKD"). */
+/** Format a number with a plain currency-code suffix (e.g. "120.000 MKD"). */
 export function formatMKDPlain(value: number): string {
-  return `${numberFormat(PLAIN_INTEGER).format(value)} MKD`;
+  return `${numberFormat(PLAIN_INTEGER).format(value)} ${orgCurrency}`;
 }
 
 /** Format an arbitrary number in the active locale. */
