@@ -323,6 +323,21 @@
     "changePassword": "Промени лозинка",
     "changing": "Се менува…",
     "changed": "Лозинката е променета.",
-    "mismatch": "Лозинките не се совпаѓаат."
+    "mismatch": "Лозинките не се совпаѓаат.",
+    "organization": "Организација",
+    "brandingSubtitle": "Се прикажува во заглавието и на PDF нарачките.",
+    "orgName": "Име",
+    "invoiceName": "Име за фактура",
+    "address": "Адреса",
+    "contactEmail": "Е-пошта",
+    "contactPhone": "Телефон",
+    "regNo": "Матичен број",
+    "logo": "Лого",
+    "chooseLogo": "Избери слика",
+    "removeLogo": "Отстрани",
+    "saveOrg": "Зачувај",
+    "savingOrg": "Се зачувува…",
+    "orgSaved": "Брендирањето е зачувано.",
+    "logoTooLarge": "Сликата е преголема (макс. 400 KB)."
   }
 }

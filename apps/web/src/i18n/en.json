@@ -323,6 +323,21 @@
     "changePassword": "Change password",
     "changing": "Changing…",
     "changed": "Password changed.",
-    "mismatch": "Passwords do not match."
+    "mismatch": "Passwords do not match.",
+    "organization": "Organization",
+    "brandingSubtitle": "Shown in the app header and on order PDFs.",
+    "orgName": "Name",
+    "invoiceName": "Invoice / legal name",
+    "address": "Address",
+    "contactEmail": "Email",
+    "contactPhone": "Phone",
+    "regNo": "Registration no.",
+    "logo": "Logo",
+    "chooseLogo": "Choose image",
+    "removeLogo": "Remove",
+    "saveOrg": "Save branding",
+    "savingOrg": "Saving…",
+    "orgSaved": "Branding saved.",
+    "logoTooLarge": "Image is too large (max 400 KB)."
   }
 }

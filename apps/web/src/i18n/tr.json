@@ -323,6 +323,21 @@
     "changePassword": "Şifreyi değiştir",
     "changing": "Değiştiriliyor…",
     "changed": "Şifre değiştirildi.",
-    "mismatch": "Şifreler eşleşmiyor."
+    "mismatch": "Şifreler eşleşmiyor.",
+    "organization": "Kuruluş",
+    "brandingSubtitle": "Uygulama başlığında ve sipariş PDF’lerinde görünür.",
+    "orgName": "Ad",
+    "invoiceName": "Fatura / yasal ad",
+    "address": "Adres",
+    "contactEmail": "E-posta",
+    "contactPhone": "Telefon",
+    "regNo": "Sicil no.",
+    "logo": "Logo",
+    "chooseLogo": "Görsel seç",
+    "removeLogo": "Kaldır",
+    "saveOrg": "Kaydet",
+    "savingOrg": "Kaydediliyor…",
+    "orgSaved": "Marka bilgileri kaydedildi.",
+    "logoTooLarge": "Görsel çok büyük (en fazla 400 KB)."
   }
 }

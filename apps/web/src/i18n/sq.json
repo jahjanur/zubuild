@@ -323,6 +323,21 @@
     "changePassword": "Ndrysho fjalëkalimin",
     "changing": "Po ndryshohet…",
     "changed": "Fjalëkalimi u ndryshua.",
-    "mismatch": "Fjalëkalimet nuk përputhen."
+    "mismatch": "Fjalëkalimet nuk përputhen.",
+    "organization": "Organizata",
+    "brandingSubtitle": "Shfaqet në header dhe në PDF-të e porosive.",
+    "orgName": "Emri",
+    "invoiceName": "Emri ligjor / i faturës",
+    "address": "Adresa",
+    "contactEmail": "Email",
+    "contactPhone": "Telefoni",
+    "regNo": "Nr. i regjistrimit",
+    "logo": "Logoja",
+    "chooseLogo": "Zgjidh imazhin",
+    "removeLogo": "Hiq",
+    "saveOrg": "Ruaj",
+    "savingOrg": "Po ruhet…",
+    "orgSaved": "Brandimi u ruajt.",
+    "logoTooLarge": "Imazhi është shumë i madh (maks. 400 KB)."
   }
 }

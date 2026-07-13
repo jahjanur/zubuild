@@ -5,7 +5,6 @@
  */
 
 import PDFDocument from 'pdfkit';
-import SVGtoPDF from 'svg-to-pdfkit';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -63,16 +62,17 @@ const TOTALS_HEIGHT = 44; // subtotal + rule + total rows
 // under the last rows on the same page whenever they fit.
 const TABLE_BOTTOM = CONTENT_BOTTOM - TOTALS_HEIGHT - 8;
 
-// Company details — North Macedonia, Gostivar
-const COMPANY = {
-  name: 'AEM Residence',
-  address: 'ul. Marshal Tito 123',
-  city: 'Gostivar',
-  postcode: '1230',
-  email: 'info@aem-residence.mk',
-  phone: '+389 42 123 456',
-  regNo: 'Mat. Br. 1234567890123',
+// Letterhead — filled from the order's organization at generate time.
+export type PdfCompany = {
+  name: string;
+  address?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  regNo?: string | null;
+  logoUrl?: string | null; // http(s) URL (app header) or data: URI (embedded in the PDF)
 };
+const DEFAULT_COMPANY: PdfCompany = { name: 'Zubuild' };
+let PDF_COMPANY: PdfCompany = DEFAULT_COMPANY;
 
 const colors = {
   black: '#0a0a0a',
@@ -117,49 +117,43 @@ const PDF_FONT = 'DejaVu';
 const PDF_FONT_BOLD = 'DejaVuBold';
 
 /** Invoice-style header: logo + company name left; company details (address, etc.) right. */
-function drawHeader(doc: Doc): void {
-  const projectRoot = path.resolve(__dirname, '../../../..');
-  const logoSvgPath = path.join(projectRoot, 'apps/web/src/assets/KAKAKAK.svg');
-  const logoPngPath = path.join(projectRoot, 'apps/web/src/assets/AemResidence.png');
+/** Embed a data:image logo (PNG/JPEG) if provided; returns whether it drew. */
+function drawLogo(doc: Doc, logoUrl: string | null | undefined, x: number, y: number, w: number, h: number): boolean {
+  if (!logoUrl || !logoUrl.startsWith('data:image/')) return false; // remote URLs render in the app header, not the PDF
+  try {
+    const base64 = logoUrl.slice(logoUrl.indexOf(',') + 1);
+    const buf = Buffer.from(base64, 'base64');
+    if (buf.length === 0) return false;
+    doc.image(buf, x, y, { fit: [w, h] });
+    return true;
+  } catch {
+    return false; // unsupported/corrupt image → fall back to the name
+  }
+}
 
+function drawHeader(doc: Doc): void {
   const logoHeight = 44;
-  const logoWidth = 44;
-  const nameX = MARGIN_PT + logoWidth + 12;
+  const logoWidth = 88;
   const detailsWidth = 180;
   const detailsX = PAGE_WIDTH - MARGIN_PT - detailsWidth;
   const blockTop = 38;
-  const logoY = blockTop;
   const nameY = blockTop + 14;
 
-  let logoDrawn = false;
-  if (fs.existsSync(logoSvgPath)) {
-    try {
-      const svgString = fs.readFileSync(logoSvgPath, 'utf-8');
-      SVGtoPDF(doc, svgString, MARGIN_PT, logoY, { width: logoWidth, height: logoHeight });
-      logoDrawn = true;
-    } catch {
-      // fall through to PNG or text
-    }
-  }
-  if (!logoDrawn && fs.existsSync(logoPngPath)) {
-    try {
-      doc.image(logoPngPath, MARGIN_PT, logoY, { width: (704 / 1080) * logoHeight, height: logoHeight });
-      logoDrawn = true;
-    } catch {
-      // fall through to text
-    }
-  }
-  if (!logoDrawn) {
-    doc.fillColor(colors.gold).fontSize(16).font(PDF_FONT_BOLD).text(COMPANY.name, MARGIN_PT, nameY);
+  // Left: the org's logo, or its name as text.
+  if (!drawLogo(doc, PDF_COMPANY.logoUrl, MARGIN_PT, blockTop, logoWidth, logoHeight)) {
+    doc.fillColor(colors.gold).fontSize(16).font(PDF_FONT_BOLD).text(PDF_COMPANY.name, MARGIN_PT, nameY);
   }
 
+  // Right: the org's letterhead details (only the ones that are set).
   doc.fillColor(colors.textMuted).fontSize(9).font(PDF_FONT);
   let lineY = blockTop;
-  doc.text(COMPANY.address, detailsX, lineY, { width: detailsWidth, align: 'right' }); lineY += 12;
-  doc.text(`${COMPANY.city}, ${COMPANY.postcode}`, detailsX, lineY, { width: detailsWidth, align: 'right' }); lineY += 12;
-  doc.text(COMPANY.email, detailsX, lineY, { width: detailsWidth, align: 'right' }); lineY += 12;
-  doc.text(COMPANY.phone, detailsX, lineY, { width: detailsWidth, align: 'right' }); lineY += 12;
-  doc.text(COMPANY.regNo, detailsX, lineY, { width: detailsWidth, align: 'right' });
+  const lines = [PDF_COMPANY.address, PDF_COMPANY.email, PDF_COMPANY.phone, PDF_COMPANY.regNo].filter(
+    (v): v is string => !!v && v.trim() !== ''
+  );
+  for (const line of lines) {
+    doc.text(line, detailsX, lineY, { width: detailsWidth, align: 'right' });
+    lineY += 12;
+  }
 
   doc.moveTo(MARGIN_PT, 96).lineTo(PAGE_WIDTH - MARGIN_PT, 96).strokeColor(colors.border).stroke();
 }
@@ -365,7 +359,7 @@ function drawFooter(doc: Doc, pageNum: number, totalPages: number): void {
   const h = generated.getHours(); const min = generated.getMinutes();
   const generatedStr = `${String(d).padStart(2, '0')}.${String(m).padStart(2, '0')}.${yr} ${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
   doc.fillColor(colors.textMuted).fontSize(7).font(PDF_FONT);
-  doc.text(`${COMPANY.name} | ${COMPANY.regNo}`, MARGIN_PT, y - 8);
+  doc.text([PDF_COMPANY.name, PDF_COMPANY.regNo].filter(Boolean).join(' | '), MARGIN_PT, y - 8);
   doc.text(`${PDF_LABELS.generated}: ${generatedStr}`, MARGIN_PT, y);
   // Width 90 so "Страница 1 / 1" or "Страница 12 / 12" fits on one line and never wraps to a new page
   doc.text(`${PDF_LABELS.page} ${pageNum} / ${totalPages}`, PAGE_WIDTH - MARGIN_PT - 90, y, { width: 90, align: 'right' });
@@ -373,7 +367,7 @@ function drawFooter(doc: Doc, pageNum: number, totalPages: number): void {
 
 export function generateOrderPdf(
   order: OrderWithItems,
-  opts: { currency?: string; locale?: string } = {}
+  opts: { currency?: string; locale?: string; company?: PdfCompany } = {}
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
@@ -381,9 +375,10 @@ export function generateOrderPdf(
       // Unicode fonts are absent, fail here instead of emitting a broken/500 PDF.
       assertPdfFontsAvailable();
 
-      // Money + dates render in the order's org currency/locale.
+      // Money + dates render in the order's org currency/locale; letterhead is the org's.
       PDF_CURRENCY = opts.currency || 'MKD';
       PDF_LOCALE = opts.locale || 'mk';
+      PDF_COMPANY = opts.company && opts.company.name ? opts.company : DEFAULT_COMPANY;
 
       const doc = new PDFDocument({ margin: MARGIN_PT, size: 'A4', bufferPages: true }) as Doc;
       const chunks: Buffer[] = [];

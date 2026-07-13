@@ -165,7 +165,20 @@ router.get('/:id/pdf', async (req: Request, res: Response): Promise<void> => {
     const org = order.organizationId
       ? await prisma.organization.findUnique({ where: { id: order.organizationId } })
       : null;
-    const pdfBuffer = await generateOrderPdf(order, { currency: org?.currency, locale: org?.locale });
+    const pdfBuffer = await generateOrderPdf(order, {
+      currency: org?.currency,
+      locale: org?.locale,
+      company: org
+        ? {
+            name: org.invoiceName || org.name,
+            address: org.invoiceAddress,
+            email: org.invoiceEmail,
+            phone: org.invoicePhone,
+            regNo: org.invoiceRegNo,
+            logoUrl: org.logoUrl,
+          }
+        : undefined,
+    });
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="order-${order.orderNumber}.pdf"`);
     res.send(pdfBuffer);

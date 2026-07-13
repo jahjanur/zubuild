@@ -21,6 +21,8 @@ model Organization {
   logoUrl        String?
   invoiceName    String? // legal name shown on invoices/PDFs (may differ from name)
   invoiceAddress String?
+  invoiceEmail   String?
+  invoicePhone   String?
   invoiceRegNo   String? // company registration number (e.g. "Mat. Br. ...")
   currency       String   @default("MKD") // ISO 4217, e.g. MKD, EUR
   locale         String   @default("mk") // en | mk | sq
