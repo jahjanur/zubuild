@@ -10,8 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Tenant. First step of multi-tenancy: the model exists standalone; existing
-// models are wired to it in later tasks.
+// Tenant. Tenant-owned rows carry an organizationId FK back to here.
+// organizationId is nullable for now (expand phase): all existing rows are
+// backfilled into a default org, and once writes set it (org-context task) a
+// follow-up migration contracts it to NOT NULL.
 model Organization {
   id             String   @id @default(uuid())
   name           String
@@ -25,27 +27,43 @@ model Organization {
   plan           String   @default("FREE") // FREE | PRO | ENTERPRISE (extensible)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  users              User[]
+  suppliers          Supplier[]
+  products           Product[]
+  orders             Order[]
+  orderItems         OrderItem[]
+  reconciliations    Reconciliation[]
+  inventoryMovements InventoryMovement[]
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  passwordHash String
-  role         String   @default("ADMIN") // extensible: ADMIN, MANAGER, VIEWER
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String        @id @default(uuid())
+  email          String        @unique
+  passwordHash   String
+  role           String        @default("ADMIN") // extensible: ADMIN, MANAGER, VIEWER
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
 }
 
 model Supplier {
-  id            String   @id @default(uuid())
-  companyName   String
-  contactPerson String?
-  phone         String?
-  location      String?
-  status        String   @default("ACTIVE") // ACTIVE | INACTIVE
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  orders        Order[]
+  id             String        @id @default(uuid())
+  companyName    String
+  contactPerson  String?
+  phone          String?
+  location       String?
+  status         String        @default("ACTIVE") // ACTIVE | INACTIVE
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  orders         Order[]
+
+  @@index([organizationId])
 }
 
 model Product {
@@ -55,24 +73,31 @@ model Product {
   measurementUnit    String // kg, ton, litre, adet, m, m², m³, torba, paket, kutu, rulo
   price              Float
   status             String              @default("ACTIVE") // ACTIVE | INACTIVE
+  organizationId     String?
+  organization       Organization?       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   inventoryMovements InventoryMovement[]
+
+  @@index([organizationId])
 }
 
 model InventoryMovement {
-  id               String   @id @default(uuid())
+  id               String        @id @default(uuid())
   productId        String
   type             String // ORDER_CREATE | ORDER_CANCEL | RECONCILE_ADJUST | MANUAL_ADJUST | STOCK_IN
   deltaQty         Int // negative = usage, positive = restock
   reason           String?
   orderId          String?
   reconciliationId String?
-  createdAt        DateTime @default(now())
-  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  organizationId   String?
+  organization     Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt        DateTime      @default(now())
+  product          Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([createdAt])
+  @@index([organizationId])
 }
 
 model Order {
@@ -84,11 +109,15 @@ model Order {
   totalAmount    Float
   status         String          @default("PENDING") // PENDING | DELIVERED | RECONCILED
   notes          String?
+  organizationId String?
+  organization   Organization?   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   supplier       Supplier        @relation(fields: [supplierId], references: [id], onDelete: Restrict)
   orderItems     OrderItem[]
   reconciliation Reconciliation?
+
+  @@index([organizationId])
 }
 
 model OrderItem {
@@ -99,8 +128,12 @@ model OrderItem {
   unit                String // snapshot
   price               Float // snapshot
   quantity            Int
+  organizationId      String?
+  organization        Organization?        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   order               Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
   reconciliationItems ReconciliationItem[]
+
+  @@index([organizationId])
 }
 
 model Reconciliation {
@@ -109,9 +142,13 @@ model Reconciliation {
   reconciliationDate DateTime             @default(now())
   notes              String?
   totalLossValue     Float
+  organizationId     String?
+  organization       Organization?        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdAt          DateTime             @default(now())
   order              Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
   items              ReconciliationItem[]
+
+  @@index([organizationId])
 }
 
 model ReconciliationItem {
