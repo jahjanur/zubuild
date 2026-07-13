@@ -38,14 +38,14 @@ model Organization {
 }
 
 model User {
-  id             String        @id @default(uuid())
-  email          String        @unique
+  id             String       @id @default(uuid())
+  email          String       @unique
   passwordHash   String
-  role           String        @default("ADMIN") // extensible: ADMIN, MANAGER, VIEWER
-  organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  role           String       @default("ADMIN") // extensible: ADMIN, MANAGER, VIEWER
+  organizationId String // every user belongs to an org (NOT NULL); other tenant models stay nullable during expand/contract
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   @@index([organizationId])
 }
