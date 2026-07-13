@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
@@ -46,16 +46,72 @@ const LANGS = [
   { code: 'sq', label: 'Shqip' },
 ] as const;
 
-function BrandMark({ logoUrl, name }: { logoUrl?: string | null; name?: string }) {
+/**
+ * A-Frame monogram — reads as the letter "A" and a roofline at once. Single
+ * weight strokes, indigo→violet gradient, no enclosing box. Same artwork as
+ * public/favicon.svg. `id` keeps the gradient unique when several marks render.
+ */
+function BrandLogo({ id, size = 32 }: { id: string; size?: number }) {
+  const gid = `brand-${id}`;
   return (
-    <div className="flex items-center gap-2.5 min-w-0">
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true" className="shrink-0">
+      <defs>
+        <linearGradient id={gid} x1="2" y1="4" x2="30" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#6366F1" />
+          <stop offset="1" stopColor="#8B5CF6" />
+        </linearGradient>
+      </defs>
+      <g stroke={`url(#${gid})`} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 4.5 L4.5 26" />
+        <path d="M16 4.5 L27.5 26" />
+        <path d="M9.6 18 L22.4 18" />
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * Sidebar brand lockup: the mark (or the org's uploaded logo) + a two-line
+ * wordmark. The org name splits into a bold first word over a spaced, muted
+ * second line. Links to the dashboard; brightens on hover. `collapsed` shows
+ * only the centered mark for an icon-rail sidebar.
+ */
+function BrandLockup({
+  logoUrl,
+  name,
+  onClick,
+  collapsed = false,
+}: {
+  logoUrl?: string | null;
+  name?: string;
+  onClick?: () => void;
+  collapsed?: boolean;
+}) {
+  const uid = useId();
+  const displayName = (name || 'Zubuild').trim();
+  const [first, ...rest] = displayName.split(/\s+/);
+  const second = rest.join(' ');
+  return (
+    <Link
+      to="/app/dashboard"
+      onClick={onClick}
+      aria-label={`${displayName} — dashboard`}
+      className={`group inline-flex items-center gap-3 min-w-0 rounded-md transition-[filter] duration-150 hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] ${collapsed ? 'justify-center' : ''}`}
+    >
       {logoUrl ? (
-        <img src={logoUrl} alt={name || 'Zubuild'} className="h-8 w-8 rounded-lg object-contain bg-white/5" />
+        <img src={logoUrl} alt={displayName} className="h-8 w-8 rounded-lg object-contain bg-white/5 shrink-0" />
       ) : (
-        <span className="h-8 w-8 rounded-lg bg-app-accent flex items-center justify-center text-white font-bold text-sm shrink-0">Z</span>
+        <BrandLogo id={uid} size={32} />
       )}
-      <span className="text-white font-semibold text-[15px] tracking-tight truncate">{name || 'Zubuild'}</span>
-    </div>
+      {!collapsed && (
+        <span className="flex flex-col min-w-0 leading-none">
+          <span className="text-white font-bold text-[15px] tracking-[0.12em] truncate">{first}</span>
+          {second && (
+            <span className="mt-[3px] text-[10px] font-medium tracking-[0.3em] uppercase text-sidebar-section truncate">{second}</span>
+          )}
+        </span>
+      )}
+    </Link>
   );
 }
 
@@ -153,8 +209,8 @@ export default function AppLayout() {
     <div className="min-h-screen bg-app-bg flex">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 left-0 bg-sidebar-bg z-20">
-        <div className="h-16 flex items-center px-5 border-b border-sidebar-border">
-          <BrandMark logoUrl={org?.logoUrl} name={org?.name} />
+        <div className="relative h-16 flex items-center px-5 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-sidebar-border after:to-transparent">
+          <BrandLockup logoUrl={org?.logoUrl} name={org?.name} />
         </div>
         <NavList />
         <Footer />
@@ -164,7 +220,7 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col w-full min-w-0 overflow-x-hidden lg:pl-64">
         {/* Mobile top bar */}
         <header className="lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 h-14 bg-sidebar-bg safe-area-pt">
-          <BrandMark logoUrl={org?.logoUrl} name={org?.name} />
+          <BrandLockup logoUrl={org?.logoUrl} name={org?.name} />
           <button type="button" onClick={() => setMenuOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('nav.more')}>
             <Menu size={22} />
           </button>
@@ -181,7 +237,7 @@ export default function AppLayout() {
           <div className="lg:hidden fixed inset-0 z-40 bg-app-overlay" onClick={() => setMenuOpen(false)} aria-hidden />
           <div className="lg:hidden fixed top-0 right-0 bottom-0 z-50 w-full max-w-xs bg-sidebar-bg flex flex-col safe-area-pt" role="dialog" aria-label={t('nav.more')}>
             <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border">
-              <BrandMark logoUrl={org?.logoUrl} name={org?.name} />
+              <BrandLockup logoUrl={org?.logoUrl} name={org?.name} onClick={() => setMenuOpen(false)} />
               <button type="button" onClick={() => setMenuOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('common.close')}>
                 <X size={22} />
               </button>
