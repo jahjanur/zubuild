@@ -342,5 +342,18 @@
     "savingOrg": "Po ruhet…",
     "orgSaved": "Brandimi u ruajt.",
     "logoTooLarge": "Imazhi është shumë i madh (maks. 400 KB)."
+  },
+  "units": {
+    "kg": "kg",
+    "ton": "ton",
+    "litre": "litër",
+    "adet": "copë",
+    "m": "m",
+    "m²": "m²",
+    "m³": "m³",
+    "torba": "thes",
+    "paket": "paketë",
+    "kutu": "kuti",
+    "rulo": "rrotull"
   }
 }

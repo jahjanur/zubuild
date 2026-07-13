@@ -342,5 +342,18 @@
     "savingOrg": "Kaydediliyor…",
     "orgSaved": "Marka bilgileri kaydedildi.",
     "logoTooLarge": "Görsel çok büyük (en fazla 400 KB)."
+  },
+  "units": {
+    "kg": "kg",
+    "ton": "ton",
+    "litre": "litre",
+    "adet": "adet",
+    "m": "m",
+    "m²": "m²",
+    "m³": "m³",
+    "torba": "torba",
+    "paket": "paket",
+    "kutu": "kutu",
+    "rulo": "rulo"
   }
 }

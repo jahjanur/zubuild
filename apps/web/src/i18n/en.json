@@ -342,5 +342,18 @@
     "savingOrg": "Saving…",
     "orgSaved": "Branding saved.",
     "logoTooLarge": "Image is too large (max 400 KB)."
+  },
+  "units": {
+    "kg": "kg",
+    "ton": "ton",
+    "litre": "L",
+    "adet": "pc",
+    "m": "m",
+    "m²": "m²",
+    "m³": "m³",
+    "torba": "bag",
+    "paket": "pack",
+    "kutu": "box",
+    "rulo": "roll"
   }
 }

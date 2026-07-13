@@ -22,6 +22,7 @@ import {
   TableActionButton,
 } from '../components/ui';
 import { formatMKD } from '../lib/formatMKD';
+import { unitLabel } from '../lib/units';
 
 interface Product {
   id: string;
@@ -226,7 +227,7 @@ export default function Products() {
                       <div key={p.id} className="flex items-center justify-between gap-2 p-4">
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-app-primary truncate">{p.name}</p>
-                          <p className="text-app-secondary text-sm">{p.measurementUnit} · {formatMKD(Number(p.price))}</p>
+                          <p className="text-app-secondary text-sm">{unitLabel(p.measurementUnit)} · {formatMKD(Number(p.price))}</p>
                           <Badge variant={p.status === 'ACTIVE' ? 'success' : 'default'} className="mt-1">
                             {p.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}
                           </Badge>
@@ -258,7 +259,7 @@ export default function Products() {
                         {items.map((p) => (
                           <TableRow key={p.id}>
                             <TableCell className="text-app-primary font-medium">{p.name}</TableCell>
-                            <TableCell>{p.measurementUnit}</TableCell>
+                            <TableCell>{unitLabel(p.measurementUnit)}</TableCell>
                             <TableCell className="text-right text-app-accent">{formatMKD(Number(p.price))}</TableCell>
                             <TableCell>
                               <Badge variant={p.status === 'ACTIVE' ? 'success' : 'default'}>

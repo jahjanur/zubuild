@@ -16,6 +16,7 @@ import {
   TableCell,
 } from '../components/ui';
 import { formatMKD, formatDate } from '../lib/formatMKD';
+import { unitLabel } from '../lib/units';
 
 interface OrderItem {
   id: string;
@@ -172,7 +173,7 @@ export default function Reconciliation() {
                   return (
                     <div key={oi.id} className="rounded-xl border border-[var(--border)] bg-app-surface-2 p-4">
                       <p className="font-medium text-app-primary">{oi.name}</p>
-                      <p className="text-app-secondary text-sm mb-2">{t('reconciliation.ordered')}: {oi.quantity} {oi.unit}</p>
+                      <p className="text-app-secondary text-sm mb-2">{t('reconciliation.ordered')}: {oi.quantity} {unitLabel(oi.unit)}</p>
                       <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('reconciliation.receivedQty')}</label>
                       <input
                         type="number"
@@ -219,7 +220,7 @@ export default function Reconciliation() {
                       return (
                         <TableRow key={oi.id}>
                           <TableCell className="text-app-primary">{oi.name}</TableCell>
-                          <TableCell>{oi.unit}</TableCell>
+                          <TableCell>{unitLabel(oi.unit)}</TableCell>
                           <TableCell className="text-right">{oi.quantity}</TableCell>
                           <TableCell className="text-right">
                             <input

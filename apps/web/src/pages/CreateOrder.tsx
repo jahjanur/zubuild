@@ -18,6 +18,7 @@ import {
   TableActionButton,
 } from '../components/ui';
 import { formatMKD } from '../lib/formatMKD';
+import { unitLabel } from '../lib/units';
 import { useAuth } from '../lib/useAuth';
 import { useToast } from '../context/ToastContext';
 
@@ -520,7 +521,7 @@ export default function CreateOrder() {
                             <div className="min-w-0 flex-1">
                               <p className="font-medium text-app-primary truncate">{p.name}</p>
                               <p className="text-app-secondary text-sm truncate">
-                                {p.measurementUnit} · <span className="text-app-accent">{formatMKD(Number(p.price))}</span>
+                                {unitLabel(p.measurementUnit)} · <span className="text-app-accent">{formatMKD(Number(p.price))}</span>
                               </p>
                             </div>
                             {added > 0 ? (
@@ -563,7 +564,7 @@ export default function CreateOrder() {
                         <div className="flex justify-between items-start gap-2">
                           <div className="min-w-0">
                             <p className="font-medium text-app-primary">{r.name}</p>
-                            <p className="text-app-secondary text-sm">{r.unit} · {formatMKD(r.price)}</p>
+                            <p className="text-app-secondary text-sm">{unitLabel(r.unit)} · {formatMKD(r.price)}</p>
                           </div>
                           <TableActionButton onClick={() => removeRow(i)} aria-label={t('createOrder.remove')}>
                             <span className="text-app-danger"><IconTrash /></span>
@@ -599,7 +600,7 @@ export default function CreateOrder() {
                         {rows.map((r, i) => (
                           <TableRow key={i}>
                             <TableCell className="text-app-primary">{r.name}</TableCell>
-                            <TableCell>{r.unit}</TableCell>
+                            <TableCell>{unitLabel(r.unit)}</TableCell>
                             <TableCell className="text-right text-app-accent">{formatMKD(r.price)}</TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end">
@@ -704,7 +705,7 @@ export default function CreateOrder() {
                       <ul className="space-y-2 text-sm text-app-secondary">
                         {rows.map((r, i) => (
                           <li key={i} className="flex justify-between gap-2">
-                            <span className="truncate">{r.name} × {r.quantity} {r.unit}</span>
+                            <span className="truncate">{r.name} × {r.quantity} {unitLabel(r.unit)}</span>
                             <span className="text-app-accent shrink-0">{formatMKD(r.price * r.quantity)}</span>
                           </li>
                         ))}

@@ -9,6 +9,7 @@ import { ShoppingCart, TrendingDown, Clock, Truck, Package, FilePlus, ClipboardC
 import { api } from '../lib/api';
 import { StatCard, Card, CardHeader, CardContent, Modal, Button, Badge } from '../components/ui';
 import { formatMKD, formatDate } from '../lib/formatMKD';
+import { unitLabel } from '../lib/units';
 
 interface Overview {
   totalSuppliers: number; totalProducts: number; pendingOrders: number; totalLosses: number;
@@ -23,7 +24,7 @@ interface MonthlyLoss { month: string; total: number; }
 
 function missingSummary(items: ReconItem[]): string {
   const missing = items.filter((i) => i.missingQty > 0);
-  return missing.length ? missing.map((i) => `${i.name}: -${i.missingQty} ${i.unit}`).join(', ') : '';
+  return missing.length ? missing.map((i) => `${i.name}: -${i.missingQty} ${unitLabel(i.unit)}`).join(', ') : '';
 }
 
 const AV_COLORS = ['#4F46E5', '#0891B2', '#059669', '#D97706', '#DB2777', '#7C3AED'];
@@ -214,7 +215,7 @@ export default function Dashboard() {
             <p className="font-semibold text-app-danger">{t('dashboard.totalLoss')}: {formatMKD(Number(selected.totalLossValue))}</p>
             <ul className="text-sm text-app-secondary space-y-1">
               {selected.items.filter((i) => i.missingQty > 0).map((i) => (
-                <li key={i.id}>{i.name}: -{i.missingQty} {i.unit} ({formatMKD(Number(i.lossValue))})</li>
+                <li key={i.id}>{i.name}: -{i.missingQty} {unitLabel(i.unit)} ({formatMKD(Number(i.lossValue))})</li>
               ))}
             </ul>
             <Button size="sm" variant="ghost" onClick={() => { setDetailId(null); navigate('/app/control-panel'); }}>{t('dashboard.openControlPanel')}</Button>

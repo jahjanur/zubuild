@@ -31,22 +31,24 @@ const SUPPLIERS = [
   { companyName: 'Hırdavat Dünyası', contactPerson: 'Deniz Polat', phone: null, location: 'Gostivar', status: 'INACTIVE' as const },
 ];
 
+// Demo catalog in Albanian (product names/categories/units are per-org DATA, not
+// UI strings — they display exactly as stored, so the seed sets the demo language).
 const PRODUCTS = [
-  { name: 'Demir 12mm', category: 'Demir', measurementUnit: 'ton' as const, price: 850, status: 'ACTIVE' as const },
-  { name: 'Demir 8mm', category: 'Demir', measurementUnit: 'ton' as const, price: 820, status: 'ACTIVE' as const },
+  { name: 'Hekur 12mm', category: 'Hekur', measurementUnit: 'ton' as const, price: 850, status: 'ACTIVE' as const },
+  { name: 'Hekur 8mm', category: 'Hekur', measurementUnit: 'ton' as const, price: 820, status: 'ACTIVE' as const },
   { name: 'Çimento 50kg', category: 'Çimento', measurementUnit: 'torba' as const, price: 450, status: 'ACTIVE' as const },
-  { name: 'Kum inşaat', category: 'Agregat', measurementUnit: 'm³' as const, price: 1200, status: 'ACTIVE' as const },
-  { name: 'Beyaz boya 15L', category: 'Boya', measurementUnit: 'kutu' as const, price: 1800, status: 'ACTIVE' as const },
-  { name: 'Su bazlı boya', category: 'Boya', measurementUnit: 'litre' as const, price: 95, status: 'ACTIVE' as const },
-  { name: 'Fayans 30x30', category: 'Seramik', measurementUnit: 'm²' as const, price: 350, status: 'ACTIVE' as const },
-  { name: 'Çivi 3"', category: 'Hırdavat', measurementUnit: 'kg' as const, price: 28, status: 'ACTIVE' as const },
-  { name: 'Kablo 3x2.5', category: 'Elektrik', measurementUnit: 'm' as const, price: 45, status: 'ACTIVE' as const },
-  { name: 'PVC boru 50mm', category: 'Tesisat', measurementUnit: 'm' as const, price: 85, status: 'ACTIVE' as const },
-  { name: 'Tuğla', category: 'Tuğla', measurementUnit: 'adet' as const, price: 2.5, status: 'ACTIVE' as const },
-  { name: 'Kireç 25kg', category: 'Çimento', measurementUnit: 'torba' as const, price: 320, status: 'ACTIVE' as const },
-  { name: 'Mermer plaka', category: 'Mermer', measurementUnit: 'm²' as const, price: 1200, status: 'ACTIVE' as const },
-  { name: 'Laminat parke', category: 'Parke', measurementUnit: 'm²' as const, price: 280, status: 'ACTIVE' as const },
-  { name: 'Çatı kiremiti', category: 'Çatı', measurementUnit: 'adet' as const, price: 8, status: 'ACTIVE' as const },
+  { name: 'Rërë ndërtimi', category: 'Agregat', measurementUnit: 'm³' as const, price: 1200, status: 'ACTIVE' as const },
+  { name: 'Bojë e bardhë 15L', category: 'Bojë', measurementUnit: 'kutu' as const, price: 1800, status: 'ACTIVE' as const },
+  { name: 'Bojë me bazë uji', category: 'Bojë', measurementUnit: 'litre' as const, price: 95, status: 'ACTIVE' as const },
+  { name: 'Pllakë 30x30', category: 'Qeramikë', measurementUnit: 'm²' as const, price: 350, status: 'ACTIVE' as const },
+  { name: 'Gozhdë 3"', category: 'Hekurishte', measurementUnit: 'kg' as const, price: 28, status: 'ACTIVE' as const },
+  { name: 'Kabull 3x2.5', category: 'Elektrik', measurementUnit: 'm' as const, price: 45, status: 'ACTIVE' as const },
+  { name: 'Tub PVC 50mm', category: 'Hidrosanitare', measurementUnit: 'm' as const, price: 85, status: 'ACTIVE' as const },
+  { name: 'Tullë', category: 'Tullë', measurementUnit: 'adet' as const, price: 2.5, status: 'ACTIVE' as const },
+  { name: 'Gëlqere 25kg', category: 'Çimento', measurementUnit: 'torba' as const, price: 320, status: 'ACTIVE' as const },
+  { name: 'Pllakë mermeri', category: 'Mermer', measurementUnit: 'm²' as const, price: 1200, status: 'ACTIVE' as const },
+  { name: 'Parket laminat', category: 'Parket', measurementUnit: 'm²' as const, price: 280, status: 'ACTIVE' as const },
+  { name: 'Tjegull çatie', category: 'Çati', measurementUnit: 'adet' as const, price: 8, status: 'ACTIVE' as const },
 ];
 
 async function main() {
