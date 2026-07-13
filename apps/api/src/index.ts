@@ -2,7 +2,6 @@
  * AEM Residence Operations API
  * Node.js + Express + TypeScript, session auth, SQLite (local) / optional Postgres (production)
  */
-import path from 'path';
 import 'express-session';
 import express from 'express';
 import cors from 'cors';
@@ -24,9 +23,8 @@ import organizationRoutes from './routes/organization';
 import debugRoutes from './routes/debug';
 import { sanitizeBody } from './middleware/sanitize';
 import { assertPdfFontsAvailable } from './lib/pdf';
-
-// Session store: file-based (no native deps; persists across restarts)
-const FileStore = require('session-file-store')(session);
+import { PrismaSessionStore } from '@quixo3/prisma-session-store';
+import { prisma } from './lib/prisma';
 
 const app = express();
 
@@ -42,11 +40,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Session: httpOnly cookies, store in files (prisma/sessions)
+// Session: httpOnly cookies, stored in the DB (survives restarts, shared across
+// instances). Uses whatever DB Prisma points at — SQLite locally, Postgres in staging.
 app.use(
   session({
-    store: new FileStore({
-      path: path.join(__dirname, '..', 'prisma', 'sessions'),
+    store: new PrismaSessionStore(prisma, {
+      checkPeriod: 2 * 60 * 1000, // prune expired sessions every 2 min
+      dbRecordIdIsSessionId: true,
     }),
     secret: config.sessionSecret,
     resave: false,

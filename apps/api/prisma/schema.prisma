@@ -88,6 +88,18 @@ model PasswordResetToken {
   @@index([token])
 }
 
+// HTTP session store (via @quixo3/prisma-session-store). Sessions live in the DB
+// instead of local files, so they survive restarts and are shared across
+// instances. Not tenant-scoped.
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
 model Supplier {
   id             String        @id @default(uuid())
   companyName    String
