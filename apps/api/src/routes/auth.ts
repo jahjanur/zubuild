@@ -71,6 +71,7 @@ router.post('/login', loginLimiter, validateBody(loginSchema), async (req: Reque
       id: user.id,
       email: user.email,
       role: user.role,
+      organizationId: user.organizationId,
     };
     res.json({ success: true, data: { id: user.id, email: user.email, role: user.role } });
   } catch (err) {

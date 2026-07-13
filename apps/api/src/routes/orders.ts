@@ -1,13 +1,14 @@
 import { Router, Request, Response } from 'express';
 import { customAlphabet } from 'nanoid';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin } from '../middleware/auth';
+import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { createOrderSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
 import { generateOrderPdf } from '../lib/pdf';
+import { currentOrgId } from '../lib/tenantContext';
 const router = Router();
-router.use(requireAuth);
+router.use(requireAuth, tenantContext);
 
 const shortId = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
 
@@ -136,7 +137,8 @@ router.post('/', requireAdmin, validateBody(createOrderSchema), async (req: Requ
         totalAmount,
         status: 'PENDING',
         notes: notes ?? null,
-        orderItems: { create: orderItemsData },
+        // Nested creates aren't seen by the Prisma tenant middleware, so scope items explicitly.
+        orderItems: { create: orderItemsData.map((it) => ({ ...it, organizationId: currentOrgId() })) },
       },
       include: { orderItems: true },
     });

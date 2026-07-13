@@ -8,6 +8,9 @@ import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+// Fixed default org id — matches the backfill in the scope_data_to_tenant migration.
+const DEFAULT_ORG_ID = '00000000-0000-0000-0000-000000000001';
+
 const USERS = [
   { email: 'viewer@aem-residence.com', password: 'viewer', role: 'VIEWER' as const },
   { email: 'admin@aem-residence.com', password: 'admin', role: 'ADMIN' as const },
@@ -47,13 +50,30 @@ const PRODUCTS = [
 ];
 
 async function main() {
+  console.log('Seeding organization...');
+  await prisma.organization.upsert({
+    where: { id: DEFAULT_ORG_ID },
+    update: {},
+    create: {
+      id: DEFAULT_ORG_ID,
+      name: 'AEM Residence',
+      slug: 'aem-residence',
+      invoiceName: 'AEM Residence',
+      invoiceAddress: 'ul. Marshal Tito 123, Gostivar 1230',
+      invoiceRegNo: 'Mat. Br. 1234567890123',
+      currency: 'MKD',
+      locale: 'mk',
+      plan: 'FREE',
+    },
+  });
+
   console.log('Seeding users...');
   for (const u of USERS) {
     const passwordHash = await bcrypt.hash(u.password, 12);
     await prisma.user.upsert({
       where: { email: u.email },
-      update: { passwordHash, role: u.role },
-      create: { email: u.email, passwordHash, role: u.role },
+      update: { passwordHash, role: u.role, organizationId: DEFAULT_ORG_ID },
+      create: { email: u.email, passwordHash, role: u.role, organizationId: DEFAULT_ORG_ID },
     });
     console.log(`  ${u.role}: ${u.email}`);
   }
@@ -68,6 +88,7 @@ async function main() {
         phone: s.phone,
         location: s.location,
         status: s.status,
+        organizationId: DEFAULT_ORG_ID,
       },
     });
     supplierIds.push(created.id);
@@ -84,6 +105,7 @@ async function main() {
         measurementUnit: p.measurementUnit,
         price: p.price,
         status: p.status,
+        organizationId: DEFAULT_ORG_ID,
       },
     });
     productRows.push({
@@ -119,6 +141,7 @@ async function main() {
         totalAmount,
         status: i < 3 ? 'RECONCILED' : i < 6 ? 'DELIVERED' : 'PENDING',
         notes: i === 0 ? 'İlk test siparişi' : null,
+        organizationId: DEFAULT_ORG_ID,
         orderItems: {
           create: items.map((it) => ({
             productId: it.productId,
@@ -126,6 +149,7 @@ async function main() {
             unit: it.unit,
             price: it.price,
             quantity: it.quantity,
+            organizationId: DEFAULT_ORG_ID,
           })),
         },
       },
@@ -146,6 +170,7 @@ async function main() {
       data: {
         orderId: order.id,
         totalLossValue: i === 0 ? 150 : i === 1 ? 0 : 320,
+        organizationId: DEFAULT_ORG_ID,
         items: {
           create: order.orderItems.map((oi, idx) => ({
             orderItemId: oi.id,

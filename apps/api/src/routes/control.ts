@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin } from '../middleware/auth';
+import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
 import { logError } from '../lib/logger';
 
 const router = Router();
-router.use(requireAuth);
+router.use(requireAuth, tenantContext);
 
 /** GET /control/summary - incidents count, items missing sum, total loss sum (only where totalLossValue > 0) */
 router.get('/summary', async (_req: Request, res: Response): Promise<void> => {

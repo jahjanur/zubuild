@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin } from '../middleware/auth';
+import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { createReconciliationSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
 
 const router = Router();
-router.use(requireAuth);
+router.use(requireAuth, tenantContext);
 
 /**
  * Compute missingQty = max(orderedQty - receivedQty, 0), lossValue = missingQty * price, status.
