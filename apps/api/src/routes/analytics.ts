@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, tenantContext } from '../middleware/auth';
 import { logError } from '../lib/logger';
 
 const router = Router();
-router.use(requireAuth);
+router.use(requireAuth, tenantContext);
 
 /** GET /analytics/overview - stats for dashboard */
 router.get('/overview', async (_req: Request, res: Response): Promise<void> => {

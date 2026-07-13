@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin } from '../middleware/auth';
+import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { createSupplierSchema, updateSupplierSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
 
 const router = Router();
-router.use(requireAuth);
+router.use(requireAuth, tenantContext);
 
 /** GET /suppliers */
 router.get('/', async (_req: Request, res: Response): Promise<void> => {

@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin } from '../middleware/auth';
+import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { createProductSchema, updateProductSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
 
 const router = Router();
-router.use(requireAuth);
+router.use(requireAuth, tenantContext);
 
 /** Normalize category: trim and title-case to avoid duplicates */
 function normalizeCategory(cat: string): string {
