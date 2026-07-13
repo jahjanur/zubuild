@@ -227,6 +227,23 @@ const ROW_HEIGHT = 20;
 const HEADER_ROW_HEIGHT = 24;
 const TABLE_WIDTH = CONTENT_WIDTH;
 
+/** Trim text to a single line that fits maxWidth, appending an ellipsis. Uses
+ *  the current font metrics (DejaVu @ 9pt), so it's correct for Cyrillic/Latin.
+ *  Keeps rows a fixed height — long names never wrap into the next row. */
+function ellipsize(doc: Doc, text: string, maxWidth: number): string {
+  doc.font(PDF_FONT).fontSize(9);
+  if (doc.widthOfString(text) <= maxWidth) return text;
+  const ell = '…';
+  let lo = 0;
+  let hi = text.length;
+  while (lo < hi) {
+    const mid = Math.ceil((lo + hi) / 2);
+    if (doc.widthOfString(text.slice(0, mid) + ell) <= maxWidth) lo = mid;
+    else hi = mid - 1;
+  }
+  return text.slice(0, lo).trimEnd() + ell;
+}
+
 function drawTableHeaderRow(doc: Doc, x: number, y: number): void {
   doc.rect(x, y, TABLE_WIDTH, HEADER_ROW_HEIGHT).fill(colors.darkGray).stroke(colors.border);
   doc.fillColor('#fff').fontSize(9).font(PDF_FONT_BOLD);
@@ -270,8 +287,8 @@ function drawItemsTable(
     const rowY = y;
     const fill = i % 2 === 1 ? colors.rowAlt : '#fff';
     doc.rect(x, rowY, TABLE_WIDTH, ROW_HEIGHT).fill(fill).stroke(colors.border);
-    doc.fillColor(colors.text);
-    doc.text(String(item.name ?? ''), x + 8, rowY + 5, { width: COL.name - 10 });
+    doc.fillColor(colors.text).font(PDF_FONT).fontSize(9);
+    doc.text(ellipsize(doc, String(item.name ?? ''), COL.name - 10), x + 8, rowY + 5, { width: COL.name - 10, lineBreak: false });
     doc.text(unitToMacedonian(item.unit), x + COL.name, rowY + 5, { width: COL.unit, align: 'right' });
     doc.text(formatMKD(price), x + COL.name + COL.unit, rowY + 5, { width: COL.price, align: 'right' });
     doc.text(String(qty), x + COL.name + COL.unit + COL.price, rowY + 5, { width: COL.qty, align: 'right' });
