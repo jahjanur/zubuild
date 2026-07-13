@@ -54,9 +54,14 @@ const CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN_PT;
 const FOOTER_HEIGHT = 22;
 const FOOTER_Y = PAGE_HEIGHT - MARGIN_PT - 12;
 const BODY_TOP = 100; // after company header block
-// Reserve space for totals (~50pt) + notes (~46pt) + footer (~22pt) + gap so we never draw past the page or add an extra blank page
-const RESERVED_BOTTOM = 50 + 46 + FOOTER_HEIGHT + 20;
-const TABLE_BOTTOM = PAGE_HEIGHT - MARGIN_PT - RESERVED_BOTTOM;
+// Lowest Y any content block (table row, totals, notes) may occupy. Everything
+// below belongs to the footer zone, so blocks page-break before crossing it —
+// this is what keeps totals/notes from overlapping the footer.
+const CONTENT_BOTTOM = PAGE_HEIGHT - MARGIN_PT - FOOTER_HEIGHT - 12;
+const TOTALS_HEIGHT = 44; // subtotal + rule + total rows
+// The items table also reserves room for the totals block, so totals sit directly
+// under the last rows on the same page whenever they fit.
+const TABLE_BOTTOM = CONTENT_BOTTOM - TOTALS_HEIGHT - 8;
 
 // Company details — North Macedonia, Gostivar
 const COMPANY = {
@@ -295,15 +300,27 @@ function drawTotals(doc: Doc, totalAmount: number, startY: number): number {
   return lineY + 22;
 }
 
-/** Notes section: only if notes exist; invoice-style bordered box. */
-function drawNotes(doc: Doc, notes: string | null, startY: number): number {
+const NOTES_PADDING = 10;
+const NOTES_TEXT_TOP = 16; // where the note body starts inside the box
+const NOTES_TEXT_WIDTH = CONTENT_WIDTH - 2 * NOTES_PADDING;
+const NOTES_MIN_HEIGHT = 36;
+
+/** Height the notes box needs for the wrapped text — so the box grows with the
+ *  content instead of clipping at a fixed 36pt. */
+function measureNotesHeight(doc: Doc, notes: string): number {
+  doc.font(PDF_FONT).fontSize(9);
+  const textH = doc.heightOfString(notes, { width: NOTES_TEXT_WIDTH });
+  return Math.max(NOTES_MIN_HEIGHT, NOTES_TEXT_TOP + textH + NOTES_PADDING);
+}
+
+/** Notes section: only if notes exist; invoice-style bordered box sized to fit
+ *  the (already measured) note text. */
+function drawNotes(doc: Doc, notes: string | null, startY: number, boxHeight: number): number {
   if (!notes || !notes.trim()) return startY;
-  const padding = 10;
-  const cardHeight = 36;
-  doc.rect(MARGIN_PT, startY, CONTENT_WIDTH, cardHeight).fill(colors.rowAlt).stroke(colors.border);
-  doc.fillColor(colors.textMuted).fontSize(8).font(PDF_FONT_BOLD).text(PDF_LABELS.notes, MARGIN_PT + padding, startY + 6);
-  doc.fillColor(colors.text).font(PDF_FONT).fontSize(9).text(notes, MARGIN_PT + padding, startY + 16, { width: CONTENT_WIDTH - 2 * padding });
-  return startY + cardHeight + 10;
+  doc.rect(MARGIN_PT, startY, CONTENT_WIDTH, boxHeight).fill(colors.rowAlt).stroke(colors.border);
+  doc.fillColor(colors.textMuted).fontSize(8).font(PDF_FONT_BOLD).text(PDF_LABELS.notes, MARGIN_PT + NOTES_PADDING, startY + 6);
+  doc.fillColor(colors.text).font(PDF_FONT).fontSize(9).text(notes, MARGIN_PT + NOTES_PADDING, startY + NOTES_TEXT_TOP, { width: NOTES_TEXT_WIDTH });
+  return startY + boxHeight + 10;
 }
 
 /** Draw footer on the current page only. Use width large enough so page number never wraps (avoids stray "1" on next page). */
@@ -344,11 +361,28 @@ export function generateOrderPdf(order: OrderWithItems): Promise<Buffer> {
       drawTableHeaderRow(doc, MARGIN_PT, y);
       y += HEADER_ROW_HEIGHT;
 
-      const { endY, pageCount } = drawItemsTable(doc, order, y);
-      y = endY + 8;
+      const table = drawItemsTable(doc, order, y);
+      let pageCount = table.pageCount;
+      y = table.endY + 8;
 
+      // Start a fresh page when the next block would cross into the footer zone.
+      const breakForBlock = (blockHeight: number): void => {
+        if (y + blockHeight > CONTENT_BOTTOM) {
+          doc.addPage({ size: 'A4', margin: MARGIN_PT });
+          pageCount += 1;
+          y = BODY_TOP;
+        }
+      };
+
+      breakForBlock(TOTALS_HEIGHT);
       y = drawTotals(doc, Number(order.totalAmount), y);
-      y = drawNotes(doc, order.notes ?? null, y);
+
+      const notes = order.notes ?? null;
+      if (notes && notes.trim()) {
+        const notesHeight = measureNotesHeight(doc, notes);
+        breakForBlock(notesHeight + 10);
+        y = drawNotes(doc, notes, y, notesHeight);
+      }
 
       // Draw footer ONLY on pages that have content (use our pageCount, not bufferedPageRange, to avoid drawing on any stray blank page)
       for (let i = 0; i < pageCount; i++) {
