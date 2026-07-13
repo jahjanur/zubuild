@@ -140,7 +140,7 @@ export default function CreateOrder() {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { canWrite } = useAuth();
   const toast = useToast();
 
@@ -243,7 +243,7 @@ export default function CreateOrder() {
 
   async function getPdfBlob(): Promise<Blob> {
     if (!createdOrder?.id) throw new Error('No order');
-    const url = `${base}/orders/${createdOrder.id}/pdf`;
+    const url = `${base}/orders/${createdOrder.id}/pdf?lang=${encodeURIComponent(i18n.language)}`;
     const r = await fetch(url, { credentials: 'include' });
     if (!r.ok) {
       const body = await r.text();
@@ -296,7 +296,7 @@ export default function CreateOrder() {
       return;
     }
     let revoked = false;
-    const url = `${base}/orders/${createdOrder.id}/pdf`;
+    const url = `${base}/orders/${createdOrder.id}/pdf?lang=${encodeURIComponent(i18n.language)}`;
     fetch(url, { credentials: 'include' })
       .then((r) => (r.ok ? r.blob() : Promise.reject(new Error('PDF failed'))))
       .then((blob) => {

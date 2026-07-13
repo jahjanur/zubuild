@@ -7,6 +7,7 @@
 import PDFDocument from 'pdfkit';
 import * as fs from 'fs';
 import * as path from 'path';
+import { productLabel, normalizeLang, type CatalogLang } from './catalog-i18n';
 
 // DejaVu Sans is a full-Unicode font (Cyrillic + Latin-Extended for Albanian ë/ç
 // and Turkish ş/ı/ğ). It is BUNDLED in the repo so it is always present at
@@ -86,10 +87,13 @@ const colors = {
   headerBg: '#f3f4f6',
 };
 
-// Per-organization currency + locale, set at the top of generateOrderPdf. The
+// Per-request currency + language, set at the top of generateOrderPdf. The
 // draw phase is fully synchronous, so module-level state is safe across requests.
+// PDF_LANG drives EVERY string on the page (labels, units, product names) plus
+// number/date formatting, so the whole document reads in one language.
 let PDF_CURRENCY = 'MKD';
 let PDF_LOCALE = 'mk';
+let PDF_LANG: CatalogLang = 'mk';
 
 /** Money in the order's org currency + locale, no decimals (e.g. "120.000 ден.", "€1,234"). */
 function formatMoney(n: number): string {
@@ -158,52 +162,64 @@ function drawHeader(doc: Doc): void {
   doc.moveTo(MARGIN_PT, 96).lineTo(PAGE_WIDTH - MARGIN_PT, 96).strokeColor(colors.border).stroke();
 }
 
-// Macedonian labels for PDF (MK locale)
-const PDF_LABELS = {
-  orderDetails: 'Детали за нарачка',
-  orderNo: 'Бр. нарачка',
-  date: 'Датум',
-  supplier: 'Добавувач',
-  status: 'Статус',
-  item: 'Ставка',
-  unit: 'Ед.',
-  price: 'Ед. цена',
-  qty: 'Кол.',
-  total: 'Вкупен износ',
-  subtotal: 'Меѓузбир',
-  notes: 'Забелешки',
-  page: 'Страница',
-  generated: 'Генерирано',
-  statusPending: 'Чека',
-  statusDelivered: 'Испорачано',
-  statusReconciled: 'Ускладено',
+// PDF chrome in every supported language. The active set is chosen by PDF_LANG
+// so labels match whatever language the order was exported in.
+type PdfLabels = {
+  orderDetails: string; orderNo: string; date: string; supplier: string; status: string;
+  item: string; unit: string; price: string; qty: string; total: string; subtotal: string;
+  notes: string; page: string; generated: string;
+  statusPending: string; statusDelivered: string; statusReconciled: string;
 };
-
-/** Map Turkish/Latin measurement units to Macedonian for PDF. */
-const UNIT_TO_MACEDONIAN: Record<string, string> = {
-  adet: 'бр.',
-  kg: 'кг',
-  ton: 'т',
-  litre: 'л',
-  'm': 'м',
-  'm²': 'м²',
-  'm³': 'м³',
-  torba: 'вреќа',
-  paket: 'пакет',
-  kutu: 'кутија',
-  rulo: 'ролна',
+const LABELS_BY_LANG: Record<CatalogLang, PdfLabels> = {
+  mk: {
+    orderDetails: 'Детали за нарачка', orderNo: 'Бр. нарачка', date: 'Датум', supplier: 'Добавувач', status: 'Статус',
+    item: 'Ставка', unit: 'Ед.', price: 'Ед. цена', qty: 'Кол.', total: 'Вкупен износ', subtotal: 'Меѓузбир',
+    notes: 'Забелешки', page: 'Страница', generated: 'Генерирано',
+    statusPending: 'Чека', statusDelivered: 'Испорачано', statusReconciled: 'Ускладено',
+  },
+  en: {
+    orderDetails: 'Order Details', orderNo: 'Order No.', date: 'Date', supplier: 'Supplier', status: 'Status',
+    item: 'Item', unit: 'Unit', price: 'Unit Price', qty: 'Qty', total: 'Total', subtotal: 'Subtotal',
+    notes: 'Notes', page: 'Page', generated: 'Generated',
+    statusPending: 'Pending', statusDelivered: 'Delivered', statusReconciled: 'Reconciled',
+  },
+  sq: {
+    orderDetails: 'Detajet e porosisë', orderNo: 'Nr. porosisë', date: 'Data', supplier: 'Furnitori', status: 'Statusi',
+    item: 'Artikulli', unit: 'Njësia', price: 'Çmimi/njësi', qty: 'Sasia', total: 'Totali', subtotal: 'Nëntotali',
+    notes: 'Shënime', page: 'Faqja', generated: 'Gjeneruar',
+    statusPending: 'Në pritje', statusDelivered: 'Dorëzuar', statusReconciled: 'Rakorduar',
+  },
+  tr: {
+    orderDetails: 'Sipariş Detayları', orderNo: 'Sipariş No', date: 'Tarih', supplier: 'Tedarikçi', status: 'Durum',
+    item: 'Ürün', unit: 'Birim', price: 'Birim Fiyat', qty: 'Miktar', total: 'Toplam', subtotal: 'Ara Toplam',
+    notes: 'Notlar', page: 'Sayfa', generated: 'Oluşturuldu',
+    statusPending: 'Beklemede', statusDelivered: 'Teslim Edildi', statusReconciled: 'Mutabık',
+  },
 };
-
-function unitToMacedonian(unit: string | null | undefined): string {
-  if (!unit || !unit.trim()) return '';
-  const key = unit.trim().toLowerCase();
-  return UNIT_TO_MACEDONIAN[key] ?? unit;
+/** Active labels for the current export language. */
+function L(): PdfLabels {
+  return LABELS_BY_LANG[PDF_LANG] ?? LABELS_BY_LANG.mk;
 }
 
-function orderStatusTr(s: string | null | undefined): string {
-  if (s === 'PENDING') return PDF_LABELS.statusPending;
-  if (s === 'DELIVERED') return PDF_LABELS.statusDelivered;
-  if (s === 'RECONCILED') return PDF_LABELS.statusReconciled;
+// Measurement-unit codes → display per language. Mirrors the `units` namespace in
+// apps/web/src/i18n/*.json so on-screen units and PDF units read identically.
+const UNITS_BY_LANG: Record<CatalogLang, Record<string, string>> = {
+  en: { kg: 'kg', ton: 'ton', litre: 'L', adet: 'pc', m: 'm', 'm²': 'm²', 'm³': 'm³', torba: 'bag', paket: 'pack', kutu: 'box', rulo: 'roll' },
+  mk: { kg: 'кг', ton: 'тон', litre: 'л', adet: 'парче', m: 'м', 'm²': 'м²', 'm³': 'м³', torba: 'вреќа', paket: 'пакет', kutu: 'кутија', rulo: 'ролна' },
+  sq: { kg: 'kg', ton: 'ton', litre: 'litër', adet: 'copë', m: 'm', 'm²': 'm²', 'm³': 'm³', torba: 'thes', paket: 'paketë', kutu: 'kuti', rulo: 'rrotull' },
+  tr: { kg: 'kg', ton: 'ton', litre: 'litre', adet: 'adet', m: 'm', 'm²': 'm²', 'm³': 'm³', torba: 'torba', paket: 'paket', kutu: 'kutu', rulo: 'rulo' },
+};
+
+function unitLabelPdf(unit: string | null | undefined): string {
+  if (!unit || !unit.trim()) return '';
+  const key = unit.trim().toLowerCase();
+  return (UNITS_BY_LANG[PDF_LANG] ?? UNITS_BY_LANG.mk)[key] ?? unit;
+}
+
+function orderStatusLabel(s: string | null | undefined): string {
+  if (s === 'PENDING') return L().statusPending;
+  if (s === 'DELIVERED') return L().statusDelivered;
+  if (s === 'RECONCILED') return L().statusReconciled;
   return String(s ?? '');
 }
 
@@ -212,17 +228,17 @@ function drawMeta(doc: Doc, order: OrderWithItems): number {
   const boxTop = BODY_TOP;
   const boxHeight = 52;
   doc.rect(MARGIN_PT, boxTop, CONTENT_WIDTH, boxHeight).fill(colors.headerBg).stroke(colors.border);
-  doc.fillColor(colors.darkGray).fontSize(10).font(PDF_FONT_BOLD).text(PDF_LABELS.orderDetails, MARGIN_PT + 10, boxTop + 10);
+  doc.fillColor(colors.darkGray).fontSize(10).font(PDF_FONT_BOLD).text(L().orderDetails, MARGIN_PT + 10, boxTop + 10);
   doc.fillColor(colors.text).fontSize(9).font(PDF_FONT);
   const leftX = MARGIN_PT + 10;
   const rightX = MARGIN_PT + CONTENT_WIDTH * 0.55;
   const lineH = 14;
   const orderDateObj = order.orderDate instanceof Date ? order.orderDate : new Date(order.orderDate);
   const dateStr = formatPdfDate(orderDateObj);
-  doc.text(`${PDF_LABELS.orderNo}: ${String(order.orderNumber ?? '')}`, leftX, boxTop + 26);
-  doc.text(`${PDF_LABELS.date}: ${dateStr}`, leftX, boxTop + 26 + lineH);
-  doc.text(`${PDF_LABELS.supplier}: ${String(order.supplierName ?? '')}`, rightX, boxTop + 26);
-  doc.text(`${PDF_LABELS.status}: ${orderStatusTr(order.status)}`, rightX, boxTop + 26 + lineH);
+  doc.text(`${L().orderNo}: ${String(order.orderNumber ?? '')}`, leftX, boxTop + 26);
+  doc.text(`${L().date}: ${dateStr}`, leftX, boxTop + 26 + lineH);
+  doc.text(`${L().supplier}: ${String(order.supplierName ?? '')}`, rightX, boxTop + 26);
+  doc.text(`${L().status}: ${orderStatusLabel(order.status)}`, rightX, boxTop + 26 + lineH);
   return boxTop + boxHeight + 10;
 }
 
@@ -258,11 +274,11 @@ function ellipsize(doc: Doc, text: string, maxWidth: number): string {
 function drawTableHeaderRow(doc: Doc, x: number, y: number): void {
   doc.rect(x, y, TABLE_WIDTH, HEADER_ROW_HEIGHT).fill(colors.darkGray).stroke(colors.border);
   doc.fillColor('#fff').fontSize(9).font(PDF_FONT_BOLD);
-  doc.text(PDF_LABELS.item, x + 8, y + 6, { width: COL.name - 8 });
-  doc.text(PDF_LABELS.unit, x + COL.name, y + 6, { width: COL.unit, align: 'right' });
-  doc.text(PDF_LABELS.price, x + COL.name + COL.unit, y + 6, { width: COL.price, align: 'right' });
-  doc.text(PDF_LABELS.qty, x + COL.name + COL.unit + COL.price, y + 6, { width: COL.qty, align: 'right' });
-  doc.text(PDF_LABELS.total, x + COL.name + COL.unit + COL.price + COL.qty, y + 6, { width: COL.total - 4, align: 'right' });
+  doc.text(L().item, x + 8, y + 6, { width: COL.name - 8 });
+  doc.text(L().unit, x + COL.name, y + 6, { width: COL.unit, align: 'right' });
+  doc.text(L().price, x + COL.name + COL.unit, y + 6, { width: COL.price, align: 'right' });
+  doc.text(L().qty, x + COL.name + COL.unit + COL.price, y + 6, { width: COL.qty, align: 'right' });
+  doc.text(L().total, x + COL.name + COL.unit + COL.price + COL.qty, y + 6, { width: COL.total - 4, align: 'right' });
 }
 
 /** Items table: full width, header repeats on new page, alternating rows, right-aligned numbers.
@@ -299,8 +315,9 @@ function drawItemsTable(
     const fill = i % 2 === 1 ? colors.rowAlt : '#fff';
     doc.rect(x, rowY, TABLE_WIDTH, ROW_HEIGHT).fill(fill).stroke(colors.border);
     doc.fillColor(colors.text).font(PDF_FONT).fontSize(9);
-    doc.text(ellipsize(doc, String(item.name ?? ''), COL.name - 10), x + 8, rowY + 5, { width: COL.name - 10, lineBreak: false });
-    doc.text(unitToMacedonian(item.unit), x + COL.name, rowY + 5, { width: COL.unit, align: 'right' });
+    const nameLabel = productLabel(item.name, PDF_LANG);
+    doc.text(ellipsize(doc, nameLabel, COL.name - 10), x + 8, rowY + 5, { width: COL.name - 10, lineBreak: false });
+    doc.text(unitLabelPdf(item.unit), x + COL.name, rowY + 5, { width: COL.unit, align: 'right' });
     doc.text(formatMoney(price), x + COL.name + COL.unit, rowY + 5, { width: COL.price, align: 'right' });
     doc.text(String(qty), x + COL.name + COL.unit + COL.price, rowY + 5, { width: COL.qty, align: 'right' });
     doc.text(formatMoney(total), x + COL.name + COL.unit + COL.price + COL.qty, rowY + 5, { width: COL.total - 4, align: 'right' });
@@ -319,11 +336,11 @@ function drawTotals(doc: Doc, totalAmount: number, startY: number): number {
   const boxX = boxRight - boxWidth;
   const lineY = startY + 18;
   doc.fillColor(colors.text).fontSize(9).font(PDF_FONT);
-  doc.text(PDF_LABELS.subtotal, boxX + 8, startY + 4);
+  doc.text(L().subtotal, boxX + 8, startY + 4);
   doc.text(formatMoney(totalAmount), boxRight - 8 - numbersWidth, startY + 4, { width: numbersWidth, align: 'right' });
   doc.moveTo(boxX, lineY).lineTo(boxX + boxWidth, lineY).strokeColor(colors.border).stroke();
   doc.font(PDF_FONT_BOLD).fontSize(10);
-  doc.text(PDF_LABELS.total, boxX + 8, lineY + 6);
+  doc.text(L().total, boxX + 8, lineY + 6);
   doc.text(formatMoney(totalAmount), boxRight - 8 - numbersWidth, lineY + 6, { width: numbersWidth, align: 'right' });
   return lineY + 22;
 }
@@ -346,7 +363,7 @@ function measureNotesHeight(doc: Doc, notes: string): number {
 function drawNotes(doc: Doc, notes: string | null, startY: number, boxHeight: number): number {
   if (!notes || !notes.trim()) return startY;
   doc.rect(MARGIN_PT, startY, CONTENT_WIDTH, boxHeight).fill(colors.rowAlt).stroke(colors.border);
-  doc.fillColor(colors.textMuted).fontSize(8).font(PDF_FONT_BOLD).text(PDF_LABELS.notes, MARGIN_PT + NOTES_PADDING, startY + 6);
+  doc.fillColor(colors.textMuted).fontSize(8).font(PDF_FONT_BOLD).text(L().notes, MARGIN_PT + NOTES_PADDING, startY + 6);
   doc.fillColor(colors.text).font(PDF_FONT).fontSize(9).text(notes, MARGIN_PT + NOTES_PADDING, startY + NOTES_TEXT_TOP, { width: NOTES_TEXT_WIDTH });
   return startY + boxHeight + 10;
 }
@@ -360,14 +377,14 @@ function drawFooter(doc: Doc, pageNum: number, totalPages: number): void {
   const generatedStr = `${String(d).padStart(2, '0')}.${String(m).padStart(2, '0')}.${yr} ${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
   doc.fillColor(colors.textMuted).fontSize(7).font(PDF_FONT);
   doc.text([PDF_COMPANY.name, PDF_COMPANY.regNo].filter(Boolean).join(' | '), MARGIN_PT, y - 8);
-  doc.text(`${PDF_LABELS.generated}: ${generatedStr}`, MARGIN_PT, y);
+  doc.text(`${L().generated}: ${generatedStr}`, MARGIN_PT, y);
   // Width 90 so "Страница 1 / 1" or "Страница 12 / 12" fits on one line and never wraps to a new page
-  doc.text(`${PDF_LABELS.page} ${pageNum} / ${totalPages}`, PAGE_WIDTH - MARGIN_PT - 90, y, { width: 90, align: 'right' });
+  doc.text(`${L().page} ${pageNum} / ${totalPages}`, PAGE_WIDTH - MARGIN_PT - 90, y, { width: 90, align: 'right' });
 }
 
 export function generateOrderPdf(
   order: OrderWithItems,
-  opts: { currency?: string; locale?: string; company?: PdfCompany } = {}
+  opts: { currency?: string; locale?: string; lang?: string; company?: PdfCompany } = {}
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
@@ -375,9 +392,12 @@ export function generateOrderPdf(
       // Unicode fonts are absent, fail here instead of emitting a broken/500 PDF.
       assertPdfFontsAvailable();
 
-      // Money + dates render in the order's org currency/locale; letterhead is the org's.
+      // The export language (from the request) drives all chrome, units, product
+      // names, and number/date formatting so the whole PDF is in one language.
+      // Currency stays the org's; only its formatting locale follows the language.
       PDF_CURRENCY = opts.currency || 'MKD';
-      PDF_LOCALE = opts.locale || 'mk';
+      PDF_LANG = normalizeLang(opts.lang || opts.locale || 'mk');
+      PDF_LOCALE = opts.lang || opts.locale || 'mk';
       PDF_COMPANY = opts.company && opts.company.name ? opts.company : DEFAULT_COMPANY;
 
       const doc = new PDFDocument({ margin: MARGIN_PT, size: 'A4', bufferPages: true }) as Doc;

@@ -45,7 +45,7 @@ function statusTr(s: string, t: (key: string) => string): string {
 const base = import.meta.env.VITE_API_BASE ?? '/api';
 
 export default function Orders() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const toast = useToast();
   const [search, setSearch] = useState('');
   const [from, setFrom] = useState('');
@@ -69,7 +69,7 @@ export default function Orders() {
   const summary = response && 'summary' in response ? response.summary : { totalSpendMkd: 0, totalCount: 0 };
 
   async function getPdfBlob(orderId: string): Promise<Blob> {
-    const url = `${base}/orders/${orderId}/pdf`;
+    const url = `${base}/orders/${orderId}/pdf?lang=${encodeURIComponent(i18n.language)}`;
     const r = await fetch(url, { credentials: 'include' });
     if (!r.ok) {
       const body = await r.text();
@@ -122,7 +122,7 @@ export default function Orders() {
       return;
     }
     let revoked = false;
-    const url = `${base}/orders/${viewingOrder.id}/pdf`;
+    const url = `${base}/orders/${viewingOrder.id}/pdf?lang=${encodeURIComponent(i18n.language)}`;
     fetch(url, { credentials: 'include' })
       .then((r) => (r.ok ? r.blob() : Promise.reject(new Error('PDF failed'))))
       .then((blob) => {

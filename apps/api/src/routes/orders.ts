@@ -165,9 +165,14 @@ router.get('/:id/pdf', async (req: Request, res: Response): Promise<void> => {
     const org = order.organizationId
       ? await prisma.organization.findUnique({ where: { id: order.organizationId } })
       : null;
+    // Export language comes from the UI (?lang=), so the PDF matches the language
+    // the user is currently viewing the app in. Falls back to the org locale.
+    const langParam = String(req.query.lang || '').split('-')[0];
+    const lang = ['en', 'mk', 'sq', 'tr'].includes(langParam) ? langParam : undefined;
     const pdfBuffer = await generateOrderPdf(order, {
       currency: org?.currency,
       locale: org?.locale,
+      lang,
       company: org
         ? {
             name: org.invoiceName || org.name,
