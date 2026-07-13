@@ -53,12 +53,12 @@ export default function Account() {
           <h2 className="text-sm font-semibold text-app-primary">{t('account.profile')}</h2>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-sm text-app-secondary">{t('account.email')}</span>
+          <div className="flex items-center gap-4">
+            <span className="w-28 shrink-0 text-sm text-app-secondary">{t('account.email')}</span>
             <span className="text-app-primary font-medium truncate">{user?.email}</span>
           </div>
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-sm text-app-secondary">{t('account.role')}</span>
+          <div className="flex items-center gap-4">
+            <span className="w-28 shrink-0 text-sm text-app-secondary">{t('account.role')}</span>
             <Badge variant={user?.role === 'ADMIN' ? 'success' : 'default'}>{roleLabel(user?.role)}</Badge>
           </div>
         </CardContent>
