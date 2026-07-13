@@ -16,6 +16,7 @@ import {
 import { api } from '../lib/api';
 import { Card, CardContent } from '../components/ui';
 import { formatMKD } from '../lib/formatMKD';
+import { productName } from '../lib/catalog';
 
 interface Overview {
   totalSuppliers: number;
@@ -202,7 +203,7 @@ export default function Analytics() {
               ) : (
                 top.byLossValue.map((it, i) => (
                   <li key={i} className="flex justify-between items-center gap-2">
-                    <span className="text-app-primary truncate">{it.name}</span>
+                    <span className="text-app-primary truncate">{productName(it.name)}</span>
                     <span className="text-app-danger font-medium shrink-0">{formatMKD(it.totalLossValue)}</span>
                   </li>
                 ))
@@ -219,7 +220,7 @@ export default function Analytics() {
               ) : (
                 top.byMissingQty.map((it, i) => (
                   <li key={i} className="flex justify-between items-center gap-2">
-                    <span className="text-app-primary truncate">{it.name}</span>
+                    <span className="text-app-primary truncate">{productName(it.name)}</span>
                     <span className="text-app-accent font-medium shrink-0">
                       {it.totalMissingQty} {itemUnit(it)}
                     </span>

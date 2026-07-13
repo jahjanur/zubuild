@@ -22,6 +22,7 @@ import {
   TableActionButton,
 } from '../components/ui';
 import { formatMKD } from '../lib/formatMKD';
+import { productName, categoryName } from '../lib/catalog';
 import { unitLabel } from '../lib/units';
 
 interface Product {
@@ -201,7 +202,7 @@ export default function Products() {
         >
           <option value="">{t('products.allCategories')}</option>
           {categories.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c} value={c}>{categoryName(c)}</option>
           ))}
         </Select>
       </div>
@@ -216,7 +217,7 @@ export default function Products() {
                 className="cursor-pointer select-none flex flex-row items-center justify-between gap-2"
                 onClick={() => toggleCategory(category)}
               >
-                <h2 className="text-sm font-semibold text-app-accent">{category}</h2>
+                <h2 className="text-sm font-semibold text-app-accent">{categoryName(category)}</h2>
                 <span className="text-app-secondary"><IconChevron open={isOpen} /></span>
               </CardHeader>
               {isOpen && (
@@ -226,7 +227,7 @@ export default function Products() {
                     {items.map((p) => (
                       <div key={p.id} className="flex items-center justify-between gap-2 p-4">
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium text-app-primary truncate">{p.name}</p>
+                          <p className="font-medium text-app-primary truncate">{productName(p.name)}</p>
                           <p className="text-app-secondary text-sm">{unitLabel(p.measurementUnit)} · {formatMKD(Number(p.price))}</p>
                           <Badge variant={p.status === 'ACTIVE' ? 'success' : 'default'} className="mt-1">
                             {p.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}
@@ -258,7 +259,7 @@ export default function Products() {
                       <TableBody>
                         {items.map((p) => (
                           <TableRow key={p.id}>
-                            <TableCell className="text-app-primary font-medium">{p.name}</TableCell>
+                            <TableCell className="text-app-primary font-medium">{productName(p.name)}</TableCell>
                             <TableCell>{unitLabel(p.measurementUnit)}</TableCell>
                             <TableCell className="text-right text-app-accent">{formatMKD(Number(p.price))}</TableCell>
                             <TableCell>

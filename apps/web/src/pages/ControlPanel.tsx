@@ -17,6 +17,7 @@ import {
   TableCell,
 } from '../components/ui';
 import { formatMKD, formatDate, formatDateTime } from '../lib/formatMKD';
+import { productName } from '../lib/catalog';
 
 interface ControlSummary {
   incidentCount: number;
@@ -212,7 +213,7 @@ export default function ControlPanel() {
             ) : (
               movements.map((m) => (
                 <div key={m.id} className="p-4">
-                  <p className="font-medium text-app-primary">{m.product.name}</p>
+                  <p className="font-medium text-app-primary">{productName(m.product.name)}</p>
                   <p className={`text-sm font-medium ${m.deltaQty >= 0 ? 'text-app-success' : 'text-app-danger'}`}>
                     {m.deltaQty >= 0 ? '+' : ''}{m.deltaQty}
                   </p>
@@ -242,7 +243,7 @@ export default function ControlPanel() {
                 ) : (
                   movements.map((m) => (
                     <TableRow key={m.id}>
-                      <TableCell className="text-app-primary font-medium">{m.product.name}</TableCell>
+                      <TableCell className="text-app-primary font-medium">{productName(m.product.name)}</TableCell>
                       <TableCell
                         className={`text-right font-medium ${m.deltaQty >= 0 ? 'text-app-success' : 'text-app-danger'}`}
                       >
@@ -290,7 +291,7 @@ export default function ControlPanel() {
                 <TableBody>
                   {(details.items ?? []).map((it, i) => (
                     <TableRow key={i}>
-                      <TableCell className="text-app-primary">{it.name}</TableCell>
+                      <TableCell className="text-app-primary">{productName(it.name)}</TableCell>
                       <TableCell className="text-right">{it.orderedQty}</TableCell>
                       <TableCell className="text-right">{it.receivedQty}</TableCell>
                       <TableCell className="text-right">{it.missingQty}</TableCell>
