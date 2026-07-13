@@ -21,6 +21,7 @@ import analyticsRoutes from './routes/analytics';
 import inventoryRoutes from './routes/inventory';
 import debugRoutes from './routes/debug';
 import { sanitizeBody } from './middleware/sanitize';
+import { assertPdfFontsAvailable } from './lib/pdf';
 
 // Session store: file-based (no native deps; persists across restarts)
 const FileStore = require('session-file-store')(session);
@@ -96,6 +97,15 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   logError('Unhandled error', err);
   res.status(500).json({ success: false, error: 'Internal server error' });
 });
+
+// Fail fast if the bundled PDF fonts are missing — better a loud crash at boot
+// than silent 500s on every order PDF once a request hits Cyrillic labels.
+try {
+  assertPdfFontsAvailable();
+} catch (err) {
+  logError('PDF font check failed at startup', err);
+  process.exit(1);
+}
 
 const server = app.listen(config.port, () => {
   console.log(`API listening on port ${config.port} (${config.nodeEnv})`);
