@@ -2,52 +2,81 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import {
+  LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
+  ShieldAlert, BarChart3, Users, Settings, LogOut, Menu, X, Globe, ChevronDown,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { api } from '../lib/api';
-import { LanguageSwitcher } from '../components/ui';
-import logo from '../assets/zubuild-logo.svg';
 import { useOrg } from '../lib/useOrg';
+import { useAuth } from '../lib/useAuth';
 
-const navKeys = [
-  'dashboard',
-  'orders',
-  'suppliers',
-  'products',
-  'createOrder',
-  'reconciliation',
-  'controlPanel',
-  'analytics',
-  'team',
-  'account',
+type NavItem = { key: string; path: string; icon: LucideIcon };
+const NAV: { section: string; items: NavItem[] }[] = [
+  {
+    section: 'sectionMain',
+    items: [
+      { key: 'dashboard', path: 'dashboard', icon: LayoutDashboard },
+      { key: 'orders', path: 'orders', icon: ShoppingCart },
+      { key: 'createOrder', path: 'create-order', icon: FilePlus },
+      { key: 'reconciliation', path: 'reconciliation', icon: ClipboardCheck },
+    ],
+  },
+  {
+    section: 'sectionManagement',
+    items: [
+      { key: 'suppliers', path: 'suppliers', icon: Truck },
+      { key: 'products', path: 'products', icon: Package },
+      { key: 'controlPanel', path: 'control-panel', icon: ShieldAlert },
+      { key: 'analytics', path: 'analytics', icon: BarChart3 },
+    ],
+  },
+  {
+    section: 'sectionSettings',
+    items: [
+      { key: 'team', path: 'team', icon: Users },
+      { key: 'account', path: 'account', icon: Settings },
+    ],
+  },
+];
+
+const LANGS = [
+  { code: 'en', label: 'English' },
+  { code: 'mk', label: 'Македонски' },
+  { code: 'sq', label: 'Shqip' },
 ] as const;
-const navToPath: Record<(typeof navKeys)[number], string> = {
-  dashboard: 'dashboard',
-  orders: 'orders',
-  suppliers: 'suppliers',
-  products: 'products',
-  createOrder: 'create-order',
-  reconciliation: 'reconciliation',
-  controlPanel: 'control-panel',
-  analytics: 'analytics',
-  team: 'team',
-  account: 'account',
-};
 
-function IconClose() {
+function BrandMark({ logoUrl, name }: { logoUrl?: string | null; name?: string }) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
+    <div className="flex items-center gap-2.5 min-w-0">
+      {logoUrl ? (
+        <img src={logoUrl} alt={name || 'Zubuild'} className="h-8 w-8 rounded-lg object-contain bg-white/5" />
+      ) : (
+        <span className="h-8 w-8 rounded-lg bg-app-accent flex items-center justify-center text-white font-bold text-sm shrink-0">Z</span>
+      )}
+      <span className="text-white font-semibold text-[15px] tracking-tight truncate">{name || 'Zubuild'}</span>
+    </div>
   );
 }
 
-function IconMenu() {
+function LanguageDropdown() {
+  const { i18n } = useTranslation();
+  const current = (i18n.resolvedLanguage ?? i18n.language ?? 'en').split('-')[0];
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <line x1="3" y1="12" x2="21" y2="12" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="18" x2="21" y2="18" />
-    </svg>
+    <div className="relative">
+      <Globe size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sidebar-text pointer-events-none" />
+      <ChevronDown size={15} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sidebar-text pointer-events-none" />
+      <select
+        aria-label="Language"
+        value={current}
+        onChange={(e) => i18n.changeLanguage(e.target.value)}
+        className="w-full appearance-none bg-sidebar-hover text-white text-sm rounded-lg pl-8 pr-8 py-2 min-h-[40px] border border-sidebar-border hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[var(--accent-ring)] cursor-pointer"
+      >
+        {LANGS.map((l) => (
+          <option key={l.code} value={l.code} className="bg-sidebar-bg text-white">{l.label}</option>
+        ))}
+      </select>
+    </div>
   );
 }
 
@@ -56,6 +85,7 @@ export default function AppLayout() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const org = useOrg();
+  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   async function handleLogout() {
@@ -64,123 +94,100 @@ export default function AppLayout() {
     navigate('/login', { replace: true });
   }
 
-  const sidebarLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-2 px-4 py-3 rounded-full text-base font-medium transition min-h-[48px] ${
-      isActive
-        ? 'bg-app-accent text-white shadow-button'
-        : 'text-app-secondary hover:text-app-primary hover:bg-slate-900/[0.04]'
-    }`;
-
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = '';
-      };
+      return () => { document.body.style.overflow = ''; };
     }
   }, [menuOpen]);
 
+  const roleLabel = user?.role === 'ADMIN' ? t('team.roleAdmin') : user?.role === 'MANAGER' ? t('team.roleManager') : t('team.roleViewer');
+  const initials = (user?.email ?? '?').replace(/@.*/, '').slice(0, 2).toUpperCase();
+
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
+    `group flex items-center gap-3 pl-3.5 pr-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 border-l-2 ${
+      isActive
+        ? 'bg-sidebar-active-bg text-white border-app-accent'
+        : 'text-sidebar-text border-transparent hover:bg-sidebar-hover hover:text-white'
+    }`;
+
+  const NavList = ({ onNavigate, prefix = '' }: { onNavigate?: () => void; prefix?: string }) => (
+    <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6" aria-label="Main navigation">
+      {NAV.map((grp) => (
+        <div key={grp.section}>
+          <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-sidebar-section">{t(`nav.${grp.section}`)}</p>
+          <div className="space-y-0.5">
+            {grp.items.map(({ key, path, icon: Icon }) => (
+              <NavLink key={key} to={`${prefix}${path}`} className={linkClass} onClick={onNavigate}>
+                <Icon size={18} strokeWidth={2} className="shrink-0" />
+                <span className="truncate">{t(`nav.${key}`)}</span>
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      ))}
+    </nav>
+  );
+
+  const Footer = () => (
+    <div className="p-3 border-t border-sidebar-border space-y-3">
+      <div className="flex items-center gap-3 px-1">
+        <span className="h-9 w-9 rounded-full bg-app-accent/90 flex items-center justify-center text-white text-xs font-semibold shrink-0">{initials}</span>
+        <div className="min-w-0">
+          <p className="text-white text-sm font-medium truncate">{user?.email}</p>
+          <p className="text-sidebar-text text-xs">{roleLabel}</p>
+        </div>
+      </div>
+      <LanguageDropdown />
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium min-h-[40px] text-sidebar-text hover:bg-sidebar-hover hover:text-white transition-colors"
+      >
+        <LogOut size={16} /> {t('nav.logout')}
+      </button>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-app-bg flex">
-      {/* Sidebar: desktop only (lg+). Fixed so it does NOT take layout width on any breakpoint. */}
-      <aside className="glass hidden lg:flex lg:flex-col lg:w-56 lg:fixed lg:inset-y-0 left-0 border-r border-[var(--border)] rounded-none z-20">
-        <div className="p-4 border-b border-[var(--border)] flex flex-col items-center">
-          <img src={org?.logoUrl || logo} alt={org?.name || "Zubuild"} width={120} height={120} className="h-28 w-auto object-contain" decoding="async" />
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 left-0 bg-sidebar-bg z-20">
+        <div className="h-16 flex items-center px-5 border-b border-sidebar-border">
+          <BrandMark logoUrl={org?.logoUrl} name={org?.name} />
         </div>
-        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto" aria-label="Main navigation">
-          {navKeys.map((key) => (
-            <NavLink key={key} to={navToPath[key]} className={sidebarLinkClass}>
-              {t(`nav.${key}`)}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="p-3 border-t border-[var(--border)] space-y-3">
-          <LanguageSwitcher className="justify-center" />
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full text-base font-medium min-h-[48px] bg-transparent border border-[var(--border)] text-app-primary hover:bg-slate-900/[0.04]"
-          >
-            {t('nav.logout')}
-          </button>
-        </div>
+        <NavList />
+        <Footer />
       </aside>
 
-      {/* Content wrapper: full width on mobile (no sidebar width), offset on desktop only */}
-      <div className="flex-1 flex flex-col w-full min-w-0 overflow-x-hidden lg:pl-56">
-        {/* Mobile: top bar — logo left, hamburger right */}
-        <header className="glass rounded-none lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 py-2 border-b border-[var(--border)] safe-area-pt">
-          <img src={org?.logoUrl || logo} alt={org?.name || "Zubuild"} width={36} height={36} className="h-9 w-auto object-contain" decoding="async" />
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            className="flex h-12 w-12 items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary"
-            aria-label={t('nav.more')}
-          >
-            <IconMenu />
+      {/* Content */}
+      <div className="flex-1 flex flex-col w-full min-w-0 overflow-x-hidden lg:pl-64">
+        {/* Mobile top bar */}
+        <header className="lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 h-14 bg-sidebar-bg safe-area-pt">
+          <BrandMark logoUrl={org?.logoUrl} name={org?.name} />
+          <button type="button" onClick={() => setMenuOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('nav.more')}>
+            <Menu size={22} />
           </button>
         </header>
 
-        {/* Main content — full width on mobile (no bottom nav) */}
-        <main className="flex-1 w-full page-container py-4 md:py-6">
+        <main className="flex-1 w-full page-container py-5 md:py-7">
           <Outlet />
         </main>
       </div>
 
-      {/* Mobile: hamburger drawer (slide-over from right) */}
+      {/* Mobile drawer */}
       {menuOpen && (
         <>
-          <div
-            className="lg:hidden fixed inset-0 z-40 bg-app-overlay backdrop-blur-sm"
-            onClick={() => setMenuOpen(false)}
-            aria-hidden
-          />
-          <div
-            className="glass rounded-none lg:hidden fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm border-l border-[var(--border)] shadow-modal flex flex-col safe-area-pt"
-            style={{ background: 'var(--glass-bg-strong)' }}
-            role="dialog"
-            aria-label={t('nav.more')}
-          >
-            <div className="flex items-center justify-between p-4 border-b border-[var(--border)] shrink-0">
-              <span className="text-lg font-semibold text-app-primary">{t('nav.operations')}</span>
-              <button
-                type="button"
-                onClick={() => setMenuOpen(false)}
-                className="flex h-12 w-12 items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary"
-                aria-label={t('common.close')}
-              >
-                <IconClose />
+          <div className="lg:hidden fixed inset-0 z-40 bg-app-overlay" onClick={() => setMenuOpen(false)} aria-hidden />
+          <div className="lg:hidden fixed top-0 right-0 bottom-0 z-50 w-full max-w-xs bg-sidebar-bg flex flex-col safe-area-pt" role="dialog" aria-label={t('nav.more')}>
+            <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border">
+              <BrandMark logoUrl={org?.logoUrl} name={org?.name} />
+              <button type="button" onClick={() => setMenuOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('common.close')}>
+                <X size={22} />
               </button>
             </div>
-            <nav className="overflow-y-auto p-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-0.5" aria-label="Main navigation">
-              {navKeys.map((key) => (
-                <NavLink
-                  key={key}
-                  to={`/app/${navToPath[key]}`}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2 px-4 py-3 rounded-full text-base font-medium transition min-h-[48px] ${
-                      isActive
-                        ? 'bg-app-accent text-white shadow-button'
-                        : 'text-app-secondary hover:bg-slate-900/[0.04]'
-                    }`
-                  }
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {t(`nav.${key}`)}
-                </NavLink>
-              ))}
-              <LanguageSwitcher className="justify-center pt-3 mt-2 border-t border-[var(--border)]" />
-              <button
-                type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  handleLogout();
-                }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full text-base font-medium min-h-[48px] bg-transparent border border-app-danger/30 text-app-danger hover:bg-app-danger-muted mt-2"
-              >
-                {t('nav.logout')}
-              </button>
-            </nav>
+            <NavList onNavigate={() => setMenuOpen(false)} prefix="/app/" />
+            <Footer />
           </div>
         </>
       )}

@@ -1,16 +1,8 @@
 import { ReactNode } from 'react';
 
-export function Card({
-  children,
-  className = '',
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div
-      className={`glass rounded-2xl transition hover:shadow-modal ${className}`}
-    >
+    <div className={`bg-app-surface-1 rounded-card border border-[var(--border)] shadow-card transition-shadow duration-150 ${className}`}>
       {children}
     </div>
   );
@@ -38,12 +30,6 @@ export function CardHeader({
   );
 }
 
-export function CardContent({
-  children,
-  className = '',
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function CardContent({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <div className={`p-5 md:p-6 ${className}`}>{children}</div>;
 }

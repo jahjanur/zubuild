@@ -16,7 +16,10 @@
     "operations": "Operasyonlar",
     "more": "Diğer",
     "team": "Ekip",
-    "account": "Hesap"
+    "account": "Hesap",
+    "sectionMain": "Ana",
+    "sectionManagement": "Yönetim",
+    "sectionSettings": "Ayarlar"
   },
   "common": {
     "loading": "Yükleniyor…",

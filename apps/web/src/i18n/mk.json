@@ -16,7 +16,10 @@
     "operations": "Операции",
     "more": "Повеќе",
     "team": "Тим",
-    "account": "Сметка"
+    "account": "Сметка",
+    "sectionMain": "Главно",
+    "sectionManagement": "Управување",
+    "sectionSettings": "Поставки"
   },
   "common": {
     "loading": "Се вчитува…",

@@ -16,7 +16,10 @@
     "operations": "Operations",
     "more": "More",
     "team": "Team",
-    "account": "Account"
+    "account": "Account",
+    "sectionMain": "Main",
+    "sectionManagement": "Management",
+    "sectionSettings": "Settings"
   },
   "common": {
     "loading": "Loading…",

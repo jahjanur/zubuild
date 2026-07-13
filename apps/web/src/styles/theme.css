@@ -1,42 +1,62 @@
 /**
- * Design system — "Grey Glass": monochrome glassmorphism.
- * Frosted translucent white surfaces over a soft grey gradient; black is the only accent.
- * Use via Tailwind: bg-app-bg, text-app-primary, border-[var(--border)], .glass, etc.
+ * Design system — "Clarity": clean, premium SaaS.
+ * Near-white canvas, white cards, hairline borders, one subtle shadow, a single
+ * indigo brand accent, and a dark sidebar. Token NAMES are reused across the app
+ * (bg-app-*, .glass, var(--*)), so restyling happens here.
  */
 :root {
-  /* Background: soft grey gradient so glass blur has something to refract */
-  --app-bg: #EBEDF1;
-  --app-bg-gradient: linear-gradient(135deg, #EBEDF1 0%, #D4D8DF 100%);
-  --surface-1: #D4D8DF;         /* solid fallback when no backdrop-filter */
-  --surface-2: #EBEDF1;
+  /* Canvas + surfaces */
+  --app-bg: #F7F8FA;
+  --app-bg-gradient: #F7F8FA; /* flat now (kept for API compatibility) */
+  --surface-1: #FFFFFF;
+  --surface-2: #FFFFFF;
+  --surface-subtle: #F3F4F6; /* tinted rows / wells */
 
-  /* Glass */
-  --glass-bg: rgba(255,255,255,0.55);
-  --glass-bg-strong: rgba(255,255,255,0.72);
-  --glass-border: rgba(255,255,255,0.60);
-  --glass-blur: blur(20px) saturate(140%);
+  /* "glass" is now a plain white card (see index.css) */
+  --glass-bg: #FFFFFF;
+  --glass-bg-strong: #FFFFFF;
+  --glass-border: #E5E7EB;
+  --glass-blur: none;
 
   /* Borders / focus */
-  --border: rgba(172,173,177,0.40);   /* Grey Timber Wolf @40% */
-  --border-focus: rgba(8,8,8,0.55);
+  --border: #E5E7EB;
+  --border-strong: #D1D5DB;
+  --border-focus: #4F46E5;
 
-  /* Text */
-  --text-primary: #080808;
-  --text-secondary: #565659;   /* AA on glass (~6.8:1) */
-  --text-muted: #6E6E72;       /* AA floor on glass (~4.8:1), lighter than secondary */
+  /* Text (gray scale) */
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
 
-  /* Accent = black */
-  --accent: #080808;
-  --accent-hover: #353536;
+  /* Brand accent — indigo */
+  --accent: #4F46E5;
+  --accent-hover: #4338CA;
   --accent-contrast: #FFFFFF;
+  --accent-muted: rgba(79, 70, 229, 0.08);
+  --accent-ring: rgba(79, 70, 229, 0.35);
 
-  /* Semantic (kept subtle) */
-  --danger: #B42318; --danger-muted: rgba(180,35,24,0.10);
-  --success: #067647; --success-muted: rgba(6,118,71,0.10);
-  --warning: #B54708; --warning-muted: rgba(181,71,8,0.10);
+  /* Semantic */
+  --danger: #DC2626;
+  --danger-muted: rgba(220, 38, 38, 0.10);
+  --success: #059669;
+  --success-muted: rgba(5, 150, 105, 0.10);
+  --warning: #D97706;
+  --warning-muted: rgba(217, 119, 6, 0.10);
 
-  --overlay: rgba(53,53,54,0.35);
-  --shadow-card: 0 8px 32px rgba(8,8,8,0.08);
-  --shadow-modal: 0 24px 60px -12px rgba(8,8,8,0.28);
-  --shadow-button: 0 1px 2px rgba(8,8,8,0.10);
+  /* Dark sidebar */
+  --sidebar-bg: #0F1117;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-text: #9CA3AF;
+  --sidebar-text-active: #FFFFFF;
+  --sidebar-hover: rgba(255, 255, 255, 0.06);
+  --sidebar-active-bg: rgba(79, 70, 229, 0.16);
+  --sidebar-section: #6B7280;
+
+  --overlay: rgba(17, 24, 39, 0.45);
+
+  /* Shadows — one subtle card shadow, a deeper modal shadow */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-modal: 0 20px 40px -12px rgba(0, 0, 0, 0.20);
+  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.05);
 }

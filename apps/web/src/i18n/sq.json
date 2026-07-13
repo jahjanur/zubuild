@@ -16,7 +16,10 @@
     "operations": "Operacionet",
     "more": "Më shumë",
     "team": "Ekipi",
-    "account": "Llogaria"
+    "account": "Llogaria",
+    "sectionMain": "Kryesore",
+    "sectionManagement": "Menaxhimi",
+    "sectionSettings": "Cilësimet"
   },
   "common": {
     "loading": "Po ngarkohet…",

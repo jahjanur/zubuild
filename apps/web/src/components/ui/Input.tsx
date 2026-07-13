@@ -1,7 +1,7 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
 
 const inputBase =
-  'w-full rounded-xl border bg-white/60 px-4 py-3 text-app-primary placeholder-app-muted transition border-[var(--border)] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none min-h-[44px]';
+  'w-full rounded-lg border bg-app-surface-1 px-3.5 py-2.5 text-app-primary placeholder-app-muted transition-colors duration-150 border-[var(--border)] hover:border-app-border-strong focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--accent-ring)] focus:outline-none min-h-[40px]';
 
 export const Input = forwardRef<
   HTMLInputElement,
@@ -9,15 +9,9 @@ export const Input = forwardRef<
 >(function Input({ className = '', error, ...props }, ref) {
   return (
     <div className="w-full">
-      <input
-        ref={ref}
-        className={`${inputBase} ${error ? 'border-app-danger/50' : ''} ${className}`}
-        {...props}
-      />
+      <input ref={ref} className={`${inputBase} ${error ? 'border-app-danger/60' : ''} ${className}`} {...props} />
       {error && (
-        <p className="mt-1.5 text-sm text-app-danger" role="alert">
-          {error}
-        </p>
+        <p className="mt-1.5 text-sm text-app-danger" role="alert">{error}</p>
       )}
     </div>
   );
