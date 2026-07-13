@@ -126,7 +126,17 @@
     "submitOrder": "Submit Order",
     "addFromRecentOrSearch": "Add from recent products or search to create an order.",
     "selectSupplierFirst": "Select a supplier first",
-    "viewerNoCreate": "You must sign in with an admin account to create orders. You only have view access on this page."
+    "viewerNoCreate": "You must sign in with an admin account to create orders. You only have view access on this page.",
+    "browseProducts": "Products",
+    "filterProducts": "Filter products…",
+    "noActiveProducts": "No products available.",
+    "addToOrder": "Add {{name}} to order",
+    "tapProductToAdd": "Tap a product to add it to the order.",
+    "allCategory": "All",
+    "decreaseQty": "Decrease quantity",
+    "increaseQty": "Increase quantity",
+    "clearAll": "Clear all",
+    "itemsLabel": "items"
   },
   "reconciliation": {
     "title": "Delivery Reconciliation",

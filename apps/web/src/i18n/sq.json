@@ -126,7 +126,17 @@
     "submitOrder": "Dërgo porosinë",
     "addFromRecentOrSearch": "Shtoni nga produktet e fundit ose kërkoni për të krijuar një porosi.",
     "selectSupplierFirst": "Zgjidhni së pari një furnitor",
-    "viewerNoCreate": "Për të krijuar porosi, duhet të identifikoheni me një llogari administratori. Në këtë faqe keni vetëm qasje për shikim."
+    "viewerNoCreate": "Për të krijuar porosi, duhet të identifikoheni me një llogari administratori. Në këtë faqe keni vetëm qasje për shikim.",
+    "browseProducts": "Produktet",
+    "filterProducts": "Filtro produktet…",
+    "noActiveProducts": "Nuk ka produkte të disponueshme.",
+    "addToOrder": "Shto {{name}} në porosi",
+    "tapProductToAdd": "Prekni një produkt për ta shtuar në porosi.",
+    "allCategory": "Të gjitha",
+    "decreaseQty": "Zvogëlo sasinë",
+    "increaseQty": "Rrit sasinë",
+    "clearAll": "Pastro të gjitha",
+    "itemsLabel": "artikuj"
   },
   "reconciliation": {
     "title": "Rakordimi i dorëzimit",

@@ -126,7 +126,17 @@
     "submitOrder": "Siparişi Gönder",
     "addFromRecentOrSearch": "Sipariş oluşturmak için son ürünlerden veya aramadan ekleyin.",
     "selectSupplierFirst": "Önce tedarikçi seçin",
-    "viewerNoCreate": "Sipariş oluşturmak için yönetici hesabıyla giriş yapmanız gerekir. Bu sayfada yalnızca görüntüleme yetkiniz var."
+    "viewerNoCreate": "Sipariş oluşturmak için yönetici hesabıyla giriş yapmanız gerekir. Bu sayfada yalnızca görüntüleme yetkiniz var.",
+    "browseProducts": "Ürünler",
+    "filterProducts": "Ürünleri filtrele…",
+    "noActiveProducts": "Kullanılabilir ürün yok.",
+    "addToOrder": "{{name}} ürününü siparişe ekle",
+    "tapProductToAdd": "Siparişe eklemek için bir ürüne dokunun.",
+    "allCategory": "Tümü",
+    "decreaseQty": "Miktarı azalt",
+    "increaseQty": "Miktarı artır",
+    "clearAll": "Tümünü temizle",
+    "itemsLabel": "kalem"
   },
   "reconciliation": {
     "title": "Teslimat Mutabakatı",
