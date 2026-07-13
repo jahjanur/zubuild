@@ -52,8 +52,6 @@ interface Order {
   orderItems: Array<{ id: string; name: string; unit: string; price: number | string; quantity: number }>;
 }
 
-const DEBOUNCE_MS = 300;
-
 function IconTrash() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -65,16 +63,22 @@ function IconTrash() {
   );
 }
 
+function IconPlus() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+
 export default function CreateOrder() {
   const [supplierId, setSupplierId] = useState('');
   const [orderDate, setOrderDate] = useState(new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState('');
   const [rows, setRows] = useState<OrderItemRow[]>([]);
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
-  const [searchInput, setSearchInput] = useState('');
-  const [debouncedQ, setDebouncedQ] = useState('');
-  const [searchOpen, setSearchOpen] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const [filter, setFilter] = useState('');
 
   const [supplierSearch, setSupplierSearch] = useState('');
   const [supplierDropdownOpen, setSupplierDropdownOpen] = useState(false);
@@ -87,25 +91,31 @@ export default function CreateOrder() {
   const { isAdmin } = useAuth();
   const toast = useToast();
 
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedQ(searchInput.trim()), DEBOUNCE_MS);
-    return () => clearTimeout(t);
-  }, [searchInput]);
-
   const { data: suppliersData } = useQuery({ queryKey: ['suppliers'], queryFn: () => api.get<Supplier[]>('/suppliers') });
-  const { data: recentData } = useQuery({
-    queryKey: ['products', 'recent'],
-    queryFn: () => api.get<Product[]>('/products/recent?limit=5&mode=created'),
-  });
-  const { data: searchData, isLoading: searchLoading } = useQuery({
-    queryKey: ['products', 'search', debouncedQ],
-    queryFn: () => api.get<Product[]>(`/products/search?q=${encodeURIComponent(debouncedQ)}&limit=20`),
-    enabled: debouncedQ.length >= 2,
+  const { data: productsData, isLoading: productsLoading } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => api.get<Product[]>('/products'),
   });
 
   const suppliers = (suppliersData?.data ?? []).filter((s) => s.status === 'ACTIVE');
-  const recentProducts = recentData?.data ?? [];
-  const searchResults = searchData?.data ?? [];
+  const activeProducts = (productsData?.data ?? []).filter((p) => p.status === 'ACTIVE');
+
+  // Browse-first: show all ACTIVE products; the filter box narrows client-side (instant, no round-trip)
+  const filterQuery = filter.trim().toLowerCase();
+  const filteredProducts = filterQuery
+    ? activeProducts.filter(
+        (p) =>
+          p.name.toLowerCase().includes(filterQuery) ||
+          (p.category ?? '').toLowerCase().includes(filterQuery)
+      )
+    : activeProducts;
+
+  // Quantity already in the order, per product — powers the tap-to-add count badge
+  const qtyInOrder = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of rows) if (r.productId) m.set(r.productId, (m.get(r.productId) ?? 0) + r.quantity);
+    return m;
+  }, [rows]);
 
   const supplierQuery = supplierSearch.trim().toLowerCase();
   const filteredSuppliers = supplierQuery
@@ -146,8 +156,6 @@ export default function CreateOrder() {
       }
       return [...prev, { productId: p.id, name: p.name, unit, price: Number(p.price), quantity: 1 }];
     });
-    setSearchInput('');
-    setSearchOpen(false);
   }
 
   function updateRow(index: number, field: 'quantity', value: number) {
@@ -364,66 +372,80 @@ export default function CreateOrder() {
               </div>
 
               <Card>
-                <CardHeader>
-                  <h3 className="text-sm font-semibold text-app-primary">{t('createOrder.addProducts')}</h3>
+                <CardHeader className="flex flex-row items-center justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-app-primary">{t('createOrder.browseProducts')}</h3>
+                  {rows.length > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-app-accent/15 text-app-accent text-xs font-semibold">
+                      {rows.length}
+                    </span>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {recentProducts.length > 0 && (
-                    <div className="sticky top-0 z-10 bg-app-surface-1 -mx-1 px-1 pt-1 pb-2">
-                      <p className="text-xs font-medium text-app-muted mb-2">{t('createOrder.recentProducts')}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {recentProducts.map((p) => (
-                          <Button
+                  {/* Optional filter — browsing works with zero typing */}
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder={t('createOrder.filterProducts')}
+                      value={filter}
+                      onChange={(e) => setFilter(e.target.value)}
+                      className="min-h-[48px] pr-10"
+                    />
+                    {filter && (
+                      <button
+                        type="button"
+                        onClick={() => setFilter('')}
+                        aria-label={t('common.close')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-lg text-app-muted hover:text-app-primary hover:bg-black/5"
+                      >
+                        <span className="text-xl leading-none">×</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Browse-first grid: tap any active product to add it to the order */}
+                  {productsLoading ? (
+                    <p className="text-app-muted text-sm py-6 text-center">{t('common.loading')}</p>
+                  ) : activeProducts.length === 0 ? (
+                    <p className="text-app-muted text-sm py-6 text-center">{t('createOrder.noActiveProducts')}</p>
+                  ) : filteredProducts.length === 0 ? (
+                    <p className="text-app-muted text-sm py-6 text-center">{t('createOrder.noResults')}</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2.5 md:max-h-[520px] md:overflow-y-auto md:pr-1">
+                      {filteredProducts.map((p) => {
+                        const added = qtyInOrder.get(p.id) ?? 0;
+                        return (
+                          <button
                             key={p.id}
                             type="button"
-                            variant="secondary"
-                            size="sm"
                             onClick={() => addProduct(p)}
-                            className="!min-h-[44px] !py-2.5 !px-4 text-sm"
+                            aria-label={t('createOrder.addToOrder', { name: p.name })}
+                            className="glass group relative flex items-center gap-3 rounded-xl border border-[var(--border)] p-3 text-left min-h-[64px] transition hover:-translate-y-0.5 hover:shadow-modal active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-app-gold/50"
+                            style={{ background: 'var(--glass-bg)' }}
                           >
-                            {p.name}
-                          </Button>
-                        ))}
-                      </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-app-primary truncate">{p.name}</p>
+                              <p className="text-app-secondary text-sm truncate">
+                                {p.measurementUnit} · <span className="text-app-accent">{formatMKD(Number(p.price))}</span>
+                              </p>
+                            </div>
+                            {added > 0 ? (
+                              <span className="shrink-0 inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full bg-app-accent/15 text-app-accent text-sm font-semibold">
+                                ×{added}
+                              </span>
+                            ) : (
+                              <span className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-app-accent/10 text-app-accent group-hover:bg-app-accent/20 transition" aria-hidden>
+                                <IconPlus />
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
 
-                  <div className="relative" ref={searchRef}>
-                    <label className="block text-xs font-medium text-app-muted mb-1.5">{t('createOrder.searchByNameOrCategory')}</label>
-                    <Input
-                      type="text"
-                      placeholder={t('common.search')}
-                      value={searchInput}
-                      onChange={(e) => { setSearchInput(e.target.value); setSearchOpen(true); }}
-                      onFocus={() => debouncedQ.length >= 2 && setSearchOpen(true)}
-                      onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
-                      className="min-h-[48px]"
-                    />
-                    {searchOpen && debouncedQ.length >= 2 && (
-                      <div className="glass absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-56 overflow-auto" style={{ background: 'var(--glass-bg-strong)' }}>
-                        {searchLoading ? (
-                          <div className="p-3 text-app-muted text-sm">{t('common.searching')}</div>
-                        ) : searchResults.length === 0 ? (
-                          <div className="p-3 text-app-muted text-sm">{t('createOrder.noResults')}</div>
-                        ) : (
-                          <ul className="py-1">
-                            {searchResults.map((p) => (
-                              <li key={p.id}>
-                                <button
-                                  type="button"
-                                  className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-slate-900/[0.06] flex justify-between items-center gap-2"
-                                  onClick={() => addProduct(p)}
-                                >
-                                  <span className="truncate">{p.name}</span>
-                                  <span className="text-app-accent shrink-0">{formatMKD(Number(p.price))}</span>
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  {rows.length > 0 && (
+                    <p className="text-xs font-medium text-app-muted pt-2 border-t border-[var(--border)]">{t('createOrder.orderTable')}</p>
+                  )}
 
                   {/* Mobile: item cards */}
                   <div className="md:hidden space-y-3">
@@ -532,7 +554,7 @@ export default function CreateOrder() {
               )}
               {/* Mobile: hint when no items yet */}
               {rows.length === 0 && (
-                <p className="md:hidden text-app-muted text-sm text-center py-2">{t('createOrder.addFromRecentOrSearch')}</p>
+                <p className="md:hidden text-app-muted text-sm text-center py-2">{t('createOrder.tapProductToAdd')}</p>
               )}
               {/* Desktop: sidebar summary */}
               <Card className="lg:sticky lg:top-6 hidden md:block">
@@ -541,7 +563,7 @@ export default function CreateOrder() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {rows.length === 0 ? (
-                    <p className="text-app-secondary text-sm">{t('createOrder.addFromRecentOrSearch')}</p>
+                    <p className="text-app-secondary text-sm">{t('createOrder.tapProductToAdd')}</p>
                   ) : (
                     <>
                       <ul className="space-y-2 text-sm text-app-secondary">
@@ -563,8 +585,8 @@ export default function CreateOrder() {
                       >
                         {createOrder.isPending ? t('common.loading') : t('createOrder.submitOrder')}
                       </Button>
-                      {rows.length === 0 || !supplierId ? (
-                        <p className="text-xs text-app-muted text-center">{t('createOrder.addFromRecentOrSearch')}</p>
+                      {!supplierId ? (
+                        <p className="text-xs text-app-muted text-center">{t('createOrder.selectSupplierFirst')}</p>
                       ) : null}
                     </>
                   )}
