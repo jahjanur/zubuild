@@ -10,6 +10,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Tenant. First step of multi-tenancy: the model exists standalone; existing
+// models are wired to it in later tasks.
+model Organization {
+  id             String   @id @default(uuid())
+  name           String
+  slug           String   @unique // URL-safe tenant key, e.g. "aem-residence"
+  logoUrl        String?
+  invoiceName    String? // legal name shown on invoices/PDFs (may differ from name)
+  invoiceAddress String?
+  invoiceRegNo   String? // company registration number (e.g. "Mat. Br. ...")
+  currency       String   @default("MKD") // ISO 4217, e.g. MKD, EUR
+  locale         String   @default("mk") // en | mk | sq
+  plan           String   @default("FREE") // FREE | PRO | ENTERPRISE (extensible)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -32,80 +49,83 @@ model Supplier {
 }
 
 model Product {
-  id               String   @id @default(uuid())
-  name             String
-  category         String
-  measurementUnit  String   // kg, ton, litre, adet, m, m², m³, torba, paket, kutu, rulo
-  price            Float
-  status           String   @default("ACTIVE") // ACTIVE | INACTIVE
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                 String              @id @default(uuid())
+  name               String
+  category           String
+  measurementUnit    String // kg, ton, litre, adet, m, m², m³, torba, paket, kutu, rulo
+  price              Float
+  status             String              @default("ACTIVE") // ACTIVE | INACTIVE
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
   inventoryMovements InventoryMovement[]
 }
 
 model InventoryMovement {
-  id                String    @id @default(uuid())
-  productId         String
-  type              String    // ORDER_CREATE | ORDER_CANCEL | RECONCILE_ADJUST | MANUAL_ADJUST | STOCK_IN
-  deltaQty          Int       // negative = usage, positive = restock
-  reason            String?
-  orderId           String?
-  reconciliationId  String?
-  createdAt         DateTime  @default(now())
-  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id               String   @id @default(uuid())
+  productId        String
+  type             String // ORDER_CREATE | ORDER_CANCEL | RECONCILE_ADJUST | MANUAL_ADJUST | STOCK_IN
+  deltaQty         Int // negative = usage, positive = restock
+  reason           String?
+  orderId          String?
+  reconciliationId String?
+  createdAt        DateTime @default(now())
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([createdAt])
 }
 
 model Order {
-  id             String    @id @default(uuid())
-  orderNumber    String    @unique // ORD-{shortId}
+  id             String          @id @default(uuid())
+  orderNumber    String          @unique // ORD-{shortId}
   orderDate      DateTime
   supplierId     String
-  supplierName   String    // snapshot at order time
+  supplierName   String // snapshot at order time
   totalAmount    Float
-  status         String    @default("PENDING") // PENDING | DELIVERED | RECONCILED
+  status         String          @default("PENDING") // PENDING | DELIVERED | RECONCILED
   notes          String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  supplier       Supplier  @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  supplier       Supplier        @relation(fields: [supplierId], references: [id], onDelete: Restrict)
   orderItems     OrderItem[]
   reconciliation Reconciliation?
 }
 
 model OrderItem {
-  id                  String    @id @default(uuid())
+  id                  String               @id @default(uuid())
   orderId             String
-  productId           String?   // nullable if product deleted
-  name                String    // snapshot
-  unit                String    // snapshot
-  price               Float     // snapshot
+  productId           String? // nullable if product deleted
+  name                String // snapshot
+  unit                String // snapshot
+  price               Float // snapshot
   quantity            Int
-  order               Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order               Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
   reconciliationItems ReconciliationItem[]
 }
 
 model Reconciliation {
-  id                String    @id @default(uuid())
-  orderId           String    @unique
-  reconciliationDate DateTime @default(now())
-  notes             String?
-  totalLossValue    Float
-  createdAt         DateTime  @default(now())
-  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  items             ReconciliationItem[]
+  id                 String               @id @default(uuid())
+  orderId            String               @unique
+  reconciliationDate DateTime             @default(now())
+  notes              String?
+  totalLossValue     Float
+  createdAt          DateTime             @default(now())
+  order              Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  items              ReconciliationItem[]
 }
 
 model ReconciliationItem {
-  id               String   @id @default(uuid())
+  id               String         @id @default(uuid())
   reconciliationId String
   orderItemId      String
-  orderItem        OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
-  name             String   // snapshot
-  unit             String   // snapshot
-  price            Float    // snapshot
+  orderItem        OrderItem      @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  name             String // snapshot
+  unit             String // snapshot
+  price            Float // snapshot
   orderedQty       Int
   receivedQty      Int
-  missingQty       Int      // max(orderedQty - receivedQty, 0)
+  missingQty       Int // max(orderedQty - receivedQty, 0)
   lossValue        Float
-  status           String   // COMPLETE | MISSING | EXCESS
+  status           String // COMPLETE | MISSING | EXCESS
   reconciliation   Reconciliation @relation(fields: [reconciliationId], references: [id], onDelete: Cascade)
 }
