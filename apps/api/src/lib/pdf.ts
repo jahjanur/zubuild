@@ -9,11 +9,29 @@ import SVGtoPDF from 'svg-to-pdfkit';
 import * as fs from 'fs';
 import * as path from 'path';
 
-function getDejaVuPath(filename: string): string | null {
-  try {
-    return require.resolve(`dejavu-fonts-ttf/ttf/${filename}`);
-  } catch {
-    return path.join(process.cwd(), 'node_modules/dejavu-fonts-ttf/ttf', filename);
+// DejaVu Sans is a full-Unicode font (Cyrillic + Latin-Extended for Albanian ë/ç
+// and Turkish ş/ı/ğ). It is BUNDLED in the repo so it is always present at
+// runtime — no dependency on npm hoisting, the process cwd, or a network fetch.
+// __dirname is apps/api/src/lib in dev (tsx) and apps/api/dist/lib in prod;
+// both resolve up to apps/api/assets/fonts.
+const FONT_DIR = path.resolve(__dirname, '../../assets/fonts');
+const DEJAVU_REGULAR_PATH = path.join(FONT_DIR, 'DejaVuSans.ttf');
+const DEJAVU_BOLD_PATH = path.join(FONT_DIR, 'DejaVuSans-Bold.ttf');
+
+/**
+ * Verify the bundled Unicode fonts exist. Call once at server startup so a
+ * missing font fails LOUDLY here — rather than silently falling back to
+ * Helvetica (Latin-only) and then throwing on the first Cyrillic label,
+ * turning every PDF request into a 500.
+ */
+export function assertPdfFontsAvailable(): void {
+  const missing = [DEJAVU_REGULAR_PATH, DEJAVU_BOLD_PATH].filter((p) => !fs.existsSync(p));
+  if (missing.length > 0) {
+    throw new Error(
+      `PDF fonts missing: ${missing.join(', ')}. ` +
+        `Cyrillic/Albanian/Turkish text cannot be rendered without them. ` +
+        `Restore the bundled DejaVu fonts with: npm run fonts (in apps/api).`
+    );
   }
 }
 
@@ -71,20 +89,10 @@ function formatMKD(n: number): string {
 
 type Doc = InstanceType<typeof PDFDocument>;
 
-const STD_FONT = 'Helvetica';
-const STD_FONT_BOLD = 'Helvetica-Bold';
-const FONT_DEJAVU = 'DejaVu';
-const FONT_DEJAVU_BOLD = 'DejaVuBold';
-let PDF_FONT = STD_FONT;
-let PDF_FONT_BOLD = STD_FONT_BOLD;
-
-/** Transliterate Turkish chars to ASCII for Helvetica (no custom font needed). */
-function toAscii(s: string): string {
-  const map: Record<string, string> = {
-    ş: 's', Ş: 'S', ı: 'i', İ: 'I', ğ: 'g', Ğ: 'G', ü: 'u', Ü: 'U', ö: 'o', Ö: 'O', ç: 'c', Ç: 'C',
-  };
-  return s.replace(/[şŞıİğĞüÜöÖçÇ]/g, (c) => map[c] ?? c);
-}
+// Every text draw uses DejaVu (full Unicode). We NEVER fall back to Helvetica —
+// its WinAnsi encoding can't represent Cyrillic and would throw at draw time.
+const PDF_FONT = 'DejaVu';
+const PDF_FONT_BOLD = 'DejaVuBold';
 
 /** Invoice-style header: logo + company name left; company details (address, etc.) right. */
 function drawHeader(doc: Doc): void {
@@ -173,7 +181,7 @@ const UNIT_TO_MACEDONIAN: Record<string, string> = {
 function unitToMacedonian(unit: string | null | undefined): string {
   if (!unit || !unit.trim()) return '';
   const key = unit.trim().toLowerCase();
-  return UNIT_TO_MACEDONIAN[key] ?? toAscii(unit);
+  return UNIT_TO_MACEDONIAN[key] ?? unit;
 }
 
 function orderStatusTr(s: string | null | undefined): string {
@@ -197,7 +205,7 @@ function drawMeta(doc: Doc, order: OrderWithItems): number {
   const dateStr = orderDateObj.toISOString().split('T')[0].replace(/-/g, '.');
   doc.text(`${PDF_LABELS.orderNo}: ${String(order.orderNumber ?? '')}`, leftX, boxTop + 26);
   doc.text(`${PDF_LABELS.date}: ${dateStr}`, leftX, boxTop + 26 + lineH);
-  doc.text(toAscii(`${PDF_LABELS.supplier}: ${String(order.supplierName ?? '')}`), rightX, boxTop + 26);
+  doc.text(`${PDF_LABELS.supplier}: ${String(order.supplierName ?? '')}`, rightX, boxTop + 26);
   doc.text(`${PDF_LABELS.status}: ${orderStatusTr(order.status)}`, rightX, boxTop + 26 + lineH);
   return boxTop + boxHeight + 10;
 }
@@ -258,7 +266,7 @@ function drawItemsTable(
     const fill = i % 2 === 1 ? colors.rowAlt : '#fff';
     doc.rect(x, rowY, TABLE_WIDTH, ROW_HEIGHT).fill(fill).stroke(colors.border);
     doc.fillColor(colors.text);
-    doc.text(toAscii(String(item.name ?? '')), x + 8, rowY + 5, { width: COL.name - 10 });
+    doc.text(String(item.name ?? ''), x + 8, rowY + 5, { width: COL.name - 10 });
     doc.text(unitToMacedonian(item.unit), x + COL.name, rowY + 5, { width: COL.unit, align: 'right' });
     doc.text(formatMKD(price), x + COL.name + COL.unit, rowY + 5, { width: COL.price, align: 'right' });
     doc.text(String(qty), x + COL.name + COL.unit + COL.price, rowY + 5, { width: COL.qty, align: 'right' });
@@ -294,7 +302,7 @@ function drawNotes(doc: Doc, notes: string | null, startY: number): number {
   const cardHeight = 36;
   doc.rect(MARGIN_PT, startY, CONTENT_WIDTH, cardHeight).fill(colors.rowAlt).stroke(colors.border);
   doc.fillColor(colors.textMuted).fontSize(8).font(PDF_FONT_BOLD).text(PDF_LABELS.notes, MARGIN_PT + padding, startY + 6);
-  doc.fillColor(colors.text).font(PDF_FONT).fontSize(9).text(toAscii(notes), MARGIN_PT + padding, startY + 16, { width: CONTENT_WIDTH - 2 * padding });
+  doc.fillColor(colors.text).font(PDF_FONT).fontSize(9).text(notes, MARGIN_PT + padding, startY + 16, { width: CONTENT_WIDTH - 2 * padding });
   return startY + cardHeight + 10;
 }
 
@@ -315,25 +323,20 @@ function drawFooter(doc: Doc, pageNum: number, totalPages: number): void {
 export function generateOrderPdf(order: OrderWithItems): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
+      // Guard: never draw non-Latin text with a Latin-only font. If the bundled
+      // Unicode fonts are absent, fail here instead of emitting a broken/500 PDF.
+      assertPdfFontsAvailable();
+
       const doc = new PDFDocument({ margin: MARGIN_PT, size: 'A4', bufferPages: true }) as Doc;
       const chunks: Buffer[] = [];
       doc.on('data', (chunk) => chunks.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(chunks)));
       doc.on('error', reject);
 
-      PDF_FONT = STD_FONT;
-      PDF_FONT_BOLD = STD_FONT_BOLD;
-      const dejaVuPath = getDejaVuPath('DejaVuSans.ttf');
-      const dejaVuBoldPath = getDejaVuPath('DejaVuSans-Bold.ttf');
-      if (dejaVuPath && fs.existsSync(dejaVuPath)) {
-        doc.registerFont(FONT_DEJAVU, dejaVuPath);
-        PDF_FONT = FONT_DEJAVU;
-        doc.font(FONT_DEJAVU);
-      }
-      if (dejaVuBoldPath && fs.existsSync(dejaVuBoldPath)) {
-        doc.registerFont(FONT_DEJAVU_BOLD, dejaVuBoldPath);
-        PDF_FONT_BOLD = FONT_DEJAVU_BOLD;
-      }
+      // Register the bundled DejaVu faces and use them for every text draw.
+      doc.registerFont(PDF_FONT, DEJAVU_REGULAR_PATH);
+      doc.registerFont(PDF_FONT_BOLD, DEJAVU_BOLD_PATH);
+      doc.font(PDF_FONT);
 
       drawHeader(doc);
       let y = drawMeta(doc, order);
