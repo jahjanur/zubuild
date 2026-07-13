@@ -131,7 +131,8 @@
     "filterProducts": "Ürünleri filtrele…",
     "noActiveProducts": "Kullanılabilir ürün yok.",
     "addToOrder": "{{name}} ürününü siparişe ekle",
-    "tapProductToAdd": "Siparişe eklemek için bir ürüne dokunun."
+    "tapProductToAdd": "Siparişe eklemek için bir ürüne dokunun.",
+    "allCategory": "Tümü"
   },
   "reconciliation": {
     "title": "Teslimat Mutabakatı",

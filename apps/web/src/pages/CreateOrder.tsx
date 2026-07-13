@@ -79,6 +79,7 @@ export default function CreateOrder() {
   const [rows, setRows] = useState<OrderItemRow[]>([]);
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [filter, setFilter] = useState('');
+  const [category, setCategory] = useState('');
 
   const [supplierSearch, setSupplierSearch] = useState('');
   const [supplierDropdownOpen, setSupplierDropdownOpen] = useState(false);
@@ -100,15 +101,22 @@ export default function CreateOrder() {
   const suppliers = (suppliersData?.data ?? []).filter((s) => s.status === 'ACTIVE');
   const activeProducts = (productsData?.data ?? []).filter((p) => p.status === 'ACTIVE');
 
-  // Browse-first: show all ACTIVE products; the filter box narrows client-side (instant, no round-trip)
+  // Distinct categories for the filter chips (data values — shown as-is, not translated)
+  const categories = useMemo(
+    () => Array.from(new Set(activeProducts.map((p) => p.category).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
+    [activeProducts]
+  );
+
+  // Browse-first: show all ACTIVE products; category chip + filter box narrow client-side (instant, no round-trip)
   const filterQuery = filter.trim().toLowerCase();
-  const filteredProducts = filterQuery
-    ? activeProducts.filter(
-        (p) =>
-          p.name.toLowerCase().includes(filterQuery) ||
-          (p.category ?? '').toLowerCase().includes(filterQuery)
-      )
-    : activeProducts;
+  const filteredProducts = activeProducts.filter((p) => {
+    if (category && p.category !== category) return false;
+    if (!filterQuery) return true;
+    return (
+      p.name.toLowerCase().includes(filterQuery) ||
+      (p.category ?? '').toLowerCase().includes(filterQuery)
+    );
+  });
 
   // Quantity already in the order, per product — powers the tap-to-add count badge
   const qtyInOrder = useMemo(() => {
@@ -401,6 +409,39 @@ export default function CreateOrder() {
                       </button>
                     )}
                   </div>
+
+                  {/* Category filter chips — glass pills; active = black pill; one tap filters instantly */}
+                  {categories.length > 1 && (
+                    <div className="flex flex-wrap gap-2" role="group" aria-label={t('products.category')}>
+                      <button
+                        type="button"
+                        onClick={() => setCategory('')}
+                        aria-pressed={category === ''}
+                        className={`px-3.5 py-2 rounded-full text-sm font-medium transition min-h-[36px] ${
+                          category === ''
+                            ? 'bg-app-accent text-white shadow-button'
+                            : 'glass text-app-secondary hover:bg-slate-900/[0.04]'
+                        }`}
+                      >
+                        {t('createOrder.allCategory')}
+                      </button>
+                      {categories.map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => setCategory(c)}
+                          aria-pressed={category === c}
+                          className={`px-3.5 py-2 rounded-full text-sm font-medium transition min-h-[36px] ${
+                            category === c
+                              ? 'bg-app-accent text-white shadow-button'
+                              : 'glass text-app-secondary hover:bg-slate-900/[0.04]'
+                          }`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Browse-first grid: tap any active product to add it to the order */}
                   {productsLoading ? (

@@ -131,7 +131,8 @@
     "filterProducts": "Filtro produktet…",
     "noActiveProducts": "Nuk ka produkte të disponueshme.",
     "addToOrder": "Shto {{name}} në porosi",
-    "tapProductToAdd": "Prekni një produkt për ta shtuar në porosi."
+    "tapProductToAdd": "Prekni një produkt për ta shtuar në porosi.",
+    "allCategory": "Të gjitha"
   },
   "reconciliation": {
     "title": "Rakordimi i dorëzimit",

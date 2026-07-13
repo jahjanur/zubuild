@@ -131,7 +131,8 @@
     "filterProducts": "Филтрирај производи…",
     "noActiveProducts": "Нема достапни производи.",
     "addToOrder": "Додади {{name}} во нарачката",
-    "tapProductToAdd": "Допрете производ за да го додадете во нарачката."
+    "tapProductToAdd": "Допрете производ за да го додадете во нарачката.",
+    "allCategory": "Сите"
   },
   "reconciliation": {
     "title": "Порамнување на испораката",
