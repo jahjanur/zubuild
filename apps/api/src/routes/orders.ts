@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { customAlphabet } from 'nanoid';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
+import { requireAuth, requireManager, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { createOrderSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
@@ -88,7 +88,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
 });
 
 /** POST /orders - create order with items (merged), snapshots stored. No stock deduction (anti-theft: ordered vs received only). */
-router.post('/', requireAdmin, validateBody(createOrderSchema), async (req: Request, res: Response): Promise<void> => {
+router.post('/', requireManager, validateBody(createOrderSchema), async (req: Request, res: Response): Promise<void> => {
   try {
     const { supplierId, orderDate, items: rawItems, notes } = req.body;
     const supplier = await prisma.supplier.findFirst({
@@ -178,7 +178,7 @@ router.get('/:id/pdf', async (req: Request, res: Response): Promise<void> => {
 });
 
 /** PUT /orders/:id/status */
-router.put('/:id/status', requireAdmin, async (req: Request, res: Response): Promise<void> => {
+router.put('/:id/status', requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { status } = req.body;
     if (!['PENDING', 'DELIVERED', 'RECONCILED'].includes(status)) {

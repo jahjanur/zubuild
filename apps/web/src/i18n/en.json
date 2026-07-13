@@ -275,7 +275,8 @@
     "revoke": "Revoke",
     "expires": "Expires {{date}}",
     "members": "Members",
-    "you": "you"
+    "you": "you",
+    "roleManager": "Manager"
   },
   "acceptInvite": {
     "invitedAs": "You have been invited to join {{org}} as {{role}}.",

@@ -42,7 +42,7 @@ function statusTr(s: string, t: (k: string) => string): string {
 
 export default function Reconciliation() {
   const { t } = useTranslation();
-  const { isAdmin } = useAuth();
+  const { canWrite } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [received, setReceived] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState('');
@@ -115,7 +115,7 @@ export default function Reconciliation() {
                     {formatDate(o.orderDate)} · {statusTr(o.status, t)}
                   </span>
                 </div>
-                {isAdmin && (
+                {canWrite && (
                   <Button type="button" size="sm" onClick={() => openModal(o)} className="w-full sm:w-auto min-h-[48px]">
                     {t('reconciliation.completeReconciliation')}
                   </Button>

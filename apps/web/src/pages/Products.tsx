@@ -80,7 +80,7 @@ export default function Products() {
   });
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { isAdmin } = useAuth();
+  const { canWrite } = useAuth();
 
   const { data } = useQuery({
     queryKey: ['products'],
@@ -180,7 +180,7 @@ export default function Products() {
     <div className="page-container space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-xl md:text-2xl font-semibold text-app-primary">{t('products.title')}</h1>
-        {isAdmin && (
+        {canWrite && (
           <Button onClick={openCreate} className="w-full sm:w-auto min-h-[48px]">{t('products.addProduct')}</Button>
         )}
       </div>
@@ -231,7 +231,7 @@ export default function Products() {
                             {p.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}
                           </Badge>
                         </div>
-                        {isAdmin && (
+                        {canWrite && (
                           <div className="flex gap-1 shrink-0">
                             <TableActionButton onClick={() => openEdit(p)} aria-label={t('common.edit')}>
                               <span className="text-app-accent"><IconEdit /></span>
@@ -266,7 +266,7 @@ export default function Products() {
                               </Badge>
                             </TableCell>
                           <TableCell className="text-right">
-                            {isAdmin && (
+                            {canWrite && (
                               <div className="flex justify-end gap-1">
                                 <TableActionButton onClick={() => openEdit(p)} aria-label={t('common.edit')}>
                                   <span className="text-app-accent"><IconEdit /></span>
@@ -288,7 +288,7 @@ export default function Products() {
           );
         })}
 
-      {isAdmin && (
+      {canWrite && (
       <Modal
         open={modalOpen}
         onClose={() => {
@@ -383,7 +383,7 @@ export default function Products() {
       </Modal>
       )}
 
-      {isAdmin && (
+      {canWrite && (
       <Modal
         open={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
+import { requireAuth, requireManager, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { createSupplierSchema, updateSupplierSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
@@ -20,7 +20,7 @@ router.get('/', async (_req: Request, res: Response): Promise<void> => {
 });
 
 /** POST /suppliers */
-router.post('/', requireAdmin, validateBody(createSupplierSchema), async (req: Request, res: Response): Promise<void> => {
+router.post('/', requireManager, validateBody(createSupplierSchema), async (req: Request, res: Response): Promise<void> => {
   try {
     const supplier = await prisma.supplier.create({ data: req.body });
     res.status(201).json({ success: true, data: supplier });
@@ -31,7 +31,7 @@ router.post('/', requireAdmin, validateBody(createSupplierSchema), async (req: R
 });
 
 /** PUT /suppliers/:id */
-router.put('/:id', requireAdmin, validateBody(updateSupplierSchema), async (req: Request, res: Response): Promise<void> => {
+router.put('/:id', requireManager, validateBody(updateSupplierSchema), async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const supplier = await prisma.supplier.update({ where: { id }, data: req.body });
@@ -47,7 +47,7 @@ router.put('/:id', requireAdmin, validateBody(updateSupplierSchema), async (req:
 });
 
 /** DELETE /suppliers/:id - cannot delete if supplier has orders (use deactivate instead) */
-router.delete('/:id', requireAdmin, async (req: Request, res: Response): Promise<void> => {
+router.delete('/:id', requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const orderCount = await prisma.order.count({ where: { supplierId: id } });

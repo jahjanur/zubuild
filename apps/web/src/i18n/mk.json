@@ -275,7 +275,8 @@
     "revoke": "Отповикај",
     "expires": "Истекува {{date}}",
     "members": "Членови",
-    "you": "вие"
+    "you": "вие",
+    "roleManager": "Менаџер"
   },
   "acceptInvite": {
     "invitedAs": "Поканети сте да се приклучите на {{org}} како {{role}}.",

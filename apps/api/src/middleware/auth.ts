@@ -46,16 +46,34 @@ export function tenantContext(req: Request, res: Response, next: NextFunction): 
 }
 
 /**
- * Require ADMIN role. Use after requireAuth. Responds 403 if not admin.
+ * Role matrix (enforced server-side — never trust the client's role for authz):
+ *   VIEWER  — read-only: may GET every resource, no writes.
+ *   MANAGER — VIEWER + operational writes: suppliers, products, orders,
+ *             reconciliations, inventory, and CSV export.
+ *   ADMIN   — MANAGER + org administration: team members & invitations.
+ * Higher rank includes everything below it.
  */
-export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
-  if (!req.user) {
-    res.status(401).json({ success: false, error: 'Authentication required' });
-    return;
-  }
-  if (req.user.role !== 'ADMIN') {
-    res.status(403).json({ success: false, error: 'Admin access required' });
-    return;
-  }
-  next();
+export const ROLES = ['VIEWER', 'MANAGER', 'ADMIN'] as const;
+export type Role = (typeof ROLES)[number];
+const ROLE_RANK: Record<string, number> = { VIEWER: 1, MANAGER: 2, ADMIN: 3 };
+
+/** Gate a route on a minimum role. Responds 401 if unauthenticated, 403 if under-ranked. */
+function requireMinRole(min: Role, label: string) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      res.status(401).json({ success: false, error: 'Authentication required' });
+      return;
+    }
+    if ((ROLE_RANK[req.user.role] ?? 0) < ROLE_RANK[min]) {
+      res.status(403).json({ success: false, error: `${label} access required` });
+      return;
+    }
+    next();
+  };
 }
+
+/** MANAGER or ADMIN — operational writes. Use after requireAuth. */
+export const requireManager = requireMinRole('MANAGER', 'Manager');
+
+/** ADMIN only — org administration. Use after requireAuth. */
+export const requireAdmin = requireMinRole('ADMIN', 'Admin');

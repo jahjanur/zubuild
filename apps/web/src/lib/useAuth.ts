@@ -25,5 +25,12 @@ export function useAuth() {
     if (user?.currency) setOrgCurrency(user.currency);
   }, [user?.currency]);
 
-  return { user, isAdmin: user?.role === 'ADMIN' };
+  const role = user?.role;
+  // UI gating mirrors the server matrix (server is the source of truth):
+  //   canWrite = MANAGER or ADMIN (operational writes); isAdmin = ADMIN (org admin).
+  return {
+    user,
+    isAdmin: role === 'ADMIN',
+    canWrite: role === 'ADMIN' || role === 'MANAGER',
+  };
 }

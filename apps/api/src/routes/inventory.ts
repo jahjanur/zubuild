@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
+import { requireAuth, requireManager, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { inventoryAdjustSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
@@ -8,7 +8,7 @@ const router = Router();
 router.use(requireAuth, tenantContext);
 
 /** POST /inventory/adjust - record manual adjustment (audit trail only; no stock-on-hand) */
-router.post('/adjust', requireAdmin, validateBody(inventoryAdjustSchema), async (req: Request, res: Response): Promise<void> => {
+router.post('/adjust', requireManager, validateBody(inventoryAdjustSchema), async (req: Request, res: Response): Promise<void> => {
   try {
     const { productId, deltaQty, reason } = req.body;
     const product = await prisma.product.findUnique({ where: { id: productId } });

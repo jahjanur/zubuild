@@ -139,7 +139,7 @@ export default function CreateOrder() {
 
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { isAdmin } = useAuth();
+  const { canWrite } = useAuth();
   const toast = useToast();
 
   const { data: suppliersData } = useQuery({ queryKey: ['suppliers'], queryFn: () => api.get<Supplier[]>('/suppliers') });
@@ -312,7 +312,7 @@ export default function CreateOrder() {
     };
   }, [createdOrder?.id]);
 
-  if (!isAdmin) {
+  if (!canWrite) {
     return (
       <div className="page-container space-y-4 md:space-y-6">
         <h1 className="text-xl md:text-2xl font-semibold text-app-primary">{t('createOrder.title')}</h1>

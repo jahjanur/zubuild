@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
+import { requireAuth, requireManager, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { createReconciliationSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
@@ -24,7 +24,7 @@ function computeItem(
 }
 
 /** POST /reconciliations - complete reconciliation for an order (once only) */
-router.post('/', requireAdmin, validateBody(createReconciliationSchema), async (req: Request, res: Response): Promise<void> => {
+router.post('/', requireManager, validateBody(createReconciliationSchema), async (req: Request, res: Response): Promise<void> => {
   try {
     const { orderId, reconciliationDate, notes, items: receivedItems } = req.body;
     const order = await prisma.order.findUnique({

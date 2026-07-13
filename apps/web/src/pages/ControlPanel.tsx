@@ -50,7 +50,7 @@ function statusTr(s: string, t: (k: string) => string): string {
 
 export default function ControlPanel() {
   const { t } = useTranslation();
-  const { isAdmin } = useAuth();
+  const { canWrite } = useAuth();
   const [detailsId, setDetailsId] = useState<string | null>(null);
 
   const { data: summaryData } = useQuery({
@@ -124,7 +124,7 @@ export default function ControlPanel() {
       <Card className="overflow-hidden">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-app-surface-2">
           <h2 className="font-semibold text-app-primary">{t('controlPanel.incidentsWithLoss')}</h2>
-          {isAdmin && (
+          {canWrite && (
             <Button type="button" size="sm" onClick={exportCsv} className="w-full sm:w-auto min-h-[48px]">
               {t('controlPanel.exportExcel')}
             </Button>

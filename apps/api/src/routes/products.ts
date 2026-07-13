@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
+import { requireAuth, requireManager, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { createProductSchema, updateProductSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
@@ -125,7 +125,7 @@ router.get('/search', async (req: Request, res: Response): Promise<void> => {
 });
 
 /** POST /products */
-router.post('/', requireAdmin, validateBody(createProductSchema), async (req: Request, res: Response): Promise<void> => {
+router.post('/', requireManager, validateBody(createProductSchema), async (req: Request, res: Response): Promise<void> => {
   try {
     const data = { ...req.body, category: normalizeCategory(req.body.category) };
     const product = await prisma.product.create({
@@ -139,7 +139,7 @@ router.post('/', requireAdmin, validateBody(createProductSchema), async (req: Re
 });
 
 /** PUT /products/:id */
-router.put('/:id', requireAdmin, validateBody(updateProductSchema), async (req: Request, res: Response): Promise<void> => {
+router.put('/:id', requireManager, validateBody(updateProductSchema), async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const body = req.body as { name?: string; category?: string; measurementUnit?: string; price?: number; status?: string };
@@ -158,7 +158,7 @@ router.put('/:id', requireAdmin, validateBody(updateProductSchema), async (req: 
 });
 
 /** DELETE /products/:id */
-router.delete('/:id', requireAdmin, async (req: Request, res: Response): Promise<void> => {
+router.delete('/:id', requireManager, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     await prisma.product.delete({ where: { id } });

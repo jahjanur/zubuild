@@ -63,7 +63,7 @@ const TOAST = {
 
 export default function Suppliers() {
   const { t } = useTranslation();
-  const { isAdmin } = useAuth();
+  const { canWrite } = useAuth();
   const toast = useToast();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Supplier | null>(null);
@@ -228,7 +228,7 @@ export default function Suppliers() {
     <div className="page-container space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-xl md:text-2xl font-semibold text-app-primary">{t('suppliers.title')}</h1>
-        {isAdmin && (
+        {canWrite && (
           <Button onClick={openCreate} className="w-full sm:w-auto min-h-[48px]">{t('suppliers.addSupplier')}</Button>
         )}
       </div>
@@ -283,7 +283,7 @@ export default function Suppliers() {
                       <IconPhone />
                     </span>
                   )}
-                  {isAdmin && (
+                  {canWrite && (
                     <>
                       <TableActionButton onClick={() => openEdit(s)} aria-label={t('common.edit')}>
                         <span className="text-app-accent"><IconEdit /></span>
@@ -300,7 +300,7 @@ export default function Suppliers() {
         ))}
       </div>
 
-      {isAdmin && (
+      {canWrite && (
       <Modal
         open={modalOpen}
         onClose={() => {
@@ -379,7 +379,7 @@ export default function Suppliers() {
       </Modal>
       )}
 
-      {isAdmin && (
+      {canWrite && (
       <Modal
         open={!!deleteConfirm}
         onClose={() => { setDeleteConfirm(null); setDeleteBlockedSupplier(null); }}

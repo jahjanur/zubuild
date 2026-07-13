@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireAdmin, tenantContext } from '../middleware/auth';
+import { requireAuth, requireManager, tenantContext } from '../middleware/auth';
 import { logError } from '../lib/logger';
 
 const router = Router();
@@ -49,7 +49,7 @@ router.get('/incidents', async (_req: Request, res: Response): Promise<void> => 
 });
 
 /** GET /control/export.csv - CSV download: date, order number, item name, unit, ordered, received, missing, lossValue, notes */
-router.get('/export.csv', requireAdmin, async (_req: Request, res: Response): Promise<void> => {
+router.get('/export.csv', requireManager, async (_req: Request, res: Response): Promise<void> => {
   try {
     const reconciliations = await prisma.reconciliation.findMany({
       where: { totalLossValue: { gt: 0 } },

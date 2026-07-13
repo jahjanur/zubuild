@@ -275,7 +275,8 @@
     "revoke": "İptal et",
     "expires": "Sona erme {{date}}",
     "members": "Üyeler",
-    "you": "siz"
+    "you": "siz",
+    "roleManager": "Müdür"
   },
   "acceptInvite": {
     "invitedAs": "{{org}} kuruluşuna {{role}} olarak katılmaya davet edildiniz.",

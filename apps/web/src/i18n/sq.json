@@ -275,7 +275,8 @@
     "revoke": "Revoko",
     "expires": "Skadon më {{date}}",
     "members": "Anëtarët",
-    "you": "ju"
+    "you": "ju",
+    "roleManager": "Menaxher"
   },
   "acceptInvite": {
     "invitedAs": "Jeni ftuar të bashkoheni me {{org}} si {{role}}.",

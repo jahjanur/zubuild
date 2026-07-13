@@ -54,7 +54,7 @@ export default function Team() {
     }
   }
 
-  const roleLabel = (r: string) => (r === 'ADMIN' ? t('team.roleAdmin') : t('team.roleViewer'));
+  const roleLabel = (r: string) => (r === 'ADMIN' ? t('team.roleAdmin') : r === 'MANAGER' ? t('team.roleManager') : t('team.roleViewer'));
 
   if (!isAdmin) {
     return (
@@ -88,6 +88,7 @@ export default function Team() {
               <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('team.role')}</label>
               <Select value={role} onChange={(e) => setRole(e.target.value)}>
                 <option value="VIEWER">{t('team.roleViewer')}</option>
+                <option value="MANAGER">{t('team.roleManager')}</option>
                 <option value="ADMIN">{t('team.roleAdmin')}</option>
               </Select>
             </div>
