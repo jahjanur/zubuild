@@ -98,21 +98,26 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ success: false, error: 'Internal server error' });
 });
 
-// Fail fast if the bundled PDF fonts are missing — better a loud crash at boot
-// than silent 500s on every order PDF once a request hits Cyrillic labels.
-try {
-  assertPdfFontsAvailable();
-} catch (err) {
-  logError('PDF font check failed at startup', err);
-  process.exit(1);
+// Start the server only when run directly (not when imported by tests via supertest).
+if (require.main === module) {
+  // Fail fast if the bundled PDF fonts are missing — better a loud crash at boot
+  // than silent 500s on every order PDF once a request hits Cyrillic labels.
+  try {
+    assertPdfFontsAvailable();
+  } catch (err) {
+    logError('PDF font check failed at startup', err);
+    process.exit(1);
+  }
+
+  const server = app.listen(config.port, () => {
+    console.log(`API listening on port ${config.port} (${config.nodeEnv})`);
+  });
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\nPort ${config.port} is already in use. Kill the process with:\n  npm run dev:kill\nor:\n  lsof -ti:${config.port} | xargs kill -9\n`);
+    }
+    throw err;
+  });
 }
 
-const server = app.listen(config.port, () => {
-  console.log(`API listening on port ${config.port} (${config.nodeEnv})`);
-});
-server.on('error', (err: NodeJS.ErrnoException) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`\nPort ${config.port} is already in use. Kill the process with:\n  npm run dev:kill\nor:\n  lsof -ti:${config.port} | xargs kill -9\n`);
-  }
-  throw err;
-});
+export { app };

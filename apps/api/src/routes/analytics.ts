@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth, tenantContext } from '../middleware/auth';
+import { currentOrgId } from '../lib/tenantContext';
 import { logError } from '../lib/logger';
 
 const router = Router();
@@ -80,8 +81,10 @@ router.get('/monthly-loss', async (req: Request, res: Response): Promise<void> =
 router.get('/top-items', async (req: Request, res: Response): Promise<void> => {
   try {
     const limit = Math.min(20, Math.max(1, parseInt(String(req.query.limit || 5), 10)));
+    // ReconciliationItem is not a tenant model, so the Prisma middleware can't
+    // scope it — filter through its parent reconciliation's org explicitly.
     const items = await prisma.reconciliationItem.findMany({
-      where: { lossValue: { gt: 0 } },
+      where: { lossValue: { gt: 0 }, reconciliation: { organizationId: currentOrgId() } },
       select: { name: true, unit: true, lossValue: true, missingQty: true },
     });
     const byName = new Map<

@@ -17,3 +17,22 @@ jobs:
       # No install needed — the script is dependency-free Node.
       - name: Check translation key parity
         run: node scripts/check-i18n-parity.mjs
+
+  api-tests:
+    name: API tests (incl. cross-tenant isolation)
+    runs-on: ubuntu-latest
+    env:
+      # Tests provision their own throwaway SQLite DB; this satisfies config/schema parsing.
+      DATABASE_URL: file:./ci.db
+      SESSION_SECRET: ci-test-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Generate Prisma client
+        run: npm run db:generate -w @aem/api
+      - name: Run API tests
+        run: npm test
