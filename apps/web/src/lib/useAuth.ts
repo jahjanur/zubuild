@@ -10,6 +10,7 @@ export interface AuthUser {
   organizationId?: string | null;
   currency?: string;
   locale?: string;
+  createdAt?: string | null;
 }
 
 export function useAuth() {

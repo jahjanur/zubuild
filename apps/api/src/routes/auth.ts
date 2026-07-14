@@ -360,8 +360,10 @@ router.post('/logout', (req: Request, res: Response): void => {
 /**
  * GET /auth/me - current user (requires auth)
  */
-router.get('/me', requireAuth, (req: Request, res: Response): void => {
-  res.json({ success: true, data: req.user });
+router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void> => {
+  // The session carries the hot fields; fetch createdAt (member-since) from the DB.
+  const row = req.user ? await prisma.user.findUnique({ where: { id: req.user.id }, select: { createdAt: true } }) : null;
+  res.json({ success: true, data: { ...req.user, createdAt: row?.createdAt ?? null } });
 });
 
 export default router;

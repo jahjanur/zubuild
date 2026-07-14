@@ -19,7 +19,8 @@
     "account": "Llogaria",
     "sectionMain": "Kryesore",
     "sectionManagement": "Menaxhimi",
-    "sectionSettings": "Cilësimet"
+    "sectionSettings": "Cilësimet",
+    "profile": "Profili"
   },
   "common": {
     "loading": "Po ngarkohet…",
@@ -355,5 +356,22 @@
     "paket": "paketë",
     "kutu": "kuti",
     "rulo": "rrotull"
+  },
+  "profile": {
+    "title": "Profili",
+    "subtitle": "Menaxhoni informacionin tuaj personal dhe sigurinë.",
+    "personalInfo": "Informacioni personal",
+    "fullName": "Emri i plotë",
+    "phone": "Telefoni",
+    "edit": "Ndrysho",
+    "save": "Ruaj ndryshimet",
+    "cancel": "Anulo",
+    "saved": "Profili u përditësua.",
+    "memberSince": "Anëtar që nga",
+    "preferences": "Preferencat",
+    "defaultLanguage": "Gjuha e parazgjedhur",
+    "notSet": "E pavendosur",
+    "showPassword": "Shfaq fjalëkalimin",
+    "hidePassword": "Fshih fjalëkalimin"
   }
 }

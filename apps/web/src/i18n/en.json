@@ -19,7 +19,8 @@
     "account": "Account",
     "sectionMain": "Main",
     "sectionManagement": "Management",
-    "sectionSettings": "Settings"
+    "sectionSettings": "Settings",
+    "profile": "Profile"
   },
   "common": {
     "loading": "Loading…",
@@ -355,5 +356,22 @@
     "paket": "pack",
     "kutu": "box",
     "rulo": "roll"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your personal information and security.",
+    "personalInfo": "Personal Information",
+    "fullName": "Full name",
+    "phone": "Phone",
+    "edit": "Edit",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "saved": "Profile updated.",
+    "memberSince": "Member since",
+    "preferences": "Preferences",
+    "defaultLanguage": "Default language",
+    "notSet": "Not set",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   }
 }

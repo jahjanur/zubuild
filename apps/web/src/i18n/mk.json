@@ -19,7 +19,8 @@
     "account": "Сметка",
     "sectionMain": "Главно",
     "sectionManagement": "Управување",
-    "sectionSettings": "Поставки"
+    "sectionSettings": "Поставки",
+    "profile": "Профил"
   },
   "common": {
     "loading": "Се вчитува…",
@@ -355,5 +356,22 @@
     "paket": "пакет",
     "kutu": "кутија",
     "rulo": "ролна"
+  },
+  "profile": {
+    "title": "Профил",
+    "subtitle": "Управувајте со вашите лични податоци и безбедност.",
+    "personalInfo": "Лични информации",
+    "fullName": "Име и презиме",
+    "phone": "Телефон",
+    "edit": "Уреди",
+    "save": "Зачувај промени",
+    "cancel": "Откажи",
+    "saved": "Профилот е ажуриран.",
+    "memberSince": "Член од",
+    "preferences": "Претпочитувања",
+    "defaultLanguage": "Стандарден јазик",
+    "notSet": "Не е поставено",
+    "showPassword": "Прикажи лозинка",
+    "hidePassword": "Сокриј лозинка"
   }
 }

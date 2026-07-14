@@ -6,12 +6,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import PageTransition, { RouteProgress } from '../components/PageTransition';
 import {
   LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
-  ShieldAlert, BarChart3, Users, Settings, LogOut, Menu, X, Globe, ChevronDown,
+  ShieldAlert, BarChart3, Users, UserCircle, LogOut, Menu, X, Globe, ChevronDown,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { api } from '../lib/api';
 import { useOrg } from '../lib/useOrg';
-import { useAuth } from '../lib/useAuth';
 
 type NavItem = { key: string; path: string; icon: LucideIcon };
 const NAV: { section: string; items: NavItem[] }[] = [
@@ -36,8 +35,8 @@ const NAV: { section: string; items: NavItem[] }[] = [
   {
     section: 'sectionSettings',
     items: [
+      { key: 'profile', path: 'profile', icon: UserCircle },
       { key: 'team', path: 'team', icon: Users },
-      { key: 'account', path: 'account', icon: Settings },
     ],
   },
 ];
@@ -153,7 +152,6 @@ export default function AppLayout() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const org = useOrg();
-  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const outlet = useOutlet();
@@ -176,9 +174,6 @@ export default function AppLayout() {
       return () => { document.body.style.overflow = ''; };
     }
   }, [menuOpen]);
-
-  const roleLabel = user?.role === 'ADMIN' ? t('team.roleAdmin') : user?.role === 'MANAGER' ? t('team.roleManager') : t('team.roleViewer');
-  const initials = (user?.email ?? '?').replace(/@.*/, '').slice(0, 2).toUpperCase();
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `group flex items-center gap-3 pl-3.5 pr-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 border-l-2 ${
@@ -206,14 +201,7 @@ export default function AppLayout() {
   );
 
   const Footer = () => (
-    <div className="p-3 border-t border-sidebar-border space-y-3">
-      <div className="flex items-center gap-3 px-1">
-        <span className="h-9 w-9 rounded-full bg-app-accent/90 flex items-center justify-center text-white text-xs font-semibold shrink-0">{initials}</span>
-        <div className="min-w-0">
-          <p className="text-white text-sm font-medium truncate">{user?.email}</p>
-          <p className="text-sidebar-text text-xs">{roleLabel}</p>
-        </div>
-      </div>
+    <div className="p-3 border-t border-sidebar-border space-y-2">
       <LanguageDropdown />
       <button
         type="button"

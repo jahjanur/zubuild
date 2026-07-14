@@ -19,7 +19,8 @@
     "account": "Hesap",
     "sectionMain": "Ana",
     "sectionManagement": "Yönetim",
-    "sectionSettings": "Ayarlar"
+    "sectionSettings": "Ayarlar",
+    "profile": "Profil"
   },
   "common": {
     "loading": "Yükleniyor…",
@@ -355,5 +356,22 @@
     "paket": "paket",
     "kutu": "kutu",
     "rulo": "rulo"
+  },
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Kişisel bilgilerinizi ve güvenliğinizi yönetin.",
+    "personalInfo": "Kişisel Bilgiler",
+    "fullName": "Ad Soyad",
+    "phone": "Telefon",
+    "edit": "Düzenle",
+    "save": "Değişiklikleri kaydet",
+    "cancel": "İptal",
+    "saved": "Profil güncellendi.",
+    "memberSince": "Üyelik tarihi",
+    "preferences": "Tercihler",
+    "defaultLanguage": "Varsayılan dil",
+    "notSet": "Ayarlanmadı",
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle"
   }
 }
