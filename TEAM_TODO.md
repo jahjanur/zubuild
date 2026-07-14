@@ -443,3 +443,20 @@ The horizontal category chips get cramped and are hard to scan with many categor
 - Keep an **"All"** option, show a **count per category**, and a clear active state.
 - Make it feel polished (smooth active state, tidy spacing, keyboard accessible).
 **Done when:** categories are browsable as a searchable vertical list on desktop and a usable control on mobile, with per-category counts and a clear active state.
+
+---
+
+## Branding & theming (from review 2026-07-15) · P1
+
+## TODO 65 — Add "Powered by Zulbera" to the order PDF
+`P1 · S · apps/api/src/lib/pdf.ts` (the `drawFooter` function, ~line 400)
+Add a small, subtle **"Powered by Zulbera"** line to the footer of the generated PDF, on **every page**, alongside the existing Generated date + Page X/Y. It must appear on **every PDF the platform produces** (the order PDF today, and any future documents that reuse this footer). Keep it muted and small; make sure it doesn't overlap the page number or push content into the footer zone (`CONTENT_BOTTOM`/`FOOTER_HEIGHT`).
+**Done when:** every generated PDF shows "Powered by Zulbera" in the footer on every page, cleanly, without overlapping other footer content.
+
+## TODO 66 — Support light (white) and dark modes with a toggle
+`P1 · M · apps/web/src/styles/theme.css, apps/web/src/index.css, apps/web/src/layout/AppLayout.tsx (+ a small theme hook/provider)`
+The app currently ships a single dark "Cosmic" theme. Add a proper **light + dark mode**:
+- Define both palettes as CSS-variable sets — keep the dark tokens on `:root` and add a light override under `:root[data-theme="light"]` (or vice-versa). All components already use theme tokens (`bg-app-*`, `var(--*)`), so switching should mostly be a variable swap.
+- Add a **theme toggle** control (sidebar footer / header), **persist** the choice to `localStorage`, and respect the OS `prefers-color-scheme` on first load.
+- **Audit for hardcoded colors** that break in one mode (e.g. the stepper's `bg-white` in TODO 63, any `text-white`/`bg-white` in components) and move them to tokens.
+**Done when:** users can switch between a polished white/light mode and the dark mode; the choice persists across reloads; every screen (dashboard, orders, create order, modals, login, PDFs preview, etc.) looks correct in both.
