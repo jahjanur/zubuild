@@ -32,6 +32,18 @@ body {
   box-shadow: var(--shadow-card);
 }
 
+/* Shared modal styling — one look for every dialog in the app. */
+.modal-backdrop {
+  background: rgba(9, 9, 14, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.modal-panel {
+  background: var(--glass-bg-strong); /* opaque #FFFFFF — never see-through */
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
 /* Page container: responsive padding */
 .page-container {
   @apply max-w-6xl mx-auto w-full px-4 md:px-6 lg:px-8 xl:px-10;
