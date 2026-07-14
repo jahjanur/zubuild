@@ -34,6 +34,19 @@ body {
   @apply max-w-6xl mx-auto w-full px-4 md:px-6 lg:px-8 xl:px-10;
 }
 
+/* Honor prefers-reduced-motion globally: near-instant CSS animations/transitions
+   (framer-motion is handled separately via useReducedMotion / MotionConfig). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Consistent page header: title (+ optional subtitle) left, actions right */
 .page-header {
   @apply flex flex-wrap items-center justify-between gap-3 mb-5 md:mb-6;

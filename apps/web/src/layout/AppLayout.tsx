@@ -1,7 +1,9 @@
-import { useState, useEffect, useId } from 'react';
+import { useState, useEffect, useId, useLayoutEffect, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate, useLocation, useOutlet } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
+import PageTransition, { RouteProgress } from '../components/PageTransition';
 import {
   LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
   ShieldAlert, BarChart3, Users, Settings, LogOut, Menu, X, Globe, ChevronDown,
@@ -143,6 +145,14 @@ export default function AppLayout() {
   const org = useOrg();
   const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const outlet = useOutlet();
+
+  // Scroll the content area to the top on every route change, before the enter
+  // animation runs — so a new page never opens scrolled halfway down.
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   async function handleLogout() {
     await api.post('/auth/logout');
@@ -226,8 +236,15 @@ export default function AppLayout() {
           </button>
         </header>
 
-        <main className="flex-1 w-full page-container py-5 md:py-7">
-          <Outlet />
+        {/* Only the content area transitions; the sidebar/top bar stay static.
+            mode="wait" keeps a single page mounted at a time — no overlap, no
+            double scrollbar, and fast repeated nav resolves to the latest. */}
+        <main className="relative flex-1 w-full page-container py-5 md:py-7">
+          <AnimatePresence mode="wait" initial={false}>
+            <PageTransition key={location.pathname}>
+              <Suspense fallback={<RouteProgress />}>{outlet}</Suspense>
+            </PageTransition>
+          </AnimatePresence>
         </main>
       </div>
 

@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { motion, useReducedMotion, type HTMLMotionProps } from 'framer-motion';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
@@ -29,9 +30,14 @@ export function Button({
   size?: 'sm' | 'md';
   className?: string;
 }) {
+  const reduce = useReducedMotion();
   return (
-    <button className={`${base} ${sizes[size]} ${variants[variant]}${className ? ' ' + className : ''}`} {...props}>
+    <motion.button
+      whileTap={reduce ? undefined : { scale: 0.98 }}
+      className={`${base} ${sizes[size]} ${variants[variant]}${className ? ' ' + className : ''}`}
+      {...(props as unknown as HTMLMotionProps<'button'>)}
+    >
       {children}
-    </button>
+    </motion.button>
   );
 }

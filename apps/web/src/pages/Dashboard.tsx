@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
+import { EASE } from '../components/PageTransition';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
 } from 'recharts';
@@ -39,10 +41,21 @@ function avatar(name: string) {
 
 const chartTooltip = { background: '#fff', border: '1px solid #E5E7EB', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', padding: '6px 10px' };
 
+// KPI cards stagger in on the FIRST dashboard mount of the session only — this
+// module-level flag flips after that so navigating back doesn't re-stagger.
+let kpisHaveEntered = false;
+const kpiContainer: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } };
+const kpiItem: Variants = { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.18, ease: EASE } } };
+
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const reduce = useReducedMotion();
   const [detailId, setDetailId] = useState<string | null>(null);
+  // Only stagger the KPI cards on the very first mount (and never under reduced motion).
+  const [staggerKpis] = useState(() => !kpisHaveEntered);
+  useEffect(() => { kpisHaveEntered = true; }, []);
+  const animateKpis = staggerKpis && !reduce;
 
   const { data } = useQuery({ queryKey: ['analytics', 'overview'], queryFn: () => api.get<Overview>('/analytics/overview') });
   const { data: recentData, isLoading: recentLoading } = useQuery({
@@ -75,13 +88,24 @@ export default function Dashboard() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-        <StatCard label={t('dashboard.totalOrdersMkd')} value={formatMKD(Number(s.totalOrdersAmountMkd ?? 0))} icon={ShoppingCart} tone="accent" onClick={() => navigate('/app/orders')} />
-        <StatCard label={t('dashboard.totalLosses')} value={formatMKD(Number(s.totalLosses))} icon={TrendingDown} tone="danger" onClick={() => navigate('/app/control-panel')} />
-        <StatCard label={t('dashboard.pendingOrders')} value={s.pendingOrders} icon={Clock} tone="warning" onClick={() => navigate('/app/reconciliation')} />
-        <StatCard label={t('dashboard.suppliers')} value={s.totalSuppliers} icon={Truck} tone="neutral" onClick={() => navigate('/app/suppliers')} />
-        <StatCard label={t('dashboard.products')} value={s.totalProducts} icon={Package} tone="neutral" onClick={() => navigate('/app/products')} />
-      </div>
+      <motion.div
+        className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4"
+        variants={kpiContainer}
+        initial={animateKpis ? 'hidden' : false}
+        animate="show"
+      >
+        {[
+          { label: t('dashboard.totalOrdersMkd'), value: formatMKD(Number(s.totalOrdersAmountMkd ?? 0)), icon: ShoppingCart, tone: 'accent' as const, to: '/app/orders' },
+          { label: t('dashboard.totalLosses'), value: formatMKD(Number(s.totalLosses)), icon: TrendingDown, tone: 'danger' as const, to: '/app/control-panel' },
+          { label: t('dashboard.pendingOrders'), value: s.pendingOrders, icon: Clock, tone: 'warning' as const, to: '/app/reconciliation' },
+          { label: t('dashboard.suppliers'), value: s.totalSuppliers, icon: Truck, tone: 'neutral' as const, to: '/app/suppliers' },
+          { label: t('dashboard.products'), value: s.totalProducts, icon: Package, tone: 'neutral' as const, to: '/app/products' },
+        ].map((k) => (
+          <motion.div key={k.label} variants={kpiItem}>
+            <StatCard label={k.label} value={k.value} icon={k.icon} tone={k.tone} onClick={() => navigate(k.to)} />
+          </motion.div>
+        ))}
+      </motion.div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -192,7 +216,8 @@ export default function Dashboard() {
           { to: '/app/create-order', icon: FilePlus, title: t('dashboard.createOrder'), sub: t('dashboard.newProcurementOrder') },
           { to: '/app/reconciliation', icon: ClipboardCheck, title: t('dashboard.reconciliation'), sub: t('dashboard.matchDeliveredVsOrdered') },
         ].map((a) => (
-          <button key={a.to} type="button" onClick={() => navigate(a.to)}
+          <motion.button key={a.to} type="button" onClick={() => navigate(a.to)}
+            whileTap={reduce ? undefined : { scale: 0.98 }}
             className="group flex items-center gap-4 p-5 rounded-card bg-app-surface-1 border border-[var(--border)] shadow-card hover:shadow-card-hover hover:border-app-accent hover:-translate-y-0.5 transition-all duration-150 text-left">
             <span className="h-11 w-11 rounded-lg bg-app-accent-muted flex items-center justify-center text-app-accent group-hover:bg-app-accent group-hover:text-white transition-colors"><a.icon size={20} /></span>
             <div className="min-w-0">
@@ -200,7 +225,7 @@ export default function Dashboard() {
               <p className="text-sm text-app-secondary">{a.sub}</p>
             </div>
             <ArrowRight size={18} className="ml-auto text-app-muted group-hover:text-app-accent transition-colors" />
-          </button>
+          </motion.button>
         ))}
       </div>
 
