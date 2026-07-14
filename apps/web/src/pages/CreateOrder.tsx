@@ -389,7 +389,7 @@ export default function CreateOrder() {
                             setSupplierDropdownOpen(true);
                           }}
                           onBlur={() => setTimeout(() => setSupplierDropdownOpen(false), 180)}
-                          className="min-h-[48px]"
+                          className="min-h-[70px]"
                         />
                         {supplierDropdownOpen && (
                           <div className="glass absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-56 overflow-auto" style={{ background: 'var(--glass-bg-strong)' }}>
