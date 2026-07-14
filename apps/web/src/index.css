@@ -1,9 +1,6 @@
 @import './styles/theme.css';
 @import '@fontsource-variable/plus-jakarta-sans';
 @import '@fontsource-variable/inter';
-/* Cinzel — engraved-caps serif for the AEM Residence brand crest + wordmark. */
-@import '@fontsource/cinzel/500.css';
-@import '@fontsource/cinzel/600.css';
 
 @tailwind base;
 @tailwind components;

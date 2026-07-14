@@ -1,9 +1,10 @@
-import { useState, useEffect, useId, useLayoutEffect, Suspense } from 'react';
+import { useState, useEffect, useLayoutEffect, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, Link, useNavigate, useLocation, useOutlet } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import PageTransition, { RouteProgress } from '../components/PageTransition';
+import { AemLogo } from '../components/AemLogo';
 import {
   LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
   ShieldAlert, BarChart3, Users, UserCircle, LogOut, Menu, X, Globe, ChevronDown,
@@ -48,79 +49,38 @@ const LANGS = [
 ] as const;
 
 /**
- * Gold crest: a serif initial inside a double-line oval, over an ornamental
- * flourish — the AEM Residence mark, recreated as vector so it's crisp at any
- * size and sits cleanly on the dark sidebar. `id` keeps the gold gradient
- * unique per instance. `withFlourish` adds the divider (stacked lockup only).
- */
-function BrandCrest({ id, letter, height = 56 }: { id: string; letter: string; height?: number }) {
-  const gid = `gold-${id}`;
-  const width = (height * 72) / 66; // oval fills the 72×66 viewBox — no flourish
-  return (
-    <svg width={width} height={height} viewBox="0 0 72 66" fill="none" aria-hidden="true" className="shrink-0">
-      <defs>
-        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#F1E3BA" />
-          <stop offset="0.55" stopColor="#E4CE9C" />
-          <stop offset="1" stopColor="#C6A86B" />
-        </linearGradient>
-      </defs>
-      <g stroke={`url(#${gid})`} fill="none">
-        <ellipse cx="36" cy="34" rx="26" ry="31" strokeWidth="1.5" />
-        <ellipse cx="36" cy="34" rx="21.5" ry="26" strokeWidth="0.9" />
-      </g>
-      <text x="36" y="46" textAnchor="middle" fill={`url(#${gid})`} fontFamily="Cinzel, Georgia, serif" fontWeight={600} fontSize={34}>
-        {letter}
-      </text>
-    </svg>
-  );
-}
-
-/**
- * Sidebar brand lockup: the gold crest (or the org's uploaded logo) with the
- * org name set in Cinzel caps. `stacked` centers crest-over-wordmark for the
- * desktop header; `inline` is a compact row for the mobile bars. Links to the
- * dashboard and brightens on hover.
+ * Sidebar brand lockup: the official AEM Residence logo (white on the dark
+ * sidebar), or the org's uploaded logo if one is set. Links to the dashboard
+ * and brightens on hover. `collapsed` shows the standalone mark; `logoHeight`
+ * sets the logo height class (smaller on the mobile bars).
  */
 function BrandLockup({
   logoUrl,
-  name,
   onClick,
-  layout = 'stacked',
   collapsed = false,
+  logoHeight = 'h-14',
 }: {
   logoUrl?: string | null;
-  name?: string;
   onClick?: () => void;
-  layout?: 'stacked' | 'inline';
   collapsed?: boolean;
+  logoHeight?: string;
 }) {
-  const uid = useId();
-  const displayName = (name || 'Zubuild').trim();
-  const initial = (displayName[0] || 'Z').toUpperCase();
-  const stacked = layout === 'stacked';
   return (
     <Link
       to="/app/dashboard"
       onClick={onClick}
-      aria-label={`${displayName} — dashboard`}
-      className={`group rounded-md transition-[filter] duration-150 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] ${
-        collapsed ? 'flex justify-center' : stacked ? 'flex flex-col items-center text-center gap-2' : 'inline-flex items-center gap-2.5 min-w-0'
-      }`}
+      aria-label="AEM Residence — dashboard"
+      className="group flex justify-center rounded-md transition-[filter] duration-150 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]"
     >
       {logoUrl ? (
         <img
           src={logoUrl}
-          alt={displayName}
-          className={collapsed ? 'h-8 w-8 rounded object-contain' : stacked ? 'h-12 w-auto max-w-[160px] object-contain' : 'h-9 w-9 rounded object-contain shrink-0'}
+          alt="AEM Residence"
+          loading="eager"
+          className={collapsed ? 'h-9 w-9 object-contain' : `${logoHeight} w-auto max-w-[190px] object-contain`}
         />
       ) : (
-        <BrandCrest id={uid} letter={initial} height={collapsed ? 32 : stacked ? 60 : 34} />
-      )}
-      {!collapsed && (
-        <span className={`font-brand font-semibold uppercase text-brand-gold ${stacked ? 'text-[12px] tracking-[0.24em] pl-[0.24em]' : 'text-[13px] tracking-[0.16em] pl-[0.16em] truncate'}`}>
-          {displayName}
-        </span>
+        <AemLogo variant={collapsed ? 'mark' : 'full'} className={`${collapsed ? 'h-9' : logoHeight} text-white`} />
       )}
     </Link>
   );
@@ -218,7 +178,7 @@ export default function AppLayout() {
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 left-0 bg-sidebar-bg z-20">
         <div className="relative flex items-center justify-center px-4 pt-4 pb-5 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-white/[0.06] after:to-transparent">
-          <BrandLockup logoUrl={org?.logoUrl} name={org?.name} layout="stacked" />
+          <BrandLockup logoUrl={org?.logoUrl} />
         </div>
         <NavList />
         <Footer />
@@ -228,7 +188,7 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col w-full min-w-0 overflow-x-hidden lg:pl-64">
         {/* Mobile top bar */}
         <header className="lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 h-14 bg-sidebar-bg safe-area-pt">
-          <BrandLockup logoUrl={org?.logoUrl} name={org?.name} layout="inline" />
+          <BrandLockup logoUrl={org?.logoUrl} logoHeight="h-9" />
           <button type="button" onClick={() => setMenuOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('nav.more')}>
             <Menu size={22} />
           </button>
@@ -252,7 +212,7 @@ export default function AppLayout() {
           <div className="lg:hidden fixed inset-0 z-40 bg-app-overlay" onClick={() => setMenuOpen(false)} aria-hidden />
           <div className="lg:hidden fixed top-0 right-0 bottom-0 z-50 w-full max-w-xs bg-sidebar-bg flex flex-col safe-area-pt" role="dialog" aria-label={t('nav.more')}>
             <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border">
-              <BrandLockup logoUrl={org?.logoUrl} name={org?.name} layout="inline" onClick={() => setMenuOpen(false)} />
+              <BrandLockup logoUrl={org?.logoUrl} logoHeight="h-9" onClick={() => setMenuOpen(false)} />
               <button type="button" onClick={() => setMenuOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('common.close')}>
                 <X size={22} />
               </button>

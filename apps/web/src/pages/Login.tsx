@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, setApiErrorHandler } from '../lib/api';
 import { Button, Input } from '../components/ui';
+import { AemLogo } from '../components/AemLogo';
 
 const languages = [
   { code: 'en', label: 'English' },
@@ -74,7 +75,7 @@ export default function Login() {
         <div className="flex justify-end mb-5">
           <LanguageSwitcher />
         </div>
-        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-app-primary mb-1">Zubuild</h1>
+        <AemLogo variant="full" className="h-12 text-app-primary mb-4" />
         <p className="text-app-secondary text-sm mb-6">{t('login.signInContinue')}</p>
         {toast && (
           <div className="mb-4 p-3 rounded-xl bg-app-danger-muted border border-app-danger/30 text-app-danger text-sm" role="alert">

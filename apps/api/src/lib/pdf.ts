@@ -5,6 +5,7 @@
  */
 
 import PDFDocument from 'pdfkit';
+import SVGtoPDF from 'svg-to-pdfkit';
 import * as fs from 'fs';
 import * as path from 'path';
 import { productLabel, normalizeLang, type CatalogLang } from './catalog-i18n';
@@ -17,6 +18,20 @@ import { productLabel, normalizeLang, type CatalogLang } from './catalog-i18n';
 const FONT_DIR = path.resolve(__dirname, '../../assets/fonts');
 const DEJAVU_REGULAR_PATH = path.join(FONT_DIR, 'DejaVuSans.ttf');
 const DEJAVU_BOLD_PATH = path.join(FONT_DIR, 'DejaVuSans-Bold.ttf');
+// Official AEM Residence logo (dark, for the white print header). Bundled SVG.
+const AEM_LOGO_PATH = path.resolve(__dirname, '../../assets/aem-logo.svg');
+let AEM_LOGO_SVG: string | null = null;
+function aemLogoSvg(): string | null {
+  if (AEM_LOGO_SVG === null) {
+    try {
+      AEM_LOGO_SVG = fs.readFileSync(AEM_LOGO_PATH, 'utf8');
+    } catch {
+      AEM_LOGO_SVG = '';
+    }
+  }
+  return AEM_LOGO_SVG || null;
+}
+const AEM_LOGO_ASPECT = 860 / 280;
 
 /**
  * Verify the bundled Unicode fonts exist. Call once at server startup so a
@@ -72,7 +87,7 @@ export type PdfCompany = {
   regNo?: string | null;
   logoUrl?: string | null; // http(s) URL (app header) or data: URI (embedded in the PDF)
 };
-const DEFAULT_COMPANY: PdfCompany = { name: 'Zubuild' };
+const DEFAULT_COMPANY: PdfCompany = { name: 'AEM Residence' };
 let PDF_COMPANY: PdfCompany = DEFAULT_COMPANY;
 
 const colors = {
@@ -143,9 +158,22 @@ function drawHeader(doc: Doc): void {
   const blockTop = 38;
   const nameY = blockTop + 14;
 
-  // Left: the org's logo, or its name as text.
+  // Left: the org's uploaded logo → the official AEM Residence logo → the name.
   if (!drawLogo(doc, PDF_COMPANY.logoUrl, MARGIN_PT, blockTop, logoWidth, logoHeight)) {
-    doc.fillColor(colors.gold).fontSize(16).font(PDF_FONT_BOLD).text(PDF_COMPANY.name, MARGIN_PT, nameY);
+    const svg = aemLogoSvg();
+    let drewLogo = false;
+    if (svg) {
+      try {
+        const w = 150;
+        SVGtoPDF(doc, svg, MARGIN_PT, blockTop + 4, { width: w, height: w / AEM_LOGO_ASPECT, preserveAspectRatio: 'xMinYMin meet' });
+        drewLogo = true;
+      } catch {
+        drewLogo = false;
+      }
+    }
+    if (!drewLogo) {
+      doc.fillColor(colors.gold).fontSize(16).font(PDF_FONT_BOLD).text(PDF_COMPANY.name, MARGIN_PT, nameY);
+    }
   }
 
   // Right: the org's letterhead details (only the ones that are set).

@@ -42,15 +42,9 @@ export default {
         },
         danger: '#F87171',
         success: '#34D399',
-        // Brand crest gold (on the dark sidebar)
-        brand: {
-          gold: '#E4CE9C',
-          'gold-soft': '#CBAE72',
-        },
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans Variable"', '"Inter Variable"', 'Inter', 'system-ui', 'sans-serif'],
-        brand: ['Cinzel', 'Georgia', 'serif'],
       },
       borderRadius: {
         card: '12px',
