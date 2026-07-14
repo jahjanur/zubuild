@@ -143,7 +143,13 @@
     "decreaseQty": "Zvogëlo sasinë",
     "increaseQty": "Rrit sasinë",
     "clearAll": "Pastro të gjitha",
-    "itemsLabel": "artikuj"
+    "itemsLabel": "artikuj",
+    "subtotal": "Nëntotali",
+    "change": "Ndrysho",
+    "clearFilters": "Pastro filtrat",
+    "noProductsMatch": "Asnjë produkt s'përputhet",
+    "searchSuppliers": "Kërko furnitorë…",
+    "addAtLeastOne": "Shto të paktën një produkt"
   },
   "reconciliation": {
     "title": "Rakordimi i dorëzimit",

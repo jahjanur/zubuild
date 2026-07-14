@@ -143,7 +143,13 @@
     "decreaseQty": "Miktarı azalt",
     "increaseQty": "Miktarı artır",
     "clearAll": "Tümünü temizle",
-    "itemsLabel": "kalem"
+    "itemsLabel": "kalem",
+    "subtotal": "Ara toplam",
+    "change": "Değiştir",
+    "clearFilters": "Filtreleri temizle",
+    "noProductsMatch": "Eşleşen ürün yok",
+    "searchSuppliers": "Tedarikçi ara…",
+    "addAtLeastOne": "En az bir ürün ekleyin"
   },
   "reconciliation": {
     "title": "Teslimat Mutabakatı",

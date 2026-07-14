@@ -143,7 +143,13 @@
     "decreaseQty": "Намали количина",
     "increaseQty": "Зголеми количина",
     "clearAll": "Исчисти сè",
-    "itemsLabel": "ставки"
+    "itemsLabel": "ставки",
+    "subtotal": "Меѓузбир",
+    "change": "Промени",
+    "clearFilters": "Исчисти филтри",
+    "noProductsMatch": "Нема совпаѓања",
+    "searchSuppliers": "Пребарај добавувачи…",
+    "addAtLeastOne": "Додајте барем еден производ"
   },
   "reconciliation": {
     "title": "Порамнување на испораката",

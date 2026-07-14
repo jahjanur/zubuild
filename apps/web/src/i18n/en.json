@@ -143,7 +143,13 @@
     "decreaseQty": "Decrease quantity",
     "increaseQty": "Increase quantity",
     "clearAll": "Clear all",
-    "itemsLabel": "items"
+    "itemsLabel": "items",
+    "subtotal": "Subtotal",
+    "change": "Change",
+    "clearFilters": "Clear filters",
+    "noProductsMatch": "No products match",
+    "searchSuppliers": "Search suppliers…",
+    "addAtLeastOne": "Add at least one product"
   },
   "reconciliation": {
     "title": "Delivery Reconciliation",
