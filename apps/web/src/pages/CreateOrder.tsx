@@ -689,7 +689,9 @@ export default function CreateOrder() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {rows.length === 0 ? (
-                    <p className="text-app-secondary text-sm">{t('createOrder.tapProductToAdd')}</p>
+                    <div className="flex items-center min-h-[43px]">
+                      <p className="text-app-secondary text-sm">{t('createOrder.tapProductToAdd')}</p>
+                    </div>
                   ) : (
                     <>
                       <div className="flex items-center justify-between gap-2">
