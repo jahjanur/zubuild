@@ -4,6 +4,7 @@ const LANGUAGES = [
   { code: 'en', label: 'English' },
   { code: 'mk', label: 'Македонски' },
   { code: 'sq', label: 'Shqip' },
+  { code: 'tr', label: 'Türkçe' },
 ] as const;
 
 /**
