@@ -477,16 +477,31 @@ Add a subtle **"Powered by Zulbera"** footer inside the web app itself (in addit
 The calculator needs an MKD→€ rate from Settings (methodology uses `mkdToEurRate = 61.5`). The `Organization` model has `currency`/`locale` but no rate. Add `mkdToEurRate` (Float, default `61.5`) to `Organization` + migration, expose it on the `GET/PUT /organization` API, and let an admin view/edit it in a Settings page (reuse/extend the existing org settings surface).
 **Done when:** an admin can read and update the MKD→€ rate; it's stored per org and consumed by the calculator.
 
-## TODO 69 — Build the "Cost per m²" (m² Maliyet) calculator page
-`P1 · L · new apps/web/src/pages/CostCalculator.tsx + route in App.tsx + nav entry in AppLayout.tsx`
-Build a live calculator page implementing the methodology exactly:
-- **Materials section:** add rows by picking materials from the **Products catalogue** (reuse the CreateOrder product picker). Each row shows the material's **unit** and catalogue **MKD price**; auto-compute **€ price = priceMKD ÷ rate** (rate from TODO 68); allow **editing the € price** (override to reflect what was actually paid); **quantity** allows **fractional** values (e.g. `2.5` ton, `1.75` m³); **line cost = unitPrice(€) × quantity**; allow removing a row.
-- **Labour ("punë dore") section:** a **lump sum** (€) plus optional **itemised lines** (role/label, days, daily rate €). `labourTotal = lumpSum + Σ(days × dailyRate)`.
-- **Area (m²)** input — the divisor. **Sale price per m²** — optional (drives profit only).
-- **Live results:** `materialsTotal = Σ lineCost` · `totalCost = materialsTotal + labourTotal` · `costPerM² = totalCost ÷ area` · `saleTotal = salePricePerM² × area` · `profit = saleTotal − totalCost` · `profitPerM² = profit ÷ area` · `margin% = profit ÷ saleTotal × 100`.
-- Guard **divide-by-zero** (area empty/0 → show a dash, not NaN); hide the profit block until a sale price is entered; European number formatting for € and MKD; **i18n EN/MK/SQ** for every label ("punë dore" = labour); works in light/dark (TODO 66); nothing is persisted.
-- **Acceptance test = the worked example:** materials (steel ton ×4, cement torba ×200, sand m³ ×40, cable m ×1500, brick adet ×5000) → materials €3,600; labour lump €2,000 + mason 10×€30 + helper 15×€20 → €2,600; **total €6,200**; area 100 m² → **cost/m² €62.00**; sale €95/m² → sale €9,500, **profit €3,300**, profit/m² €33, **margin 34.7%**.
-**Done when:** entering the worked example reproduces those exact figures, all outputs update live, and nothing is saved.
+## TODO 69 — Build the "Cost per m²" (m² Maliyet) calculator
+`P1 · L · new apps/web/src/pages/CostCalculator.tsx + route in App.tsx + nav entry; pure engine in apps/web/src/lib/costCalc.ts (+ unit test)`
+
+Build a live "cost per square metre" calculator for a floor/area. It sums the **euro** cost of every material used — each priced in its **own unit** (tons, m³, m, pieces), never converted between units; money is the only common denominator — plus labour ("punë dore"), then divides the total **once** by the built area to give cost per m². With an optional sale price per m² it also shows profit and margin. It is **live — nothing is saved**.
+
+Keep the math **out of React**: put a pure, typed engine in `lib/costCalc.ts` (inputs → all outputs) with a unit test, so the page is only state + inputs + rendering.
+
+**Inputs**
+- **Materials:** add rows by picking from the **Products catalogue** (reuse the CreateOrder picker). Each row **snapshots** the material's unit + MKD catalogue price, auto-computes **€ = priceMKD ÷ rate** (rate = the org's `mkdToEurRate` setting, TODO 68), and lets the user **override** the € price with what was actually paid — track an "overridden" flag so that **when the rate changes, auto rows recompute but overridden rows stay**. Quantity is **fractional** and **locale-aware** (accept `2,5` and `2.5`). Line cost = €price × quantity. Rows are removable.
+- **Labour ("punë dore"):** a **lump sum** (€) plus optional **itemised lines** (role, days, daily rate €). `labourTotal = lumpSum + Σ(days × dailyRate)`.
+- **Area (m²)** — the divisor. **Sale price per m²** — optional (profit figures only).
+
+**Outputs (all live):** `materialsTotal = Σ lineCost` · `totalCost = materialsTotal + labourTotal` · `costPerM² = totalCost ÷ area` · `saleTotal = salePricePerM² × area` · `profit = saleTotal − totalCost` · `profitPerM² = profit ÷ area` · `margin% = profit ÷ saleTotal × 100`.
+
+**Must handle (the hard parts):**
+- **Money rounding:** pick ONE rule and apply it everywhere (work in cents internally; round at display) so displayed lines reconcile with totals — the source methodology is itself off by a cent (lines sum to €3,599.99 but it prints €3,600), so this is a real decision, not cosmetic.
+- **Live exchange rate:** changing `mkdToEurRate` in Settings re-derives every non-overridden € price instantly.
+- **Catalogue coupling:** snapshot price + unit into the row at add-time, so later catalogue edits or a deleted product don't corrupt an open calculation.
+- **Guards:** area empty/0 → cost/m² shows "—", never NaN/∞; no sale price → hide the whole profit/margin block; negative profit → show as a loss; saleTotal 0 → margin "—".
+- **i18n EN/MK/SQ** for every label ("punë dore" = labour); European € and MKD number formatting; works in **light + dark** (TODO 66).
+
+**Scope:** this ticket is the **single-area MVP**. Multi-section/multi-floor projects, saved/named calculations, templates, and PDF export (TODO 70) are follow-ups — design the engine + state so they can be added without a rewrite.
+
+**Acceptance test = the methodology's worked example:** materials (steel ton×4, cement torba×200, sand m³×40, cable m×1500, brick adet×5000) → materials **€3,600**; labour lump €2,000 + mason 10×€30 + helper 15×€20 → **€2,600**; **total €6,200**; area 100 m² → **cost/m² €62.00**; sale €95/m² → sale €9,500, **profit €3,300**, profit/m² €33, **margin 34.7%**.
+**Done when:** entering the worked example reproduces those exact figures, everything updates live, and nothing is persisted.
 
 ## TODO 70 — (optional) Export the m² calculation to PDF
 `P2 · M · apps/api/src/lib/pdf.ts (new document type) + a button on the calculator page`
