@@ -465,3 +465,30 @@ The app currently ships a single dark "Cosmic" theme. Add a proper **light + dar
 `P1 · S · apps/web/src/layout/AppLayout.tsx (+ apps/web/src/pages/Login.tsx)`
 Add a subtle **"Powered by Zulbera"** footer inside the web app itself (in addition to the PDF, TODO 65) so it's visible across the platform — e.g. pinned at the bottom of the sidebar and/or a small global footer under the page content, and on the login page. Keep it muted and small (secondary text), consistent with the active theme (works in both light/dark from TODO 66), and non-intrusive. Optionally make it a link to Zulbera.
 **Done when:** "Powered by Zulbera" appears consistently in the app (main layout + login), styled subtly, and looks correct in both themes.
+
+---
+
+## Cost-per-m² calculator (from methodology doc, 2026-07-15) · P1
+
+**Feature summary:** a live "m² Maliyet Hesabı" calculator. It sums the cost of every material used on a floor/area (each priced in its own unit — tons, m³, m, pieces) plus labour ("punë dore"), then divides the total by the built area (m²) to give cost per m². With an optional sale price per m² it also shows profit and margin. Money (€) is the only common denominator — physical units are never converted into each other; the single physical-unit division is the final `÷ area`. Nothing is saved (live calc).
+
+## TODO 68 — Add an MKD→€ exchange-rate setting
+`P1 · S · apps/api/prisma/schema.prisma, apps/api/src/routes/organization.ts, a Settings page in apps/web`
+The calculator needs an MKD→€ rate from Settings (methodology uses `mkdToEurRate = 61.5`). The `Organization` model has `currency`/`locale` but no rate. Add `mkdToEurRate` (Float, default `61.5`) to `Organization` + migration, expose it on the `GET/PUT /organization` API, and let an admin view/edit it in a Settings page (reuse/extend the existing org settings surface).
+**Done when:** an admin can read and update the MKD→€ rate; it's stored per org and consumed by the calculator.
+
+## TODO 69 — Build the "Cost per m²" (m² Maliyet) calculator page
+`P1 · L · new apps/web/src/pages/CostCalculator.tsx + route in App.tsx + nav entry in AppLayout.tsx`
+Build a live calculator page implementing the methodology exactly:
+- **Materials section:** add rows by picking materials from the **Products catalogue** (reuse the CreateOrder product picker). Each row shows the material's **unit** and catalogue **MKD price**; auto-compute **€ price = priceMKD ÷ rate** (rate from TODO 68); allow **editing the € price** (override to reflect what was actually paid); **quantity** allows **fractional** values (e.g. `2.5` ton, `1.75` m³); **line cost = unitPrice(€) × quantity**; allow removing a row.
+- **Labour ("punë dore") section:** a **lump sum** (€) plus optional **itemised lines** (role/label, days, daily rate €). `labourTotal = lumpSum + Σ(days × dailyRate)`.
+- **Area (m²)** input — the divisor. **Sale price per m²** — optional (drives profit only).
+- **Live results:** `materialsTotal = Σ lineCost` · `totalCost = materialsTotal + labourTotal` · `costPerM² = totalCost ÷ area` · `saleTotal = salePricePerM² × area` · `profit = saleTotal − totalCost` · `profitPerM² = profit ÷ area` · `margin% = profit ÷ saleTotal × 100`.
+- Guard **divide-by-zero** (area empty/0 → show a dash, not NaN); hide the profit block until a sale price is entered; European number formatting for € and MKD; **i18n EN/MK/SQ** for every label ("punë dore" = labour); works in light/dark (TODO 66); nothing is persisted.
+- **Acceptance test = the worked example:** materials (steel ton ×4, cement torba ×200, sand m³ ×40, cable m ×1500, brick adet ×5000) → materials €3,600; labour lump €2,000 + mason 10×€30 + helper 15×€20 → €2,600; **total €6,200**; area 100 m² → **cost/m² €62.00**; sale €95/m² → sale €9,500, **profit €3,300**, profit/m² €33, **margin 34.7%**.
+**Done when:** entering the worked example reproduces those exact figures, all outputs update live, and nothing is saved.
+
+## TODO 70 — (optional) Export the m² calculation to PDF
+`P2 · M · apps/api/src/lib/pdf.ts (new document type) + a button on the calculator page`
+Let the user export the current calculation as a PDF breakdown (materials table + labour + results), styled like the methodology sheet, reusing the PDF pipeline and the "Powered by Zulbera" footer (TODO 65). Optional / nice-to-have since the calculator is otherwise live-only.
+**Done when:** the calculator can produce a clean PDF of the current inputs and results.
