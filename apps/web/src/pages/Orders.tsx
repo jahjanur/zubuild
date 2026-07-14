@@ -14,6 +14,7 @@ import {
   TableCell,
   Badge,
   Modal,
+  DatePicker,
 } from '../components/ui';
 import { formatMKD, formatDate } from '../lib/formatMKD';
 import { useToast } from '../context/ToastContext';
@@ -172,11 +173,11 @@ export default function Orders() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-app-secondary mb-1">{t('orders.filterFrom')}</label>
-              <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+              <DatePicker value={from} onChange={setFrom} ariaLabel={t('orders.filterFrom')} />
             </div>
             <div>
               <label className="block text-sm font-medium text-app-secondary mb-1">{t('orders.filterTo')}</label>
-              <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+              <DatePicker value={to} onChange={setTo} ariaLabel={t('orders.filterTo')} />
             </div>
           </div>
         </div>

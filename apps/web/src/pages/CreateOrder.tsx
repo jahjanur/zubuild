@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
-import { Card, CardContent, CardHeader, Button, Textarea } from '../components/ui';
+import { Card, CardContent, CardHeader, Button, Textarea, DatePicker } from '../components/ui';
 import { ShoppingCart, ChevronDown, Search, X } from 'lucide-react';
 import { formatMKD } from '../lib/formatMKD';
 import { productName, categoryName } from '../lib/catalog';
@@ -446,12 +446,11 @@ export default function CreateOrder() {
                   {/* Order date — editable but visually secondary */}
                   <div>
                     <label className="block text-sm font-medium text-app-muted mb-1.5">{t('createOrder.orderDateRequired')}</label>
-                    <input
-                      type="date"
+                    <DatePicker
                       value={orderDate.slice(0, 10)}
-                      onChange={(e) => setOrderDate(e.target.value)}
-                      required
-                      className="w-full rounded-xl border border-[var(--border)] bg-app-surface-subtle px-3.5 text-app-secondary min-h-[52px] focus:outline-none focus:bg-app-surface-1 focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--accent-ring)]"
+                      onChange={(v) => setOrderDate(v)}
+                      ariaLabel={t('createOrder.orderDateRequired')}
+                      className="min-h-[52px] bg-app-surface-subtle"
                     />
                   </div>
                 </div>

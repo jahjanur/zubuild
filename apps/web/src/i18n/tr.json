@@ -38,7 +38,9 @@
     "status": "Durum",
     "actions": "İşlemler",
     "viewAll": "Tümünü Gör",
-    "close": "Kapat"
+    "close": "Kapat",
+    "today": "Bugün",
+    "clear": "Temizle"
   },
   "login": {
     "title": "Zubuild",

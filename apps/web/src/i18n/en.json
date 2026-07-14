@@ -38,7 +38,9 @@
     "status": "Status",
     "actions": "Actions",
     "viewAll": "View All",
-    "close": "Close"
+    "close": "Close",
+    "today": "Today",
+    "clear": "Clear"
   },
   "login": {
     "title": "Zubuild",

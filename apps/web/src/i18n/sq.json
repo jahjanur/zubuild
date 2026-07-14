@@ -38,7 +38,9 @@
     "status": "Statusi",
     "actions": "Veprimet",
     "viewAll": "Shiko të gjitha",
-    "close": "Mbyll"
+    "close": "Mbyll",
+    "today": "Sot",
+    "clear": "Pastro"
   },
   "login": {
     "title": "Zubuild",

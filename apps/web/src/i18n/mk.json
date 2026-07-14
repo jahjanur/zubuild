@@ -38,7 +38,9 @@
     "status": "Статус",
     "actions": "Дејства",
     "viewAll": "Прикажи ги сите",
-    "close": "Затвори"
+    "close": "Затвори",
+    "today": "Денес",
+    "clear": "Исчисти"
   },
   "login": {
     "title": "Zubuild",
