@@ -119,7 +119,7 @@ function BrandLockup({
         <BrandCrest id={uid} letter={initial} height={collapsed ? 32 : stacked ? 60 : 34} />
       )}
       {!collapsed && (
-        <span className={`font-brand font-semibold uppercase text-brand-gold ${stacked ? 'text-[10.5px] tracking-[0.25em] pl-[0.25em]' : 'text-[13px] tracking-[0.16em] pl-[0.16em] truncate'}`}>
+        <span className={`font-brand font-semibold uppercase text-brand-gold ${stacked ? 'text-[12px] tracking-[0.24em] pl-[0.24em]' : 'text-[13px] tracking-[0.16em] pl-[0.16em] truncate'}`}>
           {displayName}
         </span>
       )}
