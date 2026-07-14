@@ -316,7 +316,7 @@ export default function CreateOrder() {
 
   const chipClass = (active: boolean) =>
     `shrink-0 whitespace-nowrap px-3.5 py-2 rounded-full text-sm font-medium transition min-h-[36px] ${
-      active ? 'bg-app-accent text-white shadow-button' : 'border border-[var(--border)] text-app-secondary hover:bg-app-surface-subtle'
+      active ? 'bg-app-accent text-app-accent-contrast shadow-button' : 'border border-[var(--border)] text-app-secondary hover:bg-app-surface-subtle'
     }`;
 
   function openSupplierPicker() {
@@ -407,7 +407,7 @@ export default function CreateOrder() {
                       )}
 
                       {supplierDropdownOpen && (
-                        <div className="absolute z-20 mt-1.5 w-full rounded-xl border border-[var(--border)] bg-app-surface-1 shadow-modal max-h-72 overflow-auto scroll-thin">
+                        <div className="absolute z-20 mt-1.5 w-full rounded-xl border border-[var(--border)] bg-[var(--glass-bg-strong)] shadow-modal max-h-72 overflow-auto scroll-thin">
                           {filteredSuppliers.length === 0 ? (
                             <div className="p-4 text-app-muted text-sm">{t('createOrder.noResults')}</div>
                           ) : (
@@ -473,7 +473,7 @@ export default function CreateOrder() {
                     className="w-full rounded-xl border border-[var(--border)] bg-app-surface-1 pl-10 pr-10 text-app-primary min-h-[48px] focus:outline-none focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--accent-ring)]"
                   />
                   {filter && (
-                    <button type="button" onClick={() => setFilter('')} aria-label={t('common.close')} className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg text-app-muted hover:text-app-primary hover:bg-black/5">
+                    <button type="button" onClick={() => setFilter('')} aria-label={t('common.close')} className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg text-app-muted hover:text-app-primary hover:bg-white/[0.06]">
                       <X size={16} />
                     </button>
                   )}
@@ -530,7 +530,7 @@ export default function CreateOrder() {
                               type="button"
                               onClick={() => addProduct(p)}
                               aria-label={t('createOrder.addToOrder', { name: p.name })}
-                              className="shrink-0 flex h-9 w-9 items-center justify-center rounded-lg bg-app-accent text-white shadow-button transition hover:bg-app-accent-hover active:scale-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]"
+                              className="shrink-0 flex h-9 w-9 items-center justify-center rounded-lg bg-app-accent text-app-accent-contrast shadow-button transition hover:bg-app-accent-hover active:scale-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]"
                             >
                               <IconPlus size={18} />
                             </button>

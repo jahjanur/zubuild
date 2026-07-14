@@ -1,7 +1,7 @@
 import { TextareaHTMLAttributes, forwardRef } from 'react';
 
 const textareaBase =
-  'w-full rounded-xl border bg-white/60 px-4 py-3 text-app-primary placeholder-app-muted transition border-[var(--border)] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none min-h-[100px] resize-y';
+  'w-full rounded-xl border bg-white/[0.06] px-4 py-3 text-app-primary placeholder-app-muted transition border-[var(--border)] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none min-h-[100px] resize-y';
 
 export const Textarea = forwardRef<
   HTMLTextAreaElement,

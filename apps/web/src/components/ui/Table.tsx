@@ -17,7 +17,7 @@ export function Table({
 export function TableHeader({ children }: { children: ReactNode }) {
   return (
     <thead>
-      <tr className="border-b border-[var(--border)] bg-white/50 text-app-primary">
+      <tr className="border-b border-[var(--border)] bg-white/[0.04] text-app-primary">
         {children}
       </tr>
     </thead>
@@ -53,7 +53,7 @@ export function TableRow({
 }) {
   return (
     <tr
-      className={`border-b border-[var(--border)] last:border-0 hover:bg-slate-900/[0.04] transition ${className}`}
+      className={`border-b border-[var(--border)] last:border-0 hover:bg-white/[0.06] transition ${className}`}
     >
       {children}
     </tr>
@@ -93,7 +93,7 @@ export function TableActionButton({
       type="button"
       onClick={onClick}
       aria-label={ariaLabel}
-      className={`inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] ${className}`}
+      className={`inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-secondary hover:bg-white/[0.08] hover:text-app-primary focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] ${className}`}
     >
       {children}
     </button>

@@ -1,7 +1,7 @@
 import React, { SelectHTMLAttributes, forwardRef, useRef, useState, useEffect, useId } from 'react';
 
 const selectTriggerBase =
-  'w-full rounded-xl border bg-white/60 px-4 py-3 text-left text-app-primary transition border-[var(--border)] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none min-h-[48px] flex items-center justify-between gap-2';
+  'w-full rounded-xl border bg-white/[0.06] px-4 py-3 text-left text-app-primary transition border-[var(--border)] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none min-h-[48px] flex items-center justify-between gap-2';
 
 function getOptionsFromChildren(children: React.ReactNode): { value: string; label: string }[] {
   const options: { value: string; label: string }[] = [];
@@ -72,7 +72,7 @@ export const Select = forwardRef<
         <select
           ref={ref as React.Ref<HTMLSelectElement>}
           id={id}
-          className={`w-full rounded-xl border bg-white/60 px-4 py-3 text-app-primary text-base min-h-[48px] border-[var(--border)] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none appearance-none bg-no-repeat bg-[length:1.25rem] bg-[right_0.75rem_center] pr-10 ${error ? 'border-app-danger/50' : ''} ${className}`}
+          className={`w-full rounded-xl border bg-white/[0.06] px-4 py-3 text-app-primary text-base min-h-[48px] border-[var(--border)] focus:border-[var(--border-focus)] focus:ring-2 focus:ring-black/10 focus:outline-none appearance-none bg-no-repeat bg-[length:1.25rem] bg-[right_0.75rem_center] pr-10 ${error ? 'border-app-danger/50' : ''} ${className}`}
           style={{
             backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
           }}
@@ -129,7 +129,7 @@ export const Select = forwardRef<
               role="option"
               aria-selected={opt.value === currentValue}
               onClick={() => handleSelect(opt.value)}
-              className="min-h-[48px] flex items-center px-4 py-3 text-base text-app-primary cursor-pointer hover:bg-slate-900/[0.06] focus:bg-slate-900/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] focus-visible:ring-inset"
+              className="min-h-[48px] flex items-center px-4 py-3 text-base text-app-primary cursor-pointer hover:bg-white/[0.08] focus:bg-white/[0.08] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] focus-visible:ring-inset"
             >
               {opt.value === currentValue && (
                 <span className="mr-2 text-app-accent" aria-hidden>✓</span>

@@ -302,7 +302,7 @@ export default function Reconciliation() {
                                     const active = reasons[oi.id] === r.label;
                                     return (
                                       <button key={r.key} type="button" onClick={() => setReasons((p) => ({ ...p, [oi.id]: active ? '' : r.label }))}
-                                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition ${active ? 'bg-app-accent text-white' : 'border border-[var(--border)] text-app-secondary hover:bg-app-surface-subtle'}`}>
+                                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition ${active ? 'bg-app-accent text-app-accent-contrast' : 'border border-[var(--border)] text-app-secondary hover:bg-app-surface-subtle'}`}>
                                         {r.label}
                                       </button>
                                     );

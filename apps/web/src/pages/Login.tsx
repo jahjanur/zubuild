@@ -26,8 +26,8 @@ function LanguageSwitcher() {
             aria-pressed={active}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
               active
-                ? 'bg-app-accent text-white shadow-button'
-                : 'glass text-app-secondary hover:bg-slate-900/[0.04]'
+                ? 'bg-app-accent text-app-accent-contrast shadow-button'
+                : 'glass text-app-secondary hover:bg-white/[0.06]'
             }`}
           >
             {label}

@@ -367,7 +367,7 @@ export default function Products() {
                   <li
                     key={c}
                     role="option"
-                    className="px-4 py-2.5 text-app-primary cursor-pointer hover:bg-slate-900/[0.06] focus:bg-slate-900/[0.06]"
+                    className="px-4 py-2.5 text-app-primary cursor-pointer hover:bg-white/[0.08] focus:bg-white/[0.08]"
                     onClick={() => {
                       setForm((f) => ({ ...f, category: c }));
                       setCategoryDropdownOpen(false);

@@ -1,4 +1,5 @@
 @import './styles/theme.css';
+@import '@fontsource-variable/plus-jakarta-sans';
 @import '@fontsource-variable/inter';
 /* Cinzel — engraved-caps serif for the AEM Residence brand crest + wordmark. */
 @import '@fontsource/cinzel/500.css';
@@ -14,18 +15,20 @@ html {
 
 body {
   @apply text-app-primary font-sans antialiased;
-  background: var(--app-bg);
+  /* Subtle cosmic gradient over the deep navy canvas. */
+  background: radial-gradient(120% 90% at 50% -10%, #20202c 0%, var(--app-bg) 45%, var(--app-bg-gradient) 100%);
   background-attachment: fixed;
+  color-scheme: dark;
   padding-top: env(safe-area-inset-top, 0);
 }
 
-/* Accent focus ring (indigo) */
+/* Accent focus ring (rose gold) */
 *:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--accent-ring);
+  box-shadow: 0 0 0 2px var(--app-bg), 0 0 0 4px var(--accent-ring);
 }
 
-/* "glass" surface — now a clean white card (cards, dropdowns, sticky bars, modals). */
+/* "glass" surface — translucent neomorphic card (cards, dropdowns, sticky bars). */
 .glass {
   background: var(--glass-bg);
   border: 1px solid var(--border);
@@ -39,9 +42,9 @@ body {
   -webkit-backdrop-filter: blur(4px);
 }
 .modal-panel {
-  background: var(--glass-bg-strong); /* opaque #FFFFFF — never see-through */
+  background: var(--glass-bg-strong); /* opaque dark — never see-through */
   border: 1px solid var(--border);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
 }
 
 /* Page container: responsive padding */
@@ -74,12 +77,13 @@ body {
   padding-top: max(0.5rem, env(safe-area-inset-top));
 }
 
-/* Native date picker icon legibility */
+/* Native date picker icon legibility (invert so it shows on the dark field) */
 input[type='date']::-webkit-calendar-picker-indicator {
   opacity: 0.6;
   cursor: pointer;
   min-width: 44px;
   min-height: 44px;
+  filter: invert(1);
 }
 input[type='date']::-webkit-calendar-picker-indicator:hover {
   opacity: 1;

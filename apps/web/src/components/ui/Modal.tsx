@@ -106,7 +106,7 @@ export function Modal({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-app-secondary hover:bg-slate-900/[0.06] hover:text-app-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-app-secondary hover:bg-white/[0.08] hover:text-app-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]"
                 aria-label={t('common.close')}
               >
                 <span className="text-2xl leading-none">×</span>

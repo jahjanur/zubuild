@@ -1,62 +1,64 @@
 /**
- * Design system — "Clarity": clean, premium SaaS.
- * Near-white canvas, white cards, hairline borders, one subtle shadow, a single
- * indigo brand accent, and a dark sidebar. Token NAMES are reused across the app
- * (bg-app-*, .glass, var(--*)), so restyling happens here.
+ * Design system — "Cosmic": dark, neomorphic, rose-gold.
+ * Deep cosmic-navy canvas, translucent glass surfaces (white @ 6%), hairline
+ * white borders, and a rose-gold (#C4836E) brand accent. Token NAMES are reused
+ * across the app (bg-app-*, .glass, var(--*)), so restyling happens here.
  */
 :root {
   /* Canvas + surfaces */
-  --app-bg: #F7F8FA;
-  --app-bg-gradient: #F7F8FA; /* flat now (kept for API compatibility) */
-  --surface-1: #FFFFFF;
-  --surface-2: #FFFFFF;
-  --surface-subtle: #F3F4F6; /* tinted rows / wells */
+  --app-bg: #1a1a22;          /* deep cosmic navy */
+  --app-bg-gradient: #16161c; /* deeper navy */
+  --surface-1: rgba(255, 255, 255, 0.06); /* glass card */
+  --surface-2: rgba(255, 255, 255, 0.035);
+  --surface-subtle: rgba(255, 255, 255, 0.05); /* tinted rows / wells */
 
-  /* "glass" is now a plain white card (see index.css) */
-  --glass-bg: #FFFFFF;
-  --glass-bg-strong: #FFFFFF;
-  --glass-border: #E5E7EB;
+  /* "glass" translucent card; -strong is an opaque surface (modals/dropdowns) */
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-bg-strong: #20202a;
+  --glass-border: rgba(255, 255, 255, 0.12);
   --glass-blur: none;
 
   /* Borders / focus */
-  --border: #E5E7EB;
-  --border-strong: #D1D5DB;
-  --border-focus: #4F46E5;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --border-focus: #C4836E;
 
-  /* Text (gray scale) */
-  --text-primary: #111827;
-  --text-secondary: #4B5563;
-  --text-muted: #6B7280;
+  /* Text (white scale) */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --text-muted: rgba(255, 255, 255, 0.40);
 
-  /* Brand accent — indigo */
-  --accent: #4F46E5;
-  --accent-hover: #4338CA;
-  --accent-contrast: #FFFFFF;
-  --accent-muted: rgba(79, 70, 229, 0.08);
-  --accent-ring: rgba(79, 70, 229, 0.35);
+  /* Brand accent — rose gold / copper */
+  --accent: #C4836E;
+  --accent-hover: #D3947F;      /* lighter on hover (dark ground) */
+  --accent-contrast: #1a1a22;   /* dark text on rose-gold fills */
+  --accent-muted: rgba(196, 131, 110, 0.14);
+  --accent-ring: rgba(196, 131, 110, 0.45);
+  --accent-light: #E8B4A2;      /* soft blush */
+  --accent-warm: #8B5A4A;       /* deep terracotta */
 
-  /* Semantic */
-  --danger: #DC2626;
-  --danger-muted: rgba(220, 38, 38, 0.10);
-  --success: #059669;
-  --success-muted: rgba(5, 150, 105, 0.10);
-  --warning: #D97706;
-  --warning-muted: rgba(217, 119, 6, 0.10);
+  /* Semantic — lightened so they read on the dark ground */
+  --danger: #F87171;
+  --danger-muted: rgba(248, 113, 113, 0.15);
+  --success: #34D399;
+  --success-muted: rgba(52, 211, 153, 0.15);
+  --warning: #FBBF24;
+  --warning-muted: rgba(251, 191, 36, 0.15);
 
-  /* Dark sidebar */
-  --sidebar-bg: #0F1117;
+  /* Dark sidebar (a touch deeper than the canvas) */
+  --sidebar-bg: #16161c;
   --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-text: #9CA3AF;
-  --sidebar-text-active: #FFFFFF;
+  --sidebar-text: rgba(255, 255, 255, 0.55);
+  --sidebar-text-active: #ffffff;
   --sidebar-hover: rgba(255, 255, 255, 0.06);
-  --sidebar-active-bg: rgba(79, 70, 229, 0.16);
-  --sidebar-section: #6B7280;
+  --sidebar-active-bg: rgba(196, 131, 110, 0.16);
+  --sidebar-section: rgba(255, 255, 255, 0.38);
 
-  --overlay: rgba(17, 24, 39, 0.45);
+  --overlay: rgba(9, 9, 14, 0.6);
 
-  /* Shadows — one subtle card shadow, a deeper modal shadow */
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-modal: 0 20px 40px -12px rgba(0, 0, 0, 0.20);
-  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* Shadows — deeper for a dark, neomorphic ground */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-card-hover: 0 6px 20px rgba(0, 0, 0, 0.40);
+  --shadow-modal: 0 24px 60px -12px rgba(0, 0, 0, 0.60);
+  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.30);
 }
