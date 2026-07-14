@@ -56,7 +56,9 @@ const LANGS = [
  */
 function BrandCrest({ id, letter, height = 60, withFlourish = true }: { id: string; letter: string; height?: number; withFlourish?: boolean }) {
   const gid = `gold-${id}`;
-  const vbH = withFlourish ? 98 : 68;
+  // Crop the empty space below the flourish (88) so the wordmark can sit closer;
+  // 66 for the emblem-only (collapsed) crest.
+  const vbH = withFlourish ? 88 : 66;
   const width = (height * 72) / vbH;
   return (
     <svg width={width} height={height} viewBox={`0 0 72 ${vbH}`} fill="none" aria-hidden="true" className="shrink-0">
@@ -98,11 +100,13 @@ function BrandLockup({
   name,
   onClick,
   layout = 'stacked',
+  collapsed = false,
 }: {
   logoUrl?: string | null;
   name?: string;
   onClick?: () => void;
   layout?: 'stacked' | 'inline';
+  collapsed?: boolean;
 }) {
   const uid = useId();
   const displayName = (name || 'Zubuild').trim();
@@ -114,17 +118,23 @@ function BrandLockup({
       onClick={onClick}
       aria-label={`${displayName} — dashboard`}
       className={`group rounded-md transition-[filter] duration-150 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] ${
-        stacked ? 'flex flex-col items-center text-center gap-1.5' : 'inline-flex items-center gap-2.5 min-w-0'
+        collapsed ? 'flex justify-center' : stacked ? 'flex flex-col items-center text-center gap-2' : 'inline-flex items-center gap-2.5 min-w-0'
       }`}
     >
       {logoUrl ? (
-        <img src={logoUrl} alt={displayName} className={stacked ? 'h-14 w-auto max-w-[180px] object-contain' : 'h-9 w-9 rounded object-contain shrink-0'} />
+        <img
+          src={logoUrl}
+          alt={displayName}
+          className={collapsed ? 'h-8 w-8 rounded object-contain' : stacked ? 'h-12 w-auto max-w-[160px] object-contain' : 'h-9 w-9 rounded object-contain shrink-0'}
+        />
       ) : (
-        <BrandCrest id={uid} letter={initial} height={stacked ? 62 : 34} withFlourish={stacked} />
+        <BrandCrest id={uid} letter={initial} height={collapsed ? 32 : stacked ? 46 : 34} withFlourish={!collapsed && stacked} />
       )}
-      <span className={`font-brand font-semibold uppercase text-brand-gold ${stacked ? 'text-[11.5px] tracking-[0.22em] pl-[0.22em]' : 'text-[13px] tracking-[0.16em] pl-[0.16em] truncate'}`}>
-        {displayName}
-      </span>
+      {!collapsed && (
+        <span className={`font-brand font-semibold uppercase text-brand-gold ${stacked ? 'text-[10.5px] tracking-[0.25em] pl-[0.25em]' : 'text-[13px] tracking-[0.16em] pl-[0.16em] truncate'}`}>
+          {displayName}
+        </span>
+      )}
     </Link>
   );
 }
@@ -190,7 +200,7 @@ export default function AppLayout() {
     }`;
 
   const NavList = ({ onNavigate, prefix = '' }: { onNavigate?: () => void; prefix?: string }) => (
-    <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6" aria-label="Main navigation">
+    <nav className="flex-1 overflow-y-auto px-3 pt-5 pb-4 space-y-6" aria-label="Main navigation">
       {NAV.map((grp) => (
         <div key={grp.section}>
           <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-sidebar-section">{t(`nav.${grp.section}`)}</p>
@@ -231,7 +241,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-app-bg flex">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 left-0 bg-sidebar-bg z-20">
-        <div className="relative flex items-center justify-center px-4 py-5 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-sidebar-border after:to-transparent">
+        <div className="relative flex items-center justify-center px-4 pt-5 pb-6 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-white/[0.06] after:to-transparent">
           <BrandLockup logoUrl={org?.logoUrl} name={org?.name} layout="stacked" />
         </div>
         <NavList />
