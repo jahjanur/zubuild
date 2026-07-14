@@ -507,3 +507,79 @@ Keep the math **out of React**: put a pure, typed engine in `lib/costCalc.ts` (i
 `P2 · M · apps/api/src/lib/pdf.ts (new document type) + a button on the calculator page`
 Let the user export the current calculation as a PDF breakdown (materials table + labour + results), styled like the methodology sheet, reusing the PDF pipeline and the "Powered by Zulbera" footer (TODO 65). Optional / nice-to-have since the calculator is otherwise live-only.
 **Done when:** the calculator can produce a clean PDF of the current inputs and results.
+
+---
+
+## High-end polish & product maturity (from review 2026-07-15) · P1–P2
+
+## TODO 71 — Skeleton loaders (replace "Loading…" text)
+`P1 · M · new apps/web/src/components/ui/Skeleton.tsx + every page`
+Pages currently show plain "Loading…" text while data loads — the biggest "unfinished" tell. Add a `Skeleton` primitive (subtle shimmer, theme-aware) and per-page skeletons that mirror the real layout (stat cards, table rows, list items). Show them during `isLoading`/`isPending`.
+**Done when:** every data view shows a matching skeleton while loading, no bare "Loading…" text remains.
+
+## TODO 72 — Global error boundary
+`P1 · S · new apps/web/src/components/ErrorBoundary.tsx + apps/web/src/App.tsx`
+There is no error boundary — an unhandled render error blanks the screen. Add a React error boundary with a branded fallback ("Something went wrong · Reload") that logs the error, wrapping the app and (ideally) each lazy route so one page crashing doesn't kill the whole app.
+**Done when:** a thrown error in any page shows a friendly recoverable fallback, not a white screen.
+
+## TODO 73 — Designed empty states
+`P2 · S · new apps/web/src/components/ui/EmptyState.tsx + pages`
+The empty-state strings exist (`noOrders`, `noData`, `noIncidents`, …) but render as bare text. Create an `EmptyState` component (icon/illustration + title + subtext + a primary CTA) and use it everywhere a list can be empty — e.g. "No orders yet → Create your first order".
+**Done when:** every empty list shows a designed state with a clear next action.
+
+## TODO 74 — Optimistic UI on create/edit/delete
+`P2 · M · apps/web/src/pages/* (React Query mutations)`
+Mutations currently spin then refetch. Add optimistic updates (`onMutate` snapshot + cache update, rollback `onError`, `invalidate` on settle) for supplier/product/order/inventory create-edit-delete so the UI reacts instantly.
+**Done when:** common actions update the list immediately and roll back cleanly on failure.
+
+## TODO 75 — Command palette (⌘K / Ctrl-K)
+`P2 · M · new apps/web/src/components/CommandPalette.tsx (+ optional cmdk dependency)`
+Add a command palette: ⌘K opens a search overlay to jump to any page and run quick actions (New order, New supplier, switch language/theme, go to a record). Keyboard-first, glass/theme-aware, i18n labels.
+**Done when:** ⌘K opens a palette that navigates and triggers actions from the keyboard.
+
+## TODO 76 — Global search
+`P1 · M · apps/api (a /search endpoint, tenant-scoped) + apps/web (top-bar search)`
+Add cross-entity search over suppliers, products, and orders (order number / name), tenant-scoped, feeding the command palette and a top-bar search box.
+**Done when:** typing a query surfaces matching suppliers/products/orders and links straight to them.
+
+## TODO 77 — High-end data tables
+`P1 · L · apps/web/src/components/ui/Table.tsx + list pages`
+Upgrade tables to feel professional: **sortable columns**, **sticky header**, **pagination** (or virtualized rows) for large lists, **saved filters/views**, **bulk selection + actions**, optional **inline edit**, and **CSV export** on every list (not just Control Panel).
+**Done when:** Orders/Products/Suppliers tables support sort, paginate, bulk actions, and export.
+
+## TODO 78 — Frontend test suite
+`P1 · L · apps/web (Vitest + @testing-library/react + jsdom)`
+The web app has **zero** tests. Stand up Vitest + Testing Library and cover the highest-risk logic first: the **cost-per-m² engine** (TODO 69), order/reconciliation form math and validation, the i18n switcher, and auth-gated routing. Wire into CI.
+**Done when:** `npm run test` runs a meaningful web test suite in CI alongside the API tests.
+
+## TODO 79 — Theme token sweep (kill hardcoded colors)
+`P1 · S · apps/web/src (global)`
+Hardcoded colors (`bg-white`, `text-white`, raw hex) break theming — the invisible-stepper bug (TODO 63) is one symptom. Sweep the codebase and replace them with theme tokens (`bg-app-*`, `var(--*)`, `.glass`). Prerequisite for a reliable light/dark mode (TODO 66).
+**Done when:** no component hardcodes surface/text colors; every screen is correct in both themes.
+
+## TODO 80 — Audit log / activity feed
+`P1 · M · apps/api (AuditLog model + write on key mutations) + apps/web (activity page)`
+For an anti-theft product this is core: record who did what (created/edited/deleted orders, reconciliations, price changes, stock adjustments, invites, role changes) per organization, and show a filterable activity feed. Immutable, tenant-scoped.
+**Done when:** every significant action is logged with actor + timestamp, viewable as a per-org activity feed.
+
+## TODO 81 — Error monitoring + bundle budget
+`P2 · S · apps/web, apps/api, vite config`
+Add error monitoring (e.g. Sentry) to web + API, and set a bundle-size budget in Vite (the main JS chunk is ~449 KB; recharts adds ~366 KB — lazy-load charts, trim where possible).
+**Done when:** runtime errors are reported centrally and the build warns if the main bundle regresses past the budget.
+
+## TODO 82 — Onboarding / first-run experience
+`P2 · M · apps/web (onboarding flow) + apps/api (org setup state)`
+A new organization lands on empty screens. Add a first-run flow: a setup checklist (add suppliers → add products → set the MKD→€ rate → create your first order), optional seed/sample data, and a welcome state on the dashboard until real data exists.
+**Done when:** a brand-new org is guided from empty to productive without confusion.
+
+## TODO 83 — PWA + offline resilience
+`P2 · L · apps/web (vite-plugin-pwa, service worker, offline queue)`
+Construction sites have poor connectivity. Make the app an installable PWA that caches the shell, works read-only offline, and queues create/edit actions to sync when back online. Add install prompts and an offline indicator.
+**Done when:** the app installs to a phone home screen, loads offline, and syncs queued changes on reconnect.
+
+## TODO 84 — Settings hub
+`P1 · M · new apps/web/src/pages/Settings.tsx + nav`
+Settings are scattered. Create one Settings area with sections: **Organization** (name, logo, invoice details, currency/locale), **Exchange rate** (MKD→€, TODO 68), **Members & roles**, **Billing** (TODO 52–53), and **Security** (password, sessions). Route + nav entry under the Settings section.
+**Done when:** all org/admin settings live in one coherent, sectioned Settings hub.
+
+> Note: **Billing & plans** is already tracked as **TODO 52–53** (Stripe, tiers, gating) — surfaced here via the Settings hub (TODO 84), not duplicated.
