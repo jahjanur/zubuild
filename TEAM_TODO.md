@@ -460,3 +460,8 @@ The app currently ships a single dark "Cosmic" theme. Add a proper **light + dar
 - Add a **theme toggle** control (sidebar footer / header), **persist** the choice to `localStorage`, and respect the OS `prefers-color-scheme` on first load.
 - **Audit for hardcoded colors** that break in one mode (e.g. the stepper's `bg-white` in TODO 63, any `text-white`/`bg-white` in components) and move them to tokens.
 **Done when:** users can switch between a polished white/light mode and the dark mode; the choice persists across reloads; every screen (dashboard, orders, create order, modals, login, PDFs preview, etc.) looks correct in both.
+
+## TODO 67 — Add a "Powered by Zulbera" footer in the app UI
+`P1 · S · apps/web/src/layout/AppLayout.tsx (+ apps/web/src/pages/Login.tsx)`
+Add a subtle **"Powered by Zulbera"** footer inside the web app itself (in addition to the PDF, TODO 65) so it's visible across the platform — e.g. pinned at the bottom of the sidebar and/or a small global footer under the page content, and on the login page. Keep it muted and small (secondary text), consistent with the active theme (works in both light/dark from TODO 66), and non-intrusive. Optionally make it a link to Zulbera.
+**Done when:** "Powered by Zulbera" appears consistently in the app (main layout + login), styled subtly, and looks correct in both themes.
