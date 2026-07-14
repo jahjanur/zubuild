@@ -49,70 +49,82 @@ const LANGS = [
 ] as const;
 
 /**
- * A-Frame monogram — reads as the letter "A" and a roofline at once. Single
- * weight strokes, indigo→violet gradient, no enclosing box. Same artwork as
- * public/favicon.svg. `id` keeps the gradient unique when several marks render.
+ * Gold crest: a serif initial inside a double-line oval, over an ornamental
+ * flourish — the AEM Residence mark, recreated as vector so it's crisp at any
+ * size and sits cleanly on the dark sidebar. `id` keeps the gold gradient
+ * unique per instance. `withFlourish` adds the divider (stacked lockup only).
  */
-function BrandLogo({ id, size = 32 }: { id: string; size?: number }) {
-  const gid = `brand-${id}`;
+function BrandCrest({ id, letter, height = 60, withFlourish = true }: { id: string; letter: string; height?: number; withFlourish?: boolean }) {
+  const gid = `gold-${id}`;
+  const vbH = withFlourish ? 98 : 68;
+  const width = (height * 72) / vbH;
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true" className="shrink-0">
+    <svg width={width} height={height} viewBox={`0 0 72 ${vbH}`} fill="none" aria-hidden="true" className="shrink-0">
       <defs>
-        <linearGradient id={gid} x1="2" y1="4" x2="30" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#6366F1" />
-          <stop offset="1" stopColor="#8B5CF6" />
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#F1E3BA" />
+          <stop offset="0.55" stopColor="#E4CE9C" />
+          <stop offset="1" stopColor="#C6A86B" />
         </linearGradient>
       </defs>
-      <g stroke={`url(#${gid})`} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 4.5 L4.5 26" />
-        <path d="M16 4.5 L27.5 26" />
-        <path d="M9.6 18 L22.4 18" />
+      <g stroke={`url(#${gid})`} fill="none">
+        <ellipse cx="36" cy="34" rx="26" ry="31" strokeWidth="1.5" />
+        <ellipse cx="36" cy="34" rx="21.5" ry="26" strokeWidth="0.9" />
       </g>
+      <text x="36" y="46" textAnchor="middle" fill={`url(#${gid})`} fontFamily="Cinzel, Georgia, serif" fontWeight={600} fontSize={34}>
+        {letter}
+      </text>
+      {withFlourish && (
+        <g stroke={`url(#${gid})`} strokeWidth="1" strokeLinecap="round">
+          <line x1="20" y1="82" x2="52" y2="82" />
+          <path d="M26 79.6 L28 82 L26 84.4 L24 82 Z" fill={`url(#${gid})`} strokeWidth="0.4" />
+          <path d="M46 79.6 L48 82 L46 84.4 L44 82 Z" fill={`url(#${gid})`} strokeWidth="0.4" />
+          <path d="M20 82 q -3.5 0 -3.5 -3.6" fill="none" />
+          <path d="M52 82 q 3.5 0 3.5 -3.6" fill="none" />
+        </g>
+      )}
     </svg>
   );
 }
 
 /**
- * Sidebar brand lockup: the mark (or the org's uploaded logo) + a two-line
- * wordmark. The org name splits into a bold first word over a spaced, muted
- * second line. Links to the dashboard; brightens on hover. `collapsed` shows
- * only the centered mark for an icon-rail sidebar.
+ * Sidebar brand lockup: the gold crest (or the org's uploaded logo) with the
+ * org name set in Cinzel caps. `stacked` centers crest-over-wordmark for the
+ * desktop header; `inline` is a compact row for the mobile bars. Links to the
+ * dashboard and brightens on hover.
  */
 function BrandLockup({
   logoUrl,
   name,
   onClick,
-  collapsed = false,
+  layout = 'stacked',
 }: {
   logoUrl?: string | null;
   name?: string;
   onClick?: () => void;
-  collapsed?: boolean;
+  layout?: 'stacked' | 'inline';
 }) {
   const uid = useId();
   const displayName = (name || 'Zubuild').trim();
-  const [first, ...rest] = displayName.split(/\s+/);
-  const second = rest.join(' ');
+  const initial = (displayName[0] || 'Z').toUpperCase();
+  const stacked = layout === 'stacked';
   return (
     <Link
       to="/app/dashboard"
       onClick={onClick}
       aria-label={`${displayName} — dashboard`}
-      className={`group inline-flex items-center gap-3 min-w-0 rounded-md transition-[filter] duration-150 hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] ${collapsed ? 'justify-center' : ''}`}
+      className={`group rounded-md transition-[filter] duration-150 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] ${
+        stacked ? 'flex flex-col items-center text-center gap-1.5' : 'inline-flex items-center gap-2.5 min-w-0'
+      }`}
     >
       {logoUrl ? (
-        <img src={logoUrl} alt={displayName} className="h-8 w-8 rounded-lg object-contain bg-white/5 shrink-0" />
+        <img src={logoUrl} alt={displayName} className={stacked ? 'h-14 w-auto max-w-[180px] object-contain' : 'h-9 w-9 rounded object-contain shrink-0'} />
       ) : (
-        <BrandLogo id={uid} size={32} />
+        <BrandCrest id={uid} letter={initial} height={stacked ? 62 : 34} withFlourish={stacked} />
       )}
-      {!collapsed && (
-        <span className="flex flex-col min-w-0 leading-none">
-          <span className="text-white font-bold text-[15px] tracking-[0.12em] truncate">{first}</span>
-          {second && (
-            <span className="mt-[3px] text-[10px] font-medium tracking-[0.3em] uppercase text-sidebar-section truncate">{second}</span>
-          )}
-        </span>
-      )}
+      <span className={`font-brand font-semibold uppercase text-brand-gold ${stacked ? 'text-[11.5px] tracking-[0.22em] pl-[0.22em]' : 'text-[13px] tracking-[0.16em] pl-[0.16em] truncate'}`}>
+        {displayName}
+      </span>
     </Link>
   );
 }
@@ -219,8 +231,8 @@ export default function AppLayout() {
     <div className="min-h-screen bg-app-bg flex">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 left-0 bg-sidebar-bg z-20">
-        <div className="relative h-16 flex items-center px-5 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-sidebar-border after:to-transparent">
-          <BrandLockup logoUrl={org?.logoUrl} name={org?.name} />
+        <div className="relative flex items-center justify-center px-4 py-5 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-sidebar-border after:to-transparent">
+          <BrandLockup logoUrl={org?.logoUrl} name={org?.name} layout="stacked" />
         </div>
         <NavList />
         <Footer />
@@ -230,7 +242,7 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col w-full min-w-0 overflow-x-hidden lg:pl-64">
         {/* Mobile top bar */}
         <header className="lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 h-14 bg-sidebar-bg safe-area-pt">
-          <BrandLockup logoUrl={org?.logoUrl} name={org?.name} />
+          <BrandLockup logoUrl={org?.logoUrl} name={org?.name} layout="inline" />
           <button type="button" onClick={() => setMenuOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('nav.more')}>
             <Menu size={22} />
           </button>
@@ -254,7 +266,7 @@ export default function AppLayout() {
           <div className="lg:hidden fixed inset-0 z-40 bg-app-overlay" onClick={() => setMenuOpen(false)} aria-hidden />
           <div className="lg:hidden fixed top-0 right-0 bottom-0 z-50 w-full max-w-xs bg-sidebar-bg flex flex-col safe-area-pt" role="dialog" aria-label={t('nav.more')}>
             <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border">
-              <BrandLockup logoUrl={org?.logoUrl} name={org?.name} onClick={() => setMenuOpen(false)} />
+              <BrandLockup logoUrl={org?.logoUrl} name={org?.name} layout="inline" onClick={() => setMenuOpen(false)} />
               <button type="button" onClick={() => setMenuOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('common.close')}>
                 <X size={22} />
               </button>

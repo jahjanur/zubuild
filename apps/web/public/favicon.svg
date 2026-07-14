@@ -1,13 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
   <defs>
-    <linearGradient id="g" x1="2" y1="4" x2="30" y2="28" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#6366F1"/>
-      <stop offset="1" stop-color="#8B5CF6"/>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F1E3BA"/>
+      <stop offset="0.55" stop-color="#E4CE9C"/>
+      <stop offset="1" stop-color="#C6A86B"/>
     </linearGradient>
   </defs>
-  <g stroke="url(#g)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M16 4.5 L4.5 26"/>
-    <path d="M16 4.5 L27.5 26"/>
-    <path d="M9.6 18 L22.4 18"/>
+  <rect width="32" height="32" rx="7" fill="#2A2030"/>
+  <g stroke="url(#g)" fill="none">
+    <ellipse cx="16" cy="14.5" rx="8.2" ry="9.6" stroke-width="1"/>
+    <ellipse cx="16" cy="14.5" rx="6.4" ry="7.7" stroke-width="0.6"/>
   </g>
+  <text x="16" y="19" text-anchor="middle" fill="url(#g)" font-family="Cinzel, Georgia, serif" font-weight="600" font-size="11">A</text>
+  <line x1="10" y1="27" x2="22" y2="27" stroke="url(#g)" stroke-width="0.8" stroke-linecap="round"/>
 </svg>
