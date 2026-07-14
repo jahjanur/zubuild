@@ -401,3 +401,27 @@ Choose a container host + managed Postgres; create dev/staging/prod with separat
 `P2 · M · infra`
 DB backups + migration strategy; error monitoring (e.g. Sentry) + uptime; automated build/deploy (`build` shared→api→web, serve `apps/web/dist`, run API via `npm run start`).
 **Done when:** deploys are automated and the app is observable in production.
+
+---
+
+## Login page fixes (from review 2026-07-14) · P1
+
+## TODO 59 — Stop the "Authentication required" toast on the login screen
+`P1 · S · apps/web/src/lib/api.ts, apps/web/src/App.tsx, apps/web/src/pages/Login.tsx`
+On first load the session check (`GET /auth/me`) returns 401 for a logged-out visitor, and that 401 is surfaced as a global **"Authentication required"** error toast on the login page — which is wrong (being logged out is the normal state there). Treat a 401 from the auth/session check as "not logged in", not an error: skip the global error handler for the `auth/me` query (or suppress 401 toasts on the `/login` route / when unauthenticated).
+**Done when:** loading the app while logged out shows the login page with **no** error toast; genuine errors still surface.
+
+## TODO 60 — Reposition the login language picker
+`P1 · S · apps/web/src/pages/Login.tsx`
+The EN / Македонски / Shqip pills are crammed at the top-right inside the login card (`flex justify-end mb-5`), competing with the brand + form. Move them somewhere cleaner and secondary — recommend fixed at the **top-right of the viewport** (outside the card) or a centered, muted row **below** the card — and make them smaller so the card leads with the logo and form.
+**Done when:** the language picker is visually separated from the form, balanced, and looks intentional on mobile and desktop.
+
+## TODO 61 — Fix login brand inconsistency (logo vs placeholder vs title)
+`P1 · S · apps/web/src/pages/Login.tsx, apps/web/index.html`
+Login shows the **AEM Residence** script logo, the email placeholder is **`you@zubuild.com`**, and the page `<title>` is **AEM Residence** — three different identities. Pick one (per the branding decision) and make the logo, `<title>`, placeholder, and product name consistent.
+**Done when:** login branding is internally consistent with the chosen product identity.
+
+## TODO 62 — General login page polish / redesign
+`P1 · S · apps/web/src/pages/Login.tsx`
+Overall the login page needs tightening: consistent spacing, a proper brand lockup, aligned inputs, a clear primary sign-in button, and the "Forgot password?" / "Create organization" links styled as obvious secondary/link actions. Match the app's chosen theme + brand.
+**Done when:** login looks clean, balanced, on-brand, and passes a quick design review.
