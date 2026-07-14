@@ -102,7 +102,10 @@
     "price": "Unit Price",
     "category": "Category",
     "deleteProduct": "Delete Product",
-    "deleteConfirm": "Delete \"{{name}}\"? This action cannot be undone."
+    "deleteConfirm": "Delete \"{{name}}\"? This action cannot be undone.",
+    "newCategory": "New category",
+    "addAsNew": "Add “{{name}}” as new",
+    "pickOrType": "Pick or type a category"
   },
   "createOrder": {
     "selectSupplier": "Select supplier",

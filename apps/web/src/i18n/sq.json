@@ -102,7 +102,10 @@
     "price": "Çmimi për njësi",
     "category": "Kategoria",
     "deleteProduct": "Fshi produktin",
-    "deleteConfirm": "Të fshihet «{{name}}»? Ky veprim nuk mund të zhbëhet."
+    "deleteConfirm": "Të fshihet «{{name}}»? Ky veprim nuk mund të zhbëhet.",
+    "newCategory": "Kategori e re",
+    "addAsNew": "Shto “{{name}}” si të re",
+    "pickOrType": "Zgjidhni ose shkruani një kategori"
   },
   "createOrder": {
     "selectSupplier": "Zgjidhni furnitorin",

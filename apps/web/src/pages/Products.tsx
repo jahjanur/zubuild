@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Plus } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/useAuth';
@@ -73,6 +74,7 @@ export default function Products() {
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const categoryInputRef = useRef<HTMLDivElement>(null);
+  const categoryFieldRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: '',
     category: '',
@@ -157,6 +159,15 @@ export default function Products() {
   const categorySuggestions = form.category.trim()
     ? categories.filter((c) => c.toLowerCase().includes(form.category.trim().toLowerCase())).slice(0, 8)
     : categories.slice(0, 8);
+  // Offer to create the typed value when it isn't an existing category.
+  const categoryTyped = form.category.trim();
+  const categoryCanCreate = categoryTyped !== '' && !categories.some((c) => c.toLowerCase() === categoryTyped.toLowerCase());
+
+  function startNewCategory() {
+    setForm((f) => ({ ...f, category: '' }));
+    setCategoryDropdownOpen(true);
+    setTimeout(() => categoryFieldRef.current?.focus(), 0);
+  }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -315,8 +326,18 @@ export default function Products() {
             <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required />
           </div>
           <div ref={categoryInputRef} className="relative">
-            <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('products.category')} *</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-sm font-medium text-app-secondary">{t('products.category')} *</label>
+              <button
+                type="button"
+                onClick={startNewCategory}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-app-accent hover:text-app-accent-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] rounded"
+              >
+                <Plus size={14} /> {t('products.newCategory')}
+              </button>
+            </div>
             <Input
+              ref={categoryFieldRef}
               value={form.category}
               onChange={(e) => {
                 setForm((f) => ({ ...f, category: e.target.value }));
@@ -325,13 +346,23 @@ export default function Products() {
               onFocus={() => setCategoryDropdownOpen(true)}
               autoComplete="off"
               required
+              placeholder={t('products.pickOrType')}
             />
-            {categoryDropdownOpen && categorySuggestions.length > 0 && (
+            {categoryDropdownOpen && (categoryCanCreate || categorySuggestions.length > 0) && (
               <ul
-                className="glass absolute z-50 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-48 overflow-y-auto py-1"
+                className="glass absolute z-50 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-52 overflow-y-auto py-1"
                 style={{ background: 'var(--glass-bg-strong)' }}
                 role="listbox"
               >
+                {categoryCanCreate && (
+                  <li
+                    role="option"
+                    className="px-4 py-2.5 cursor-pointer hover:bg-app-accent-muted flex items-center gap-2 text-app-accent font-medium border-b border-[var(--border)]"
+                    onClick={() => setCategoryDropdownOpen(false)}
+                  >
+                    <Plus size={16} className="shrink-0" /> {t('products.addAsNew', { name: categoryTyped })}
+                  </li>
+                )}
                 {categorySuggestions.map((c) => (
                   <li
                     key={c}

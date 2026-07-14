@@ -102,7 +102,10 @@
     "price": "Birim Fiyat",
     "category": "Kategori",
     "deleteProduct": "Ürünü Sil",
-    "deleteConfirm": "\"{{name}}\" silinsin mi? Bu işlem geri alınamaz."
+    "deleteConfirm": "\"{{name}}\" silinsin mi? Bu işlem geri alınamaz.",
+    "newCategory": "Yeni kategori",
+    "addAsNew": "“{{name}}” yeni olarak ekle",
+    "pickOrType": "Kategori seçin veya yazın"
   },
   "createOrder": {
     "selectSupplier": "Tedarikçi seçin",
