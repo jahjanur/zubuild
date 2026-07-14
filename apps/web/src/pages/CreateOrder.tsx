@@ -369,71 +369,72 @@ export default function CreateOrder() {
         <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 md:gap-6 items-start">
             <div className="space-y-4 md:space-y-6 min-w-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                <Card>
-                  <CardContent>
-                    <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('createOrder.supplierRequired')}</label>
-                    <div className="relative" ref={supplierRef}>
+              <Card>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('createOrder.supplierRequired')}</label>
+                      <div className="relative" ref={supplierRef}>
+                        <Input
+                          type="text"
+                          placeholder={t('createOrder.selectSupplier')}
+                          value={supplierDropdownOpen ? supplierSearch : (selectedSupplier ? selectedSupplier.companyName : supplierSearch)}
+                          onChange={(e) => {
+                            setSupplierSearch(e.target.value);
+                            if (!e.target.value) setSupplierId('');
+                            setSupplierDropdownOpen(true);
+                          }}
+                          onFocus={() => {
+                            if (selectedSupplier) setSupplierSearch(selectedSupplier.companyName);
+                            setSupplierDropdownOpen(true);
+                          }}
+                          onBlur={() => setTimeout(() => setSupplierDropdownOpen(false), 180)}
+                          className="min-h-[48px]"
+                        />
+                        {supplierDropdownOpen && (
+                          <div className="glass absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-56 overflow-auto" style={{ background: 'var(--glass-bg-strong)' }}>
+                            {filteredSuppliers.length === 0 ? (
+                              <div className="p-3 text-app-muted text-sm">{t('createOrder.noResults')}</div>
+                            ) : (
+                              <ul className="py-1">
+                                {filteredSuppliers.map((s) => (
+                                  <li key={s.id}>
+                                    <button
+                                      type="button"
+                                      className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-slate-900/[0.06] flex flex-col gap-0.5"
+                                      onClick={() => {
+                                        setSupplierId(s.id);
+                                        setSupplierSearch('');
+                                        setSupplierDropdownOpen(false);
+                                      }}
+                                    >
+                                      <span className="font-medium">{s.companyName}</span>
+                                      {s.contactPerson && (
+                                        <span className="text-sm text-app-muted">{s.contactPerson}</span>
+                                      )}
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {supplierId && <input type="hidden" name="supplierId" value={supplierId} />}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('createOrder.orderDateRequired')}</label>
                       <Input
-                        type="text"
-                        placeholder={t('createOrder.selectSupplier')}
-                        value={supplierDropdownOpen ? supplierSearch : (selectedSupplier ? selectedSupplier.companyName : supplierSearch)}
-                        onChange={(e) => {
-                          setSupplierSearch(e.target.value);
-                          if (!e.target.value) setSupplierId('');
-                          setSupplierDropdownOpen(true);
-                        }}
-                        onFocus={() => {
-                          if (selectedSupplier) setSupplierSearch(selectedSupplier.companyName);
-                          setSupplierDropdownOpen(true);
-                        }}
-                        onBlur={() => setTimeout(() => setSupplierDropdownOpen(false), 180)}
+                        type="date"
+                        value={orderDate.slice(0, 10)}
+                        onChange={(e) => setOrderDate(e.target.value)}
+                        required
                         className="min-h-[48px]"
                       />
-                      {supplierDropdownOpen && (
-                        <div className="glass absolute z-10 mt-1 w-full rounded-xl border border-[var(--border)] shadow-modal max-h-56 overflow-auto" style={{ background: 'var(--glass-bg-strong)' }}>
-                          {filteredSuppliers.length === 0 ? (
-                            <div className="p-3 text-app-muted text-sm">{t('createOrder.noResults')}</div>
-                          ) : (
-                            <ul className="py-1">
-                              {filteredSuppliers.map((s) => (
-                                <li key={s.id}>
-                                  <button
-                                    type="button"
-                                    className="w-full text-left px-4 py-3 min-h-[48px] text-base text-app-primary hover:bg-slate-900/[0.06] flex flex-col gap-0.5"
-                                    onClick={() => {
-                                      setSupplierId(s.id);
-                                      setSupplierSearch('');
-                                      setSupplierDropdownOpen(false);
-                                    }}
-                                  >
-                                    <span className="font-medium">{s.companyName}</span>
-                                    {s.contactPerson && (
-                                      <span className="text-sm text-app-muted">{s.contactPerson}</span>
-                                    )}
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      )}
                     </div>
-                    {supplierId && <input type="hidden" name="supplierId" value={supplierId} />}
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent>
-                    <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('createOrder.orderDateRequired')}</label>
-                    <Input
-                      type="date"
-                      value={orderDate.slice(0, 10)}
-                      onChange={(e) => setOrderDate(e.target.value)}
-                      required
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
