@@ -54,14 +54,11 @@ const LANGS = [
  * size and sits cleanly on the dark sidebar. `id` keeps the gold gradient
  * unique per instance. `withFlourish` adds the divider (stacked lockup only).
  */
-function BrandCrest({ id, letter, height = 60, withFlourish = true }: { id: string; letter: string; height?: number; withFlourish?: boolean }) {
+function BrandCrest({ id, letter, height = 56 }: { id: string; letter: string; height?: number }) {
   const gid = `gold-${id}`;
-  // Crop the empty space below the flourish (88) so the wordmark can sit closer;
-  // 66 for the emblem-only (collapsed) crest.
-  const vbH = withFlourish ? 88 : 66;
-  const width = (height * 72) / vbH;
+  const width = (height * 72) / 66; // oval fills the 72×66 viewBox — no flourish
   return (
-    <svg width={width} height={height} viewBox={`0 0 72 ${vbH}`} fill="none" aria-hidden="true" className="shrink-0">
+    <svg width={width} height={height} viewBox="0 0 72 66" fill="none" aria-hidden="true" className="shrink-0">
       <defs>
         <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#F1E3BA" />
@@ -76,15 +73,6 @@ function BrandCrest({ id, letter, height = 60, withFlourish = true }: { id: stri
       <text x="36" y="46" textAnchor="middle" fill={`url(#${gid})`} fontFamily="Cinzel, Georgia, serif" fontWeight={600} fontSize={34}>
         {letter}
       </text>
-      {withFlourish && (
-        <g stroke={`url(#${gid})`} strokeWidth="1" strokeLinecap="round">
-          <line x1="20" y1="82" x2="52" y2="82" />
-          <path d="M26 79.6 L28 82 L26 84.4 L24 82 Z" fill={`url(#${gid})`} strokeWidth="0.4" />
-          <path d="M46 79.6 L48 82 L46 84.4 L44 82 Z" fill={`url(#${gid})`} strokeWidth="0.4" />
-          <path d="M20 82 q -3.5 0 -3.5 -3.6" fill="none" />
-          <path d="M52 82 q 3.5 0 3.5 -3.6" fill="none" />
-        </g>
-      )}
     </svg>
   );
 }
@@ -128,7 +116,7 @@ function BrandLockup({
           className={collapsed ? 'h-8 w-8 rounded object-contain' : stacked ? 'h-12 w-auto max-w-[160px] object-contain' : 'h-9 w-9 rounded object-contain shrink-0'}
         />
       ) : (
-        <BrandCrest id={uid} letter={initial} height={collapsed ? 32 : stacked ? 46 : 34} withFlourish={!collapsed && stacked} />
+        <BrandCrest id={uid} letter={initial} height={collapsed ? 32 : stacked ? 60 : 34} />
       )}
       {!collapsed && (
         <span className={`font-brand font-semibold uppercase text-brand-gold ${stacked ? 'text-[10.5px] tracking-[0.25em] pl-[0.25em]' : 'text-[13px] tracking-[0.16em] pl-[0.16em] truncate'}`}>
@@ -241,7 +229,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-app-bg flex">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 left-0 bg-sidebar-bg z-20">
-        <div className="relative flex items-center justify-center px-4 pt-5 pb-6 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-white/[0.06] after:to-transparent">
+        <div className="relative flex items-center justify-center px-4 pt-4 pb-5 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-white/[0.06] after:to-transparent">
           <BrandLockup logoUrl={org?.logoUrl} name={org?.name} layout="stacked" />
         </div>
         <NavList />
