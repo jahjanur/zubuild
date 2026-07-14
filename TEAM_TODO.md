@@ -425,3 +425,21 @@ Login shows the **AEM Residence** script logo, the email placeholder is **`you@z
 `P1 · S · apps/web/src/pages/Login.tsx`
 Overall the login page needs tightening: consistent spacing, a proper brand lockup, aligned inputs, a clear primary sign-in button, and the "Forgot password?" / "Create organization" links styled as obvious secondary/link actions. Match the app's chosen theme + brand.
 **Done when:** login looks clean, balanced, on-brand, and passes a quick design review.
+
+---
+
+## Create Order fixes (from review 2026-07-14) · P1
+
+## TODO 63 — Fix invisible quantity stepper numbers (− value +)
+`P1 · S · apps/web/src/pages/CreateOrder.tsx` (the `InlineStepper` component)
+The stepper hardcodes `bg-white` for the pill but renders the quantity with `text-app-primary`, which is **white** in the current dark "Cosmic" theme — so the number is **white-on-white (invisible)**, and the +/- icons (`text-app-accent`, rose-gold) are also low-contrast. Make it theme-aware: drop the hardcoded `bg-white`, use a themed surface (e.g. `--glass-bg-strong` / `bg-app-surface-1`) with `text-app-primary` for the number and a clearly contrasting color for the +/- icons, so it stays legible in whatever theme is active.
+**Done when:** the `− value +` control is fully legible (number **and** both icons) with good contrast, in both the current theme and the light theme.
+
+## TODO 64 — Modernize the category filter (vertical + searchable)
+`P1 · M · apps/web/src/pages/CreateOrder.tsx` (category state + chips, and `apps/web/src/pages/Products.tsx` if shared)
+The horizontal category chips get cramped and are hard to scan with many categories. Redesign the category filter to be modern and scalable:
+- Support a **vertical list layout** — a left rail of categories beside the product grid on desktop, collapsing to a dropdown/sheet on mobile.
+- Add a **search box that filters the categories themselves** (type to narrow the category list).
+- Keep an **"All"** option, show a **count per category**, and a clear active state.
+- Make it feel polished (smooth active state, tidy spacing, keyboard accessible).
+**Done when:** categories are browsable as a searchable vertical list on desktop and a usable control on mobile, with per-category counts and a clear active state.
