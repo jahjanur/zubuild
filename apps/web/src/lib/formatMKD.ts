@@ -77,6 +77,21 @@ export function formatMKDPlain(value: number): string {
   return `${numberFormat(PLAIN_INTEGER).format(value)} ${orgCurrency}`;
 }
 
+/** Format euros with 2 decimals in the active locale (e.g. "€3,600.00" / "3.600,00 €"). */
+export function formatEUR(value: number): string {
+  return numberFormat({
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+/** Format a percentage with `digits` decimals in the active locale (e.g. "34.7%"). */
+export function formatPercent(value: number, digits = 1): string {
+  return `${numberFormat({ minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value)}%`;
+}
+
 /** Format an arbitrary number in the active locale. */
 export function formatNumber(value: number, opts: Intl.NumberFormatOptions = {}): string {
   return numberFormat(opts).format(value);

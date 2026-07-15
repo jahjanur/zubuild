@@ -20,6 +20,7 @@ const Reconciliation = lazy(() => import('./pages/Reconciliation'));
 const ControlPanel = lazy(() => import('./pages/ControlPanel'));
 const Orders = lazy(() => import('./pages/Orders'));
 const Analytics = lazy(() => import('./pages/Analytics'));
+const CostCalculator = lazy(() => import('./pages/CostCalculator'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -76,6 +77,7 @@ export default function App() {
           <Route path="control-panel" element={<ControlPanel />} />
           <Route path="orders" element={<Orders />} />
           <Route path="analytics" element={<Analytics />} />
+          <Route path="cost-calculator" element={<CostCalculator />} />
           <Route path="team" element={<Team />} />
           <Route path="profile" element={<Profile />} />
           {/* Account merged into Profile — redirect old links. */}

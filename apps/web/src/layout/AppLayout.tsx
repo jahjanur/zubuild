@@ -9,7 +9,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { PoweredBy } from '../components/PoweredBy';
 import {
   LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
-  ShieldAlert, BarChart3, Users, UserCircle, LogOut, Menu, X, Globe, ChevronDown,
+  ShieldAlert, BarChart3, Users, UserCircle, LogOut, Menu, X, Globe, ChevronDown, Calculator,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { api } from '../lib/api';
@@ -33,6 +33,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
       { key: 'products', path: 'products', icon: Package },
       { key: 'controlPanel', path: 'control-panel', icon: ShieldAlert },
       { key: 'analytics', path: 'analytics', icon: BarChart3 },
+      { key: 'costCalculator', path: 'cost-calculator', icon: Calculator },
     ],
   },
   {
