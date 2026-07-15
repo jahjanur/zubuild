@@ -21,7 +21,7 @@
     "sectionMain": "Ana",
     "sectionManagement": "Yönetim",
     "sectionSettings": "Ayarlar",
-    "profile": "Profil"
+    "settings": "Ayarlar"
   },
   "common": {
     "loading": "Yükleniyor…",
@@ -500,5 +500,21 @@
     "noRows": "Satır yok",
     "deactivate": "Pasifleştir",
     "delete": "Sil"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "subtitle": "Kuruluşunuzu, ekibinizi ve hesabınızı yönetin.",
+    "organization": "Kuruluş",
+    "exchangeRate": "Döviz kuru",
+    "members": "Üyeler ve roller",
+    "billing": "Faturalandırma",
+    "security": "Güvenlik",
+    "currency": "Para birimi",
+    "locale": "Varsayılan dil",
+    "currentPlan": "Mevcut plan",
+    "active": "Etkin",
+    "billingSoon": "Plan yönetimi ve faturalar yakında.",
+    "sessions": "Oturumlar",
+    "sessionsNote": "Bu cihazda oturum açıksınız. Çıkış bu oturumu sonlandırır."
   }
 }

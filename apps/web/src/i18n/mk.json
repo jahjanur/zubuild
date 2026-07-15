@@ -21,7 +21,7 @@
     "sectionMain": "Главно",
     "sectionManagement": "Управување",
     "sectionSettings": "Поставки",
-    "profile": "Профил"
+    "settings": "Поставки"
   },
   "common": {
     "loading": "Се вчитува…",
@@ -500,5 +500,21 @@
     "noRows": "Нема редови",
     "deactivate": "Деактивирај",
     "delete": "Избриши"
+  },
+  "settings": {
+    "title": "Поставки",
+    "subtitle": "Управувајте со вашата организација, тим и сметка.",
+    "organization": "Организација",
+    "exchangeRate": "Девизен курс",
+    "members": "Членови и улоги",
+    "billing": "Наплата",
+    "security": "Безбедност",
+    "currency": "Валута",
+    "locale": "Стандарден јазик",
+    "currentPlan": "Тековен план",
+    "active": "Активен",
+    "billingSoon": "Управувањето со планот и фактурите наскоро.",
+    "sessions": "Сесии",
+    "sessionsNote": "Најавени сте на овој уред. Одјавата ја завршува оваа сесија."
   }
 }

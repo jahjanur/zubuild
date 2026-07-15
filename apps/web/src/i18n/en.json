@@ -21,7 +21,7 @@
     "sectionMain": "Main",
     "sectionManagement": "Management",
     "sectionSettings": "Settings",
-    "profile": "Profile"
+    "settings": "Settings"
   },
   "common": {
     "loading": "Loading…",
@@ -500,5 +500,21 @@
     "noRows": "No rows",
     "deactivate": "Deactivate",
     "delete": "Delete"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your organization, team and account.",
+    "organization": "Organization",
+    "exchangeRate": "Exchange rate",
+    "members": "Members & roles",
+    "billing": "Billing",
+    "security": "Security",
+    "currency": "Currency",
+    "locale": "Default language",
+    "currentPlan": "Current plan",
+    "active": "Active",
+    "billingSoon": "Plan management and invoices are coming soon.",
+    "sessions": "Sessions",
+    "sessionsNote": "You are signed in on this device. Signing out ends this session."
   }
 }

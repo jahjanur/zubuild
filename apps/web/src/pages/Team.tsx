@@ -15,7 +15,8 @@ function inviteLink(token: string): string {
   return `${window.location.origin}/accept-invite/${token}`;
 }
 
-export default function Team() {
+/** Team management content (invites + members). Rendered inside the Settings hub. */
+export function TeamContent() {
   const { t } = useTranslation();
   const { user, isAdmin } = useAuth();
   const toast = useToast();
@@ -58,21 +59,14 @@ export default function Team() {
   const roleLabel = (r: string) => (r === 'ADMIN' ? t('team.roleAdmin') : r === 'MANAGER' ? t('team.roleManager') : t('team.roleViewer'));
 
   if (!isAdmin) {
-    return (
-      <div className="page-container space-y-4 md:space-y-6">
-        <h1 className="text-xl md:text-2xl font-semibold text-app-primary">{t('team.title')}</h1>
-        <Card><CardContent className="p-6"><p className="text-app-secondary">{t('team.adminOnly')}</p></CardContent></Card>
-      </div>
-    );
+    return <Card><CardContent className="p-6"><p className="text-app-secondary">{t('team.adminOnly')}</p></CardContent></Card>;
   }
 
   const members = membersQ.data?.data ?? [];
   const invites = invitesQ.data?.data ?? [];
 
   return (
-    <div className="page-container space-y-4 md:space-y-6">
-      <h1 className="text-xl md:text-2xl font-semibold text-app-primary">{t('team.title')}</h1>
-
+    <div className="space-y-4 md:space-y-6">
       {/* Invite form */}
       <Card>
         <CardHeader><h2 className="text-sm font-semibold text-app-primary">{t('team.inviteTeammate')}</h2></CardHeader>

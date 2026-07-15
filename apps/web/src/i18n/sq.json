@@ -21,7 +21,7 @@
     "sectionMain": "Kryesore",
     "sectionManagement": "Menaxhimi",
     "sectionSettings": "Cilësimet",
-    "profile": "Profili"
+    "settings": "Cilësimet"
   },
   "common": {
     "loading": "Po ngarkohet…",
@@ -500,5 +500,21 @@
     "noRows": "Asnjë rresht",
     "deactivate": "Çaktivizo",
     "delete": "Fshi"
+  },
+  "settings": {
+    "title": "Cilësimet",
+    "subtitle": "Menaxhoni organizatën, ekipin dhe llogarinë tuaj.",
+    "organization": "Organizata",
+    "exchangeRate": "Kursi i këmbimit",
+    "members": "Anëtarët & rolet",
+    "billing": "Faturimi",
+    "security": "Siguria",
+    "currency": "Monedha",
+    "locale": "Gjuha e parazgjedhur",
+    "currentPlan": "Plani aktual",
+    "active": "Aktiv",
+    "billingSoon": "Menaxhimi i planit dhe faturat vijnë së shpejti.",
+    "sessions": "Sesionet",
+    "sessionsNote": "Jeni identifikuar në këtë pajisje. Dalja e mbyll këtë sesion."
   }
 }

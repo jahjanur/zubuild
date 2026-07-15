@@ -10,7 +10,7 @@ import { PoweredBy } from '../components/PoweredBy';
 import { GlobalSearch } from '../components/GlobalSearch';
 import {
   LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
-  ShieldAlert, BarChart3, Users, UserCircle, LogOut, Menu, X, Globe, ChevronDown, Calculator, Search,
+  ShieldAlert, BarChart3, LogOut, Menu, X, Globe, ChevronDown, Calculator, Search, Settings as SettingsIcon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { api } from '../lib/api';
@@ -40,8 +40,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
   {
     section: 'sectionSettings',
     items: [
-      { key: 'profile', path: 'profile', icon: UserCircle },
-      { key: 'team', path: 'team', icon: Users },
+      { key: 'settings', path: 'settings', icon: SettingsIcon },
     ],
   },
 ];

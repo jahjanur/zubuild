@@ -11,8 +11,7 @@ const Register = lazy(() => import('./pages/Register'));
 const AcceptInvite = lazy(() => import('./pages/AcceptInvite'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
-const Team = lazy(() => import('./pages/Team'));
-const Profile = lazy(() => import('./pages/Profile'));
+const Settings = lazy(() => import('./pages/Settings'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Suppliers = lazy(() => import('./pages/Suppliers'));
 const Products = lazy(() => import('./pages/Products'));
@@ -86,10 +85,11 @@ export default function App() {
             <Route path="orders" element={page(<Orders />)} />
             <Route path="analytics" element={page(<Analytics />)} />
             <Route path="cost-calculator" element={page(<CostCalculator />)} />
-            <Route path="team" element={page(<Team />)} />
-            <Route path="profile" element={page(<Profile />)} />
-            {/* Account merged into Profile — redirect old links. */}
-            <Route path="account" element={<Navigate to="/app/profile" replace />} />
+            <Route path="settings" element={page(<Settings />)} />
+            {/* Profile / Team / Account consolidated into Settings — redirect old links. */}
+            <Route path="team" element={<Navigate to="/app/settings?section=members" replace />} />
+            <Route path="profile" element={<Navigate to="/app/settings" replace />} />
+            <Route path="account" element={<Navigate to="/app/settings" replace />} />
           </Route>
           <Route path="/" element={<Navigate to="/app" replace />} />
           <Route path="*" element={<Navigate to="/app" replace />} />

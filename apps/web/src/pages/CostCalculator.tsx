@@ -220,7 +220,7 @@ export default function CostCalculator() {
             <CardHeader className="flex flex-row items-center justify-between gap-2">
               <div>
                 <h2 className="text-sm font-semibold text-app-primary">{t('costCalc.materials')}</h2>
-                <p className="text-app-muted text-xs mt-0.5">{t('costCalc.rateNote', { rate })} · <Link to="/app/profile" className="text-app-accent hover:underline">{t('costCalc.rateEdit')}</Link></p>
+                <p className="text-app-muted text-xs mt-0.5">{t('costCalc.rateNote', { rate })} · <Link to="/app/settings?section=exchange-rate" className="text-app-accent hover:underline">{t('costCalc.rateEdit')}</Link></p>
               </div>
               <Button type="button" size="sm" onClick={() => setPickerOpen(true)}>
                 <Plus size={16} /> {t('costCalc.addMaterial')}
