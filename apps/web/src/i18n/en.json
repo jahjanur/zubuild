@@ -485,5 +485,20 @@
     "title": "Search",
     "placeholder": "Search suppliers, products, orders…",
     "noResults": "No results found."
+  },
+  "table": {
+    "export": "Export CSV",
+    "exportSelected": "Export selected",
+    "selected": "{{count}} selected",
+    "clear": "Clear",
+    "rowsPerPage": "Rows per page",
+    "pageInfo": "{{from}}–{{to}} of {{total}}",
+    "selectAll": "Select all",
+    "selectRow": "Select row",
+    "prev": "Previous page",
+    "next": "Next page",
+    "noRows": "No rows",
+    "deactivate": "Deactivate",
+    "delete": "Delete"
   }
 }

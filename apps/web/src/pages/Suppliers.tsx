@@ -6,17 +6,19 @@ import { api } from '../lib/api';
 import { snapshotList, patchList, restoreList, type ListCache } from '../lib/optimistic';
 import { useAuth } from '../lib/useAuth';
 import { useToast } from '../context/ToastContext';
-import { Truck } from 'lucide-react';
+import { Truck, PowerOff } from 'lucide-react';
 import {
   Button,
   Card,
-  CardContent,
   Modal,
   Input,
   Select,
   Badge,
   TableActionButton,
   EmptyState,
+  DataTable,
+  type Column,
+  type BulkAction,
 } from '../components/ui';
 
 interface Supplier {
@@ -46,13 +48,6 @@ function IconTrash() {
       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
       <line x1="10" y1="11" x2="10" y2="17" />
       <line x1="14" y1="11" x2="14" y2="17" />
-    </svg>
-  );
-}
-function IconPhone() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
     </svg>
   );
 }
@@ -267,6 +262,49 @@ export default function Suppliers() {
     }
   }
 
+  async function bulkDeactivate(rows: Supplier[]) {
+    const active = rows.filter((s) => s.status === 'ACTIVE');
+    if (active.length === 0) return;
+    await Promise.allSettled(active.map((s) => api.put(`/suppliers/${s.id}`, { status: 'INACTIVE' })));
+    queryClient.invalidateQueries({ queryKey: ['suppliers'] });
+    toast.show(TOAST.setPassiveSuccess, 'success');
+  }
+
+  const supplierColumns: Column<Supplier>[] = [
+    { key: 'companyName', header: t('suppliers.companyName'), sortable: true, value: (s) => s.companyName, className: 'font-medium text-app-primary', csvHeader: 'Company' },
+    { key: 'contactPerson', header: t('suppliers.contactPerson'), sortable: true, value: (s) => s.contactPerson ?? '', render: (s) => s.contactPerson || '—', csvHeader: 'Contact' },
+    {
+      key: 'phone',
+      header: t('suppliers.phone'),
+      value: (s) => s.phone ?? '',
+      render: (s) =>
+        phoneToTel(s.phone) ? (
+          <a href={phoneToTel(s.phone)} onClick={(e) => e.stopPropagation()} className="text-app-accent hover:underline">{s.phone}</a>
+        ) : (
+          '—'
+        ),
+      csvHeader: 'Phone',
+    },
+    { key: 'location', header: t('suppliers.location'), sortable: true, value: (s) => s.location ?? '', render: (s) => s.location || '—', csvHeader: 'Location' },
+    { key: 'status', header: t('common.status'), sortable: true, value: (s) => s.status, render: (s) => <Badge variant={s.status === 'ACTIVE' ? 'success' : 'default'}>{s.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}</Badge>, csv: (s) => s.status, csvHeader: 'Status' },
+  ];
+  if (canWrite) {
+    supplierColumns.push({
+      key: 'actions',
+      header: '',
+      align: 'right',
+      render: (s) => (
+        <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+          <TableActionButton onClick={() => openEdit(s)} aria-label={t('common.edit')}><span className="text-app-accent"><IconEdit /></span></TableActionButton>
+          <TableActionButton onClick={() => setDeleteConfirm(s)} aria-label={t('common.delete')}><span className="text-app-danger"><IconTrash /></span></TableActionButton>
+        </div>
+      ),
+    });
+  }
+  const supplierBulkActions: BulkAction<Supplier>[] = canWrite
+    ? [{ key: 'deactivate', label: t('table.deactivate'), icon: <PowerOff size={15} />, onClick: bulkDeactivate }]
+    : [];
+
   return (
     <div className="page-container space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -287,70 +325,30 @@ export default function Suppliers() {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-        {suppliers.length === 0 ? (
-          <div className="col-span-full">
-            {q ? (
-              <EmptyState compact icon={<Truck size={24} />} title={t('suppliers.noSearchResults')} />
-            ) : (
-              <EmptyState
-                icon={<Truck size={26} />}
-                title={t('suppliers.noSuppliers')}
-                description={t('suppliers.noSuppliersSub')}
-                action={canWrite ? { label: t('suppliers.addSupplier'), onClick: openCreate } : undefined}
-              />
-            )}
-          </div>
-        ) : null}
-        {suppliers.map((s) => (
-          <Card key={s.id} className="p-0">
-            <CardContent className="flex flex-col gap-3">
-              <div className="flex justify-between items-start gap-2">
-                <div className="min-w-0">
-                  <h3 className="font-semibold text-app-primary truncate">{s.companyName}</h3>
-                  <p className="text-app-secondary text-sm mt-0.5">{s.contactPerson || '—'}</p>
-                  <p className="text-app-muted text-sm">{s.phone || '—'}</p>
-                  <div className="mt-2">
-                    <Badge variant={s.status === 'ACTIVE' ? 'success' : 'default'}>
-                      {s.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}
-                    </Badge>
-                  </div>
-                </div>
-                <div className="flex gap-1 shrink-0">
-                  {phoneToTel(s.phone) ? (
-                    <a
-                      href={phoneToTel(s.phone)}
-                      className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-secondary hover:bg-[var(--hover)] hover:text-app-primary focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]"
-                      aria-label="Ara"
-                      title="Ara"
-                    >
-                      <span className="text-app-accent"><IconPhone /></span>
-                    </a>
-                  ) : (
-                    <span
-                      className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-muted cursor-not-allowed"
-                      title="Telefon yok"
-                      aria-label="Telefon yok"
-                    >
-                      <IconPhone />
-                    </span>
-                  )}
-                  {canWrite && (
-                    <>
-                      <TableActionButton onClick={() => openEdit(s)} aria-label={t('common.edit')}>
-                        <span className="text-app-accent"><IconEdit /></span>
-                      </TableActionButton>
-                      <TableActionButton onClick={() => setDeleteConfirm(s)} aria-label={t('common.delete')}>
-                        <span className="text-app-danger"><IconTrash /></span>
-                      </TableActionButton>
-                    </>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {suppliers.length === 0 ? (
+        <Card>
+          {q ? (
+            <EmptyState compact icon={<Truck size={24} />} title={t('suppliers.noSearchResults')} />
+          ) : (
+            <EmptyState
+              icon={<Truck size={26} />}
+              title={t('suppliers.noSuppliers')}
+              description={t('suppliers.noSuppliersSub')}
+              action={canWrite ? { label: t('suppliers.addSupplier'), onClick: openCreate } : undefined}
+            />
+          )}
+        </Card>
+      ) : (
+        <DataTable<Supplier>
+          data={suppliers}
+          getRowId={(s) => s.id}
+          selectable
+          bulkActions={supplierBulkActions}
+          csvFilename="suppliers"
+          initialSort={{ key: 'companyName', dir: 'asc' }}
+          columns={supplierColumns}
+        />
+      )}
 
       {canWrite && (
       <Modal

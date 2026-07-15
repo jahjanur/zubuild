@@ -4,6 +4,7 @@ export { StatCard } from './StatCard';
 export { Badge } from './Badge';
 export { Button } from './Button';
 export { EmptyState } from './EmptyState';
+export { DataTable, type Column, type BulkAction } from './DataTable';
 export { Modal } from './Modal';
 export { Input } from './Input';
 export { Select } from './Select';

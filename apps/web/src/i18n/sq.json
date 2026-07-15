@@ -485,5 +485,20 @@
     "title": "Kërko",
     "placeholder": "Kërko furnitorë, produkte, porosi…",
     "noResults": "Nuk u gjet asnjë rezultat."
+  },
+  "table": {
+    "export": "Eksporto CSV",
+    "exportSelected": "Eksporto të zgjedhurat",
+    "selected": "{{count}} të zgjedhura",
+    "clear": "Pastro",
+    "rowsPerPage": "Rreshta për faqe",
+    "pageInfo": "{{from}}–{{to}} nga {{total}}",
+    "selectAll": "Zgjidh të gjitha",
+    "selectRow": "Zgjidh rreshtin",
+    "prev": "Faqja e mëparshme",
+    "next": "Faqja tjetër",
+    "noRows": "Asnjë rresht",
+    "deactivate": "Çaktivizo",
+    "delete": "Fshi"
   }
 }

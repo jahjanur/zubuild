@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Plus, Package } from 'lucide-react';
+import { Plus, Package, PowerOff, Trash2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { snapshotList, patchList, restoreList, type ListCache } from '../lib/optimistic';
@@ -9,21 +9,16 @@ import { useAuth } from '../lib/useAuth';
 import { MEASUREMENT_UNITS } from '../constants/measurementUnits';
 import {
   Card,
-  CardContent,
-  CardHeader,
   Button,
   Badge,
   Modal,
   Input,
   Select,
-  Table,
-  TableHeader,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
   TableActionButton,
   EmptyState,
+  DataTable,
+  type Column,
+  type BulkAction,
 } from '../components/ui';
 import { formatMKD } from '../lib/formatMKD';
 import { productName, categoryName } from '../lib/catalog';
@@ -60,14 +55,6 @@ function IconTrash() {
   );
 }
 
-function IconChevron({ open }: { open: boolean }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden>
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  );
-}
-
 export default function Products() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
@@ -75,7 +62,6 @@ export default function Products() {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const categoryInputRef = useRef<HTMLDivElement>(null);
   const categoryFieldRef = useRef<HTMLInputElement>(null);
@@ -104,10 +90,6 @@ export default function Products() {
   let filtered = products;
   if (search.trim()) filtered = filtered.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase()));
   if (categoryFilter) filtered = filtered.filter((p) => p.category === categoryFilter);
-  const byCategory = filtered.reduce<Record<string, Product[]>>((acc, p) => {
-    (acc[p.category] = acc[p.category] ?? []).push(p);
-    return acc;
-  }, {});
 
   const KEY = ['products'] as const;
   // The failed request already surfaces a global error toast (api.ts); onError
@@ -224,15 +206,53 @@ export default function Products() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  function toggleCategory(cat: string) {
-    setOpenCategories((prev) => ({ ...prev, [cat]: !prev[cat] }));
-  }
-
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (editing) update.mutate({ id: editing.id, body: form });
     else create.mutate(form);
   }
+
+  const invalidateProducts = () => {
+    queryClient.invalidateQueries({ queryKey: ['products'] });
+    queryClient.invalidateQueries({ queryKey: ['products', 'recent'] });
+  };
+  async function bulkDeactivate(rows: Product[]) {
+    const active = rows.filter((p) => p.status === 'ACTIVE');
+    if (active.length === 0) return;
+    await Promise.allSettled(active.map((p) => api.put(`/products/${p.id}`, { status: 'INACTIVE' })));
+    invalidateProducts();
+  }
+  async function bulkDelete(rows: Product[]) {
+    await Promise.allSettled(rows.map((p) => api.delete(`/products/${p.id}`)));
+    invalidateProducts();
+  }
+
+  const productColumns: Column<Product>[] = [
+    { key: 'name', header: t('common.name'), sortable: true, value: (p) => productName(p.name), render: (p) => productName(p.name), csv: (p) => productName(p.name), className: 'font-medium text-app-primary', csvHeader: 'Name' },
+    { key: 'category', header: t('products.category'), sortable: true, value: (p) => categoryName(p.category), render: (p) => categoryName(p.category), csv: (p) => categoryName(p.category), csvHeader: 'Category' },
+    { key: 'unit', header: t('products.measurementUnit'), sortable: true, value: (p) => unitLabel(p.measurementUnit), csvHeader: 'Unit' },
+    { key: 'price', header: t('products.price'), align: 'right', sortable: true, value: (p) => Number(p.price), render: (p) => <span className="text-app-accent">{formatMKD(Number(p.price))}</span>, csv: (p) => Number(p.price), csvHeader: 'Price' },
+    { key: 'status', header: t('common.status'), sortable: true, value: (p) => p.status, render: (p) => <Badge variant={p.status === 'ACTIVE' ? 'success' : 'default'}>{p.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}</Badge>, csv: (p) => p.status, csvHeader: 'Status' },
+  ];
+  if (canWrite) {
+    productColumns.push({
+      key: 'actions',
+      header: '',
+      align: 'right',
+      render: (p) => (
+        <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+          <TableActionButton onClick={() => openEdit(p)} aria-label={t('common.edit')}><span className="text-app-accent"><IconEdit /></span></TableActionButton>
+          <TableActionButton onClick={() => setDeleteConfirm(p)} aria-label={t('common.delete')}><span className="text-app-danger"><IconTrash /></span></TableActionButton>
+        </div>
+      ),
+    });
+  }
+  const productBulkActions: BulkAction<Product>[] = canWrite
+    ? [
+        { key: 'deactivate', label: t('table.deactivate'), icon: <PowerOff size={15} />, onClick: bulkDeactivate },
+        { key: 'delete', label: t('table.delete'), icon: <Trash2 size={15} />, danger: true, onClick: bulkDelete },
+      ]
+    : [];
 
   return (
     <div className="page-container space-y-4 md:space-y-6">
@@ -263,90 +283,7 @@ export default function Products() {
         </Select>
       </div>
 
-      {Object.entries(byCategory)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([category, items]) => {
-          const isOpen = openCategories[category] !== false;
-          return (
-            <Card key={category} className="overflow-hidden">
-              <CardHeader
-                className="cursor-pointer select-none flex flex-row items-center justify-between gap-2"
-                onClick={() => toggleCategory(category)}
-              >
-                <h2 className="text-sm font-semibold text-app-accent">{categoryName(category)}</h2>
-                <span className="text-app-secondary"><IconChevron open={isOpen} /></span>
-              </CardHeader>
-              {isOpen && (
-                <CardContent className="p-0 pt-0">
-                  {/* Mobile: product cards */}
-                  <div className="md:hidden divide-y divide-[var(--border)]">
-                    {items.map((p) => (
-                      <div key={p.id} className="flex items-center justify-between gap-2 p-4">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-medium text-app-primary truncate">{productName(p.name)}</p>
-                          <p className="text-app-secondary text-sm">{unitLabel(p.measurementUnit)} · {formatMKD(Number(p.price))}</p>
-                          <Badge variant={p.status === 'ACTIVE' ? 'success' : 'default'} className="mt-1">
-                            {p.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}
-                          </Badge>
-                        </div>
-                        {canWrite && (
-                          <div className="flex gap-1 shrink-0">
-                            <TableActionButton onClick={() => openEdit(p)} aria-label={t('common.edit')}>
-                              <span className="text-app-accent"><IconEdit /></span>
-                            </TableActionButton>
-                            <TableActionButton onClick={() => setDeleteConfirm(p)} aria-label={t('common.delete')}>
-                              <span className="text-app-danger"><IconTrash /></span>
-                            </TableActionButton>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  {/* Desktop: table */}
-                  <div className="hidden md:block">
-                    <Table>
-                      <TableHeader>
-                        <TableHead>{t('common.name')}</TableHead>
-                        <TableHead>{t('products.measurementUnit')}</TableHead>
-                        <TableHead className="text-right">{t('products.price')}</TableHead>
-                        <TableHead>{t('common.status')}</TableHead>
-                        <TableHead className="text-right w-24">{t('common.actions')}</TableHead>
-                      </TableHeader>
-                      <TableBody>
-                        {items.map((p) => (
-                          <TableRow key={p.id}>
-                            <TableCell className="text-app-primary font-medium">{productName(p.name)}</TableCell>
-                            <TableCell>{unitLabel(p.measurementUnit)}</TableCell>
-                            <TableCell className="text-right text-app-accent">{formatMKD(Number(p.price))}</TableCell>
-                            <TableCell>
-                              <Badge variant={p.status === 'ACTIVE' ? 'success' : 'default'}>
-                                {p.status === 'ACTIVE' ? t('status.active') : t('status.inactive')}
-                              </Badge>
-                            </TableCell>
-                          <TableCell className="text-right">
-                            {canWrite && (
-                              <div className="flex justify-end gap-1">
-                                <TableActionButton onClick={() => openEdit(p)} aria-label={t('common.edit')}>
-                                  <span className="text-app-accent"><IconEdit /></span>
-                                </TableActionButton>
-                                <TableActionButton onClick={() => setDeleteConfirm(p)} aria-label={t('common.delete')}>
-                                  <span className="text-app-danger"><IconTrash /></span>
-                                </TableActionButton>
-                              </div>
-                            )}
-                          </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CardContent>
-              )}
-            </Card>
-          );
-        })}
-
-      {Object.keys(byCategory).length === 0 && (
+      {filtered.length === 0 ? (
         <Card>
           {search.trim() || categoryFilter ? (
             <EmptyState compact icon={<Package size={24} />} title={t('products.noMatch')} />
@@ -359,6 +296,16 @@ export default function Products() {
             />
           )}
         </Card>
+      ) : (
+        <DataTable<Product>
+          data={filtered}
+          getRowId={(p) => p.id}
+          selectable
+          bulkActions={productBulkActions}
+          csvFilename="products"
+          initialSort={{ key: 'name', dir: 'asc' }}
+          columns={productColumns}
+        />
       )}
 
       {canWrite && (

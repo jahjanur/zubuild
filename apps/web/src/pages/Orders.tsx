@@ -8,16 +8,12 @@ import {
   Card,
   Button,
   Input,
-  Table,
-  TableHeader,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
   Badge,
   Modal,
   DatePicker,
   EmptyState,
+  DataTable,
+  type Column,
 } from '../components/ui';
 import { formatMKD, formatDate } from '../lib/formatMKD';
 import { useToast } from '../context/ToastContext';
@@ -146,6 +142,15 @@ export default function Orders() {
     };
   }, [viewingOrder?.id]);
 
+  const orderColumns: Column<OrderRow>[] = [
+    { key: 'orderNumber', header: t('orders.orderNumber'), sortable: true, value: (o) => o.orderNumber, csvHeader: 'Order No.', className: 'font-medium text-app-primary' },
+    { key: 'supplier', header: t('orders.supplier'), sortable: true, value: (o) => o.supplierName, csvHeader: 'Supplier' },
+    { key: 'date', header: t('orders.date'), sortable: true, value: (o) => new Date(o.orderDate).getTime(), render: (o) => formatDate(o.orderDate), csv: (o) => formatDate(o.orderDate), csvHeader: 'Date' },
+    { key: 'status', header: t('common.status'), sortable: true, value: (o) => o.status, render: (o) => <Badge variant={o.status === 'RECONCILED' ? 'success' : 'default'}>{statusTr(o.status, t)}</Badge>, csv: (o) => statusTr(o.status, t), csvHeader: 'Status' },
+    { key: 'total', header: t('orders.total'), align: 'right', sortable: true, value: (o) => Number(o.totalAmount), render: (o) => <span className="font-medium text-app-accent">{formatMKD(Number(o.totalAmount))}</span>, csv: (o) => Number(o.totalAmount), csvHeader: 'Total' },
+    { key: 'reconciliation', header: t('orders.reconciliation'), sortable: true, value: (o) => (o.hasReconciliation ? 1 : 0), render: (o) => <Badge variant={o.hasReconciliation ? 'success' : 'default'}>{o.hasReconciliation ? t('orders.reconciled') : t('orders.pending')}</Badge>, csv: (o) => (o.hasReconciliation ? 'reconciled' : 'pending'), csvHeader: 'Reconciliation' },
+  ];
+
   return (
     <div className="page-container space-y-4 md:space-y-6">
       <h1 className="text-xl md:text-2xl font-semibold text-app-primary">{t('orders.title')}</h1>
@@ -189,64 +194,28 @@ export default function Orders() {
       </Card>
 
       {/* Table */}
-      <Card className="overflow-hidden">
-        {isLoading ? (
-          <div className="p-6 text-app-secondary text-sm">{t('common.loading')}</div>
-        ) : orders.length === 0 ? (
+      {isLoading ? (
+        <Card><div className="p-6 text-app-secondary text-sm">{t('common.loading')}</div></Card>
+      ) : orders.length === 0 ? (
+        <Card>
           <EmptyState
             icon={<ShoppingCart size={26} />}
             title={t('orders.noOrders')}
             description={t('orders.noOrdersSub')}
             action={{ label: t('dashboard.createOrder'), onClick: () => navigate('/app/create-order') }}
           />
-        ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableHead>{t('orders.orderNumber')}</TableHead>
-                <TableHead>{t('orders.supplier')}</TableHead>
-                <TableHead>{t('orders.date')}</TableHead>
-                <TableHead>{t('common.status')}</TableHead>
-                <TableHead className="text-right">{t('orders.total')}</TableHead>
-                <TableHead>{t('orders.reconciliation')}</TableHead>
-                <TableHead className="text-right">{t('orders.view')}</TableHead>
-              </TableHeader>
-              <TableBody>
-                {orders.map((o) => (
-                  <TableRow key={o.id}>
-                    <TableCell className="font-medium text-app-primary">{o.orderNumber}</TableCell>
-                    <TableCell className="text-app-secondary">{o.supplierName}</TableCell>
-                    <TableCell className="text-app-secondary">{formatDate(o.orderDate)}</TableCell>
-                    <TableCell>
-                      <Badge variant={o.status === 'RECONCILED' ? 'success' : o.status === 'DELIVERED' ? 'default' : 'default'}>
-                        {statusTr(o.status, t)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right text-app-accent font-medium">{formatMKD(Number(o.totalAmount))}</TableCell>
-                    <TableCell>
-                      {o.hasReconciliation ? (
-                        <Badge variant="success">{t('orders.reconciled')}</Badge>
-                      ) : (
-                        <Badge variant="default">{t('orders.pending')}</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setViewingOrder(o)}
-                        className="min-h-[36px]"
-                      >
-                        {t('orders.view')}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </Card>
+        </Card>
+      ) : (
+        <DataTable<OrderRow>
+          data={orders}
+          getRowId={(o) => o.id}
+          onRowClick={(o) => setViewingOrder(o)}
+          selectable
+          csvFilename="orders"
+          initialSort={{ key: 'date', dir: 'desc' }}
+          columns={orderColumns}
+        />
+      )}
 
       {/* View order modal: Share, WhatsApp, Download PDF, PDF preview */}
       <Modal

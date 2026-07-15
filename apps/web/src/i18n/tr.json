@@ -485,5 +485,20 @@
     "title": "Ara",
     "placeholder": "Tedarikçi, ürün, sipariş ara…",
     "noResults": "Sonuç bulunamadı."
+  },
+  "table": {
+    "export": "CSV dışa aktar",
+    "exportSelected": "Seçilenleri dışa aktar",
+    "selected": "{{count}} seçili",
+    "clear": "Temizle",
+    "rowsPerPage": "Sayfa başına satır",
+    "pageInfo": "{{from}}–{{to}} / {{total}}",
+    "selectAll": "Tümünü seç",
+    "selectRow": "Satırı seç",
+    "prev": "Önceki sayfa",
+    "next": "Sonraki sayfa",
+    "noRows": "Satır yok",
+    "deactivate": "Pasifleştir",
+    "delete": "Sil"
   }
 }
