@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, setApiErrorHandler } from '../lib/api';
 import { Button, Input } from '../components/ui';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { PoweredBy } from '../components/PoweredBy';
 import zubuildLogo from '../assets/zubuild-logo.svg';
 
 const languages = [
@@ -135,6 +136,7 @@ export default function Login() {
       <div className="mt-6 flex justify-center">
         <LanguageSwitcher />
       </div>
+      <PoweredBy className="mt-6" />
     </div>
   );
 }

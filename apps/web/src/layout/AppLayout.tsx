@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import PageTransition, { RouteProgress } from '../components/PageTransition';
 import { AemLogo } from '../components/AemLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { PoweredBy } from '../components/PoweredBy';
 import {
   LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
   ShieldAlert, BarChart3, Users, UserCircle, LogOut, Menu, X, Globe, ChevronDown,
@@ -177,6 +178,7 @@ export default function AppLayout() {
       >
         <LogOut size={16} /> {t('nav.logout')}
       </button>
+      <PoweredBy className="pt-1" />
     </div>
   );
 
@@ -211,6 +213,11 @@ export default function AppLayout() {
             </PageTransition>
           </AnimatePresence>
         </main>
+        {/* Mobile: the sidebar footer lives in the drawer, so surface the brand
+            mark under the page content too. Desktop shows it in the sidebar. */}
+        <footer className="lg:hidden px-4 pb-6 pt-2">
+          <PoweredBy />
+        </footer>
       </div>
 
       {/* Mobile drawer */}
