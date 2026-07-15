@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeCost, mkdToEur, parseDecimal, type CostCalcInput } from './costCalc';
+import { computeCost, mkdToEur, parseDecimal, labourLineCost, type CostCalcInput } from './costCalc';
 
 /** The methodology worked example. € prices chosen so materials total €3,600. */
 function workedExample(): CostCalcInput {
@@ -96,6 +96,29 @@ describe('guards', () => {
     expect(out.saleTotal).toBe(0);
     expect(out.margin).toBeNull();
     expect(out.profit).toBe(-50); // still a loss
+  });
+});
+
+describe('labour — days×rate or a final price', () => {
+  it('labourLineCost uses days × rate when no final price', () =>
+    expect(labourLineCost({ role: 'Mason', days: 10, dailyRateEur: 30 })).toBe(300));
+  it('labourLineCost uses the final price when given (overrides days×rate)', () =>
+    expect(labourLineCost({ role: 'Mason', days: 10, dailyRateEur: 30, finalPriceEur: 250 })).toBe(250));
+  it('final price of 0 is respected (not treated as empty)', () =>
+    expect(labourLineCost({ role: 'X', days: 5, dailyRateEur: 20, finalPriceEur: 0 })).toBe(0));
+
+  it('labourTotal mixes day-rated and fixed-price lines', () => {
+    const out = computeCost({
+      materials: [],
+      labourLumpSumEur: 100,
+      labourItems: [
+        { role: 'Mason', days: 10, dailyRateEur: 30 }, // 300 (by day)
+        { role: 'Foreman', days: 0, dailyRateEur: 0, finalPriceEur: 500 }, // 500 (fixed)
+      ],
+      areaM2: null,
+      salePricePerM2Eur: null,
+    });
+    expect(out.labourTotal).toBe(900); // 100 + 300 + 500
   });
 });
 

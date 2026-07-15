@@ -324,6 +324,7 @@
     "role": "Role",
     "days": "Days",
     "dailyRate": "Daily rate (€)",
+    "finalPrice": "Final price (€)",
     "rolePlaceholder": "e.g. Mason",
     "addLabourLine": "Add labour line",
     "labourTotal": "Labour",

@@ -10,7 +10,7 @@ import { unitLabel } from '../lib/units';
 import { formatEUR, formatMKDPlain, formatPercent } from '../lib/formatMKD';
 import { useOrg } from '../lib/useOrg';
 import { useToast } from '../context/ToastContext';
-import { computeCost, mkdToEur, parseDecimal, type CostCalcInput } from '../lib/costCalc';
+import { computeCost, mkdToEur, parseDecimal, labourLineCost, type CostCalcInput } from '../lib/costCalc';
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? '/api';
 
@@ -44,6 +44,7 @@ interface LabourRow {
   role: string;
   daysStr: string;
   rateStr: string;
+  finalStr: string; // agreed fixed price (€) — overrides days × rate when set
 }
 
 export default function CostCalculator() {
@@ -105,8 +106,8 @@ export default function CostCalculator() {
     setMaterials((rows) => rows.map((r) => (r.id === id ? { ...r, qtyStr: v } : r)));
   const removeMat = (id: string) => setMaterials((rows) => rows.filter((r) => r.id !== id));
 
-  const addLabour = () => setLabour((l) => [...l, { id: nextId(), role: '', daysStr: '', rateStr: '' }]);
-  const setLab = (id: string, field: 'role' | 'daysStr' | 'rateStr', v: string) =>
+  const addLabour = () => setLabour((l) => [...l, { id: nextId(), role: '', daysStr: '', rateStr: '', finalStr: '' }]);
+  const setLab = (id: string, field: 'role' | 'daysStr' | 'rateStr' | 'finalStr', v: string) =>
     setLabour((l) => l.map((r) => (r.id === id ? { ...r, [field]: v } : r)));
   const removeLab = (id: string) => setLabour((l) => l.filter((r) => r.id !== id));
 
@@ -127,6 +128,7 @@ export default function CostCalculator() {
         role: l.role,
         days: parseDecimal(l.daysStr) ?? 0,
         dailyRateEur: parseDecimal(l.rateStr) ?? 0,
+        finalPriceEur: l.finalStr.trim() === '' ? null : parseDecimal(l.finalStr),
       })),
       areaM2: parseDecimal(areaStr),
       salePricePerM2Eur: saleStr.trim() === '' ? null : parseDecimal(saleStr),
@@ -160,7 +162,9 @@ export default function CostCalculator() {
         labourItems: labour.map((l) => {
           const days = parseDecimal(l.daysStr) ?? 0;
           const dailyRateEur = parseDecimal(l.rateStr) ?? 0;
-          return { role: l.role, days, dailyRateEur, cost: Math.round(days * dailyRateEur * 100) / 100 };
+          const finalPriceEur = l.finalStr.trim() === '' ? null : parseDecimal(l.finalStr);
+          const cost = Math.round(labourLineCost({ role: l.role, days, dailyRateEur, finalPriceEur }) * 100) / 100;
+          return { role: l.role, days, dailyRateEur, cost };
         }),
         labourTotal: out.labourTotal,
         totalCost: out.totalCost,
@@ -317,24 +321,30 @@ export default function CostCalculator() {
 
               {labour.length > 0 && (
                 <div className="space-y-2">
-                  <div className="hidden md:grid grid-cols-[1fr_100px_120px_110px_36px] gap-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-app-muted">
+                  <div className="hidden md:grid grid-cols-[1fr_80px_100px_100px_100px_36px] gap-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-app-muted">
                     <span>{t('costCalc.role')}</span>
                     <span className="text-right">{t('costCalc.days')}</span>
                     <span className="text-right">{t('costCalc.dailyRate')}</span>
+                    <span className="text-right">{t('costCalc.finalPrice')}</span>
                     <span className="text-right">{t('costCalc.lineCost')}</span>
                     <span />
                   </div>
                   {labour.map((l) => {
                     const days = parseDecimal(l.daysStr) ?? 0;
                     const rateEur = parseDecimal(l.rateStr) ?? 0;
+                    const finalEur = l.finalStr.trim() === '' ? null : parseDecimal(l.finalStr);
+                    const hasFinal = finalEur != null;
+                    const lineCost = labourLineCost({ role: l.role, days, dailyRateEur: rateEur, finalPriceEur: finalEur });
                     return (
-                      <div key={l.id} className="grid grid-cols-2 md:grid-cols-[1fr_100px_120px_110px_36px] gap-2 items-center rounded-lg border border-[var(--border)] p-2 md:border-0 md:p-1">
+                      <div key={l.id} className="grid grid-cols-2 md:grid-cols-[1fr_80px_100px_100px_100px_36px] gap-2 items-center rounded-lg border border-[var(--border)] p-2 md:border-0 md:p-1">
                         <div className="col-span-2 md:col-span-1">
                           <Input type="text" aria-label={t('costCalc.role')} value={l.role} onChange={(e) => setLab(l.id, 'role', e.target.value)} placeholder={t('costCalc.rolePlaceholder')} className="!min-h-[40px]" />
                         </div>
-                        <Input type="text" inputMode="decimal" aria-label={t('costCalc.days')} value={l.daysStr} onChange={(e) => setLab(l.id, 'daysStr', e.target.value)} className="text-right !min-h-[40px]" />
-                        <Input type="text" inputMode="decimal" aria-label={t('costCalc.dailyRate')} value={l.rateStr} onChange={(e) => setLab(l.id, 'rateStr', e.target.value)} className="text-right !min-h-[40px]" />
-                        <div className="text-right text-sm font-semibold text-app-primary tabular-nums">{money(Math.round(days * rateEur * 100) / 100)}</div>
+                        {/* Days × daily rate — dimmed when a fixed final price overrides them. */}
+                        <Input type="text" inputMode="decimal" aria-label={t('costCalc.days')} value={l.daysStr} onChange={(e) => setLab(l.id, 'daysStr', e.target.value)} className={`text-right !min-h-[40px] ${hasFinal ? 'opacity-50' : ''}`} />
+                        <Input type="text" inputMode="decimal" aria-label={t('costCalc.dailyRate')} value={l.rateStr} onChange={(e) => setLab(l.id, 'rateStr', e.target.value)} className={`text-right !min-h-[40px] ${hasFinal ? 'opacity-50' : ''}`} />
+                        <Input type="text" inputMode="decimal" aria-label={t('costCalc.finalPrice')} value={l.finalStr} onChange={(e) => setLab(l.id, 'finalStr', e.target.value)} placeholder={t('costCalc.optional')} className="text-right !min-h-[40px]" />
+                        <div className="text-right text-sm font-semibold text-app-primary tabular-nums">{money(Math.round(lineCost * 100) / 100)}</div>
                         <button type="button" onClick={() => removeLab(l.id)} aria-label={t('costCalc.remove')} className="justify-self-end flex h-8 w-8 items-center justify-center rounded-md text-app-danger hover:bg-app-danger-muted transition">
                           <Trash2 size={16} />
                         </button>

@@ -324,6 +324,7 @@
     "role": "Görev",
     "days": "Gün",
     "dailyRate": "Günlük ücret (€)",
+    "finalPrice": "Nihai fiyat (€)",
     "rolePlaceholder": "ör. Duvarcı",
     "addLabourLine": "İşçilik satırı ekle",
     "labourTotal": "İşçilik",

@@ -676,12 +676,14 @@ export function generateCostCalcPdf(
           y += HEADER_ROW_HEIGHT;
           data.labourItems.forEach((it) => {
             let cx = MARGIN_PT;
+            // A fixed-price line has no days/rate — show "—" instead of 0 / €0.00.
+            const fixedPrice = it.days === 0 && it.dailyRateEur === 0;
             const cells: Array<{ text: string; x: number; w: number; align?: 'left' | 'right' }> = [
               { text: ellipsize(doc, it.role || '—', LAB_COL.role - 10), x: cx + 8, w: LAB_COL.role - 10 },
             ];
             cx += LAB_COL.role;
-            cells.push({ text: formatQtyPdf(it.days), x: cx, w: LAB_COL.days, align: 'right' }); cx += LAB_COL.days;
-            cells.push({ text: formatEurPdf(it.dailyRateEur), x: cx, w: LAB_COL.rate, align: 'right' }); cx += LAB_COL.rate;
+            cells.push({ text: fixedPrice ? '—' : formatQtyPdf(it.days), x: cx, w: LAB_COL.days, align: 'right' }); cx += LAB_COL.days;
+            cells.push({ text: fixedPrice ? '—' : formatEurPdf(it.dailyRateEur), x: cx, w: LAB_COL.rate, align: 'right' }); cx += LAB_COL.rate;
             cells.push({ text: formatEurPdf(it.cost), x: cx, w: LAB_COL.cost - 4, align: 'right' });
             bodyRow(cells, rowIdx++);
           });

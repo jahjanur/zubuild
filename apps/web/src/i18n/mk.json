@@ -324,6 +324,7 @@
     "role": "Улога",
     "days": "Денови",
     "dailyRate": "Дневница (€)",
+    "finalPrice": "Крајна цена (€)",
     "rolePlaceholder": "пр. Ѕидар",
     "addLabourLine": "Додај ставка за работа",
     "labourTotal": "Работна рака",

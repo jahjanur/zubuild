@@ -33,6 +33,18 @@ export interface LabourItem {
   role: string;
   days: number;
   dailyRateEur: number;
+  /**
+   * Agreed fixed price for this line (€). When set, it's used as the line cost
+   * instead of days × daily rate — so a role can be priced by the day OR as a
+   * lump sum. null/undefined ⇒ fall back to days × dailyRate.
+   */
+  finalPriceEur?: number | null;
+}
+
+/** Effective € cost of a labour line: the final price when given, else days × daily rate. */
+export function labourLineCost(it: LabourItem): number {
+  if (it.finalPriceEur != null && Number.isFinite(it.finalPriceEur)) return it.finalPriceEur;
+  return it.days * it.dailyRateEur;
 }
 
 export interface CostCalcInput {
@@ -93,7 +105,7 @@ export function computeCost(input: CostCalcInput): CostCalcOutput {
 
   const labourCents =
     toCents(input.labourLumpSumEur) +
-    input.labourItems.reduce((sum, it) => sum + toCents(it.days * it.dailyRateEur), 0);
+    input.labourItems.reduce((sum, it) => sum + toCents(labourLineCost(it)), 0);
 
   const totalCents = materialsCents + labourCents;
 
