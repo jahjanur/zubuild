@@ -131,7 +131,7 @@ export default function Analytics() {
                   <YAxis stroke="var(--text-secondary)" fontSize={12} tickFormatter={(v) => formatMKD(v)} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: 'var(--glass-bg-strong)', color: '#fff',
+                      backgroundColor: 'var(--glass-bg-strong)', color: 'var(--text-primary)',
                       border: '1px solid var(--border-focus)',
                     }}
                     labelStyle={{ color: 'var(--accent)' }}
@@ -175,7 +175,7 @@ export default function Analytics() {
                     <Legend />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: 'var(--glass-bg-strong)', color: '#fff',
+                        backgroundColor: 'var(--glass-bg-strong)', color: 'var(--text-primary)',
                         border: '1px solid var(--border-focus)',
                       }}
                       formatter={(value: number) => [value, t('analytics.count')]}

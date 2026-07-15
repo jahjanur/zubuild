@@ -34,7 +34,7 @@ body {
 
 /* Shared modal styling — one look for every dialog in the app. */
 .modal-backdrop {
-  background: rgba(9, 9, 14, 0.6);
+  background: var(--overlay);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
