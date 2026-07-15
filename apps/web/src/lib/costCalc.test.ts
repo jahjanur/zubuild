@@ -13,8 +13,8 @@ function workedExample(): CostCalcInput {
     ],
     labourLumpSumEur: 2000,
     labourItems: [
-      { role: 'Mason', days: 10, dailyRateEur: 30 },
-      { role: 'Helper', days: 15, dailyRateEur: 20 },
+      { role: 'Mason', quantity: 10, unit: 'day', ratePerUnit: 30 },
+      { role: 'Helper', quantity: 15, unit: 'day', ratePerUnit: 20 },
     ],
     areaM2: 100,
     salePricePerM2Eur: 95,
@@ -99,26 +99,30 @@ describe('guards', () => {
   });
 });
 
-describe('labour — days×rate or a final price', () => {
-  it('labourLineCost uses days × rate when no final price', () =>
-    expect(labourLineCost({ role: 'Mason', days: 10, dailyRateEur: 30 })).toBe(300));
-  it('labourLineCost uses the final price when given (overrides days×rate)', () =>
-    expect(labourLineCost({ role: 'Mason', days: 10, dailyRateEur: 30, finalPriceEur: 250 })).toBe(250));
+describe('labour — quantity × unit rate, or a final price', () => {
+  it('by day: quantity × rate', () =>
+    expect(labourLineCost({ role: 'Mason', quantity: 10, unit: 'day', ratePerUnit: 30 })).toBe(300));
+  it('by ton (e.g. rebar fixer): quantity × rate', () =>
+    expect(labourLineCost({ role: 'Armirač', quantity: 4, unit: 'ton', ratePerUnit: 45 })).toBe(180));
+  it('by m² (e.g. carpenter): quantity × rate', () =>
+    expect(labourLineCost({ role: 'Tesar', quantity: 100, unit: 'm²', ratePerUnit: 8 })).toBe(800));
+  it('final price overrides quantity × rate', () =>
+    expect(labourLineCost({ role: 'X', quantity: 10, unit: 'day', ratePerUnit: 30, finalPriceEur: 250 })).toBe(250));
   it('final price of 0 is respected (not treated as empty)', () =>
-    expect(labourLineCost({ role: 'X', days: 5, dailyRateEur: 20, finalPriceEur: 0 })).toBe(0));
+    expect(labourLineCost({ role: 'X', quantity: 5, unit: 'day', ratePerUnit: 20, finalPriceEur: 0 })).toBe(0));
 
-  it('labourTotal mixes day-rated and fixed-price lines', () => {
+  it('labourTotal mixes unit-priced and fixed-price lines', () => {
     const out = computeCost({
       materials: [],
       labourLumpSumEur: 100,
       labourItems: [
-        { role: 'Mason', days: 10, dailyRateEur: 30 }, // 300 (by day)
-        { role: 'Foreman', days: 0, dailyRateEur: 0, finalPriceEur: 500 }, // 500 (fixed)
+        { role: 'Armirač', quantity: 4, unit: 'ton', ratePerUnit: 45 }, // 180 (by ton)
+        { role: 'Foreman', quantity: 0, unit: 'day', ratePerUnit: 0, finalPriceEur: 500 }, // 500 (fixed)
       ],
       areaM2: null,
       salePricePerM2Eur: null,
     });
-    expect(out.labourTotal).toBe(900); // 100 + 300 + 500
+    expect(out.labourTotal).toBe(780); // 100 + 180 + 500
   });
 });
 

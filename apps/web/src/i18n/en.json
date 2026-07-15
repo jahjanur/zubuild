@@ -346,7 +346,12 @@
     "noProducts": "No products found.",
     "exportPdf": "Export PDF",
     "exporting": "Exporting…",
-    "pdfError": "Could not export the PDF."
+    "pdfError": "Could not export the PDF.",
+    "unit": "Unit",
+    "rate": "Rate",
+    "linkMaterial": "Link to material",
+    "noLink": "No link",
+    "dayUnit": "day"
   },
   "status": {
     "pending": "Pending",

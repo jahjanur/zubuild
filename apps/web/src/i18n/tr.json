@@ -346,7 +346,12 @@
     "noProducts": "Ürün bulunamadı.",
     "exportPdf": "PDF dışa aktar",
     "exporting": "Dışa aktarılıyor…",
-    "pdfError": "PDF dışa aktarılamadı."
+    "pdfError": "PDF dışa aktarılamadı.",
+    "unit": "Birim",
+    "rate": "Ücret",
+    "linkMaterial": "Malzemeye bağla",
+    "noLink": "Bağlantı yok",
+    "dayUnit": "gün"
   },
   "status": {
     "pending": "Bekliyor",

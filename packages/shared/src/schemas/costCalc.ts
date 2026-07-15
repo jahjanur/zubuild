@@ -28,8 +28,9 @@ export const costCalcPdfSchema = z.object({
     .array(
       z.object({
         role: z.string().trim().max(120),
-        days: money,
-        dailyRateEur: money,
+        quantity: money,
+        unit: z.string().trim().max(20),
+        ratePerUnit: money,
         cost: money,
       })
     )

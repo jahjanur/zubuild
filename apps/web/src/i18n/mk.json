@@ -346,7 +346,12 @@
     "noProducts": "Нема пронајдено производи.",
     "exportPdf": "Извези PDF",
     "exporting": "Се извезува…",
-    "pdfError": "PDF-от не може да се извезе."
+    "pdfError": "PDF-от не може да се извезе.",
+    "unit": "Ед.",
+    "rate": "Тарифа",
+    "linkMaterial": "Поврзи со материјал",
+    "noLink": "Без врска",
+    "dayUnit": "ден"
   },
   "status": {
     "pending": "На чекање",

@@ -346,7 +346,12 @@
     "noProducts": "Nuk u gjetën produkte.",
     "exportPdf": "Eksporto PDF",
     "exporting": "Po eksportohet…",
-    "pdfError": "PDF-ja nuk mund të eksportohej."
+    "pdfError": "PDF-ja nuk mund të eksportohej.",
+    "unit": "Njësia",
+    "rate": "Tarifa",
+    "linkMaterial": "Lidh me material",
+    "noLink": "Pa lidhje",
+    "dayUnit": "ditë"
   },
   "status": {
     "pending": "Në pritje",

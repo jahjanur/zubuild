@@ -232,10 +232,10 @@ function L(): PdfLabels {
 // Measurement-unit codes → display per language. Mirrors the `units` namespace in
 // apps/web/src/i18n/*.json so on-screen units and PDF units read identically.
 const UNITS_BY_LANG: Record<CatalogLang, Record<string, string>> = {
-  en: { kg: 'kg', ton: 'ton', litre: 'L', adet: 'pc', m: 'm', 'm²': 'm²', 'm³': 'm³', torba: 'bag', paket: 'pack', kutu: 'box', rulo: 'roll' },
-  mk: { kg: 'кг', ton: 'тон', litre: 'л', adet: 'парче', m: 'м', 'm²': 'м²', 'm³': 'м³', torba: 'вреќа', paket: 'пакет', kutu: 'кутија', rulo: 'ролна' },
-  sq: { kg: 'kg', ton: 'ton', litre: 'litër', adet: 'copë', m: 'm', 'm²': 'm²', 'm³': 'm³', torba: 'thes', paket: 'paketë', kutu: 'kuti', rulo: 'rrotull' },
-  tr: { kg: 'kg', ton: 'ton', litre: 'litre', adet: 'adet', m: 'm', 'm²': 'm²', 'm³': 'm³', torba: 'torba', paket: 'paket', kutu: 'kutu', rulo: 'rulo' },
+  en: { day: 'day', kg: 'kg', ton: 'ton', litre: 'L', adet: 'pc', m: 'm', 'm²': 'm²', 'm³': 'm³', torba: 'bag', paket: 'pack', kutu: 'box', rulo: 'roll' },
+  mk: { day: 'ден', kg: 'кг', ton: 'тон', litre: 'л', adet: 'парче', m: 'м', 'm²': 'м²', 'm³': 'м³', torba: 'вреќа', paket: 'пакет', kutu: 'кутија', rulo: 'ролна' },
+  sq: { day: 'ditë', kg: 'kg', ton: 'ton', litre: 'litër', adet: 'copë', m: 'm', 'm²': 'm²', 'm³': 'm³', torba: 'thes', paket: 'paketë', kutu: 'kuti', rulo: 'rrotull' },
+  tr: { day: 'gün', kg: 'kg', ton: 'ton', litre: 'litre', adet: 'adet', m: 'm', 'm²': 'm²', 'm³': 'm³', torba: 'torba', paket: 'paket', kutu: 'kutu', rulo: 'rulo' },
 };
 
 function unitLabelPdf(unit: string | null | undefined): string {
@@ -496,7 +496,7 @@ export type CostCalcPdfData = {
   materials: Array<{ name: string; unit: string; priceEur: number; quantity: number; lineCost: number }>;
   materialsTotal: number;
   labourLumpSum: number;
-  labourItems: Array<{ role: string; days: number; dailyRateEur: number; cost: number }>;
+  labourItems: Array<{ role: string; quantity: number; unit: string; ratePerUnit: number; cost: number }>;
   labourTotal: number;
   totalCost: number;
   costPerM2: number | null;
@@ -529,15 +529,15 @@ function formatQtyPdf(n: number): string {
 type CalcLabels = {
   title: string; area: string; exchangeRate: string;
   materials: string; material: string; unit: string; unitPrice: string; qty: string; cost: string;
-  labour: string; lumpSum: string; role: string; days: string; dailyRate: string;
+  labour: string; lumpSum: string; role: string; rate: string;
   totalCost: string; costPerM2: string;
   saleTotal: string; profit: string; loss: string; profitPerM2: string; margin: string;
 };
 const CALC_LABELS_BY_LANG: Record<CatalogLang, CalcLabels> = {
-  en: { title: 'Cost per m²', area: 'Area', exchangeRate: 'Exchange rate', materials: 'Materials', material: 'Material', unit: 'Unit', unitPrice: 'Price (€)', qty: 'Qty', cost: 'Cost', labour: 'Labour', lumpSum: 'Lump sum', role: 'Role', days: 'Days', dailyRate: 'Daily rate (€)', totalCost: 'Total cost', costPerM2: 'Cost per m²', saleTotal: 'Sale total', profit: 'Profit', loss: 'Loss', profitPerM2: 'Profit per m²', margin: 'Margin' },
-  mk: { title: 'Цена по m²', area: 'Површина', exchangeRate: 'Девизен курс', materials: 'Материјали', material: 'Материјал', unit: 'Ед.', unitPrice: 'Цена (€)', qty: 'Кол.', cost: 'Цена', labour: 'Работна рака', lumpSum: 'Паушал', role: 'Улога', days: 'Денови', dailyRate: 'Дневница (€)', totalCost: 'Вкупен трошок', costPerM2: 'Цена по m²', saleTotal: 'Вкупна продажба', profit: 'Профит', loss: 'Загуба', profitPerM2: 'Профит по m²', margin: 'Маржа' },
-  sq: { title: 'Kosto për m²', area: 'Sipërfaqja', exchangeRate: 'Kursi i këmbimit', materials: 'Materialet', material: 'Materiali', unit: 'Njësia', unitPrice: 'Çmimi (€)', qty: 'Sasia', cost: 'Kosto', labour: 'Punë dore', lumpSum: 'Shumë e plotë', role: 'Roli', days: 'Ditë', dailyRate: 'Tarifa ditore (€)', totalCost: 'Kosto totale', costPerM2: 'Kosto për m²', saleTotal: 'Totali i shitjes', profit: 'Fitimi', loss: 'Humbje', profitPerM2: 'Fitimi për m²', margin: 'Marzha' },
-  tr: { title: 'm² başına maliyet', area: 'Alan', exchangeRate: 'Döviz kuru', materials: 'Malzemeler', material: 'Malzeme', unit: 'Birim', unitPrice: 'Fiyat (€)', qty: 'Miktar', cost: 'Tutar', labour: 'İşçilik', lumpSum: 'Götürü tutar', role: 'Görev', days: 'Gün', dailyRate: 'Günlük ücret (€)', totalCost: 'Toplam maliyet', costPerM2: 'm² başına maliyet', saleTotal: 'Satış toplamı', profit: 'Kâr', loss: 'Zarar', profitPerM2: 'm² başına kâr', margin: 'Marj' },
+  en: { title: 'Cost per m²', area: 'Area', exchangeRate: 'Exchange rate', materials: 'Materials', material: 'Material', unit: 'Unit', unitPrice: 'Price (€)', qty: 'Qty', cost: 'Cost', labour: 'Labour', lumpSum: 'Lump sum', role: 'Role', rate: 'Rate (€)', totalCost: 'Total cost', costPerM2: 'Cost per m²', saleTotal: 'Sale total', profit: 'Profit', loss: 'Loss', profitPerM2: 'Profit per m²', margin: 'Margin' },
+  mk: { title: 'Цена по m²', area: 'Површина', exchangeRate: 'Девизен курс', materials: 'Материјали', material: 'Материјал', unit: 'Ед.', unitPrice: 'Цена (€)', qty: 'Кол.', cost: 'Цена', labour: 'Работна рака', lumpSum: 'Паушал', role: 'Улога', rate: 'Тарифа (€)', totalCost: 'Вкупен трошок', costPerM2: 'Цена по m²', saleTotal: 'Вкупна продажба', profit: 'Профит', loss: 'Загуба', profitPerM2: 'Профит по m²', margin: 'Маржа' },
+  sq: { title: 'Kosto për m²', area: 'Sipërfaqja', exchangeRate: 'Kursi i këmbimit', materials: 'Materialet', material: 'Materiali', unit: 'Njësia', unitPrice: 'Çmimi (€)', qty: 'Sasia', cost: 'Kosto', labour: 'Punë dore', lumpSum: 'Shumë e plotë', role: 'Roli', rate: 'Tarifa (€)', totalCost: 'Kosto totale', costPerM2: 'Kosto për m²', saleTotal: 'Totali i shitjes', profit: 'Fitimi', loss: 'Humbje', profitPerM2: 'Fitimi për m²', margin: 'Marzha' },
+  tr: { title: 'm² başına maliyet', area: 'Alan', exchangeRate: 'Döviz kuru', materials: 'Malzemeler', material: 'Malzeme', unit: 'Birim', unitPrice: 'Fiyat (€)', qty: 'Miktar', cost: 'Tutar', labour: 'İşçilik', lumpSum: 'Götürü tutar', role: 'Görev', rate: 'Ücret (€)', totalCost: 'Toplam maliyet', costPerM2: 'm² başına maliyet', saleTotal: 'Satış toplamı', profit: 'Kâr', loss: 'Zarar', profitPerM2: 'm² başına kâr', margin: 'Marj' },
 };
 function CL(): CalcLabels {
   return CALC_LABELS_BY_LANG[PDF_LANG] ?? CALC_LABELS_BY_LANG.mk;
@@ -547,7 +547,7 @@ function CL(): CalcLabels {
 // materials and labour "Cost" columns line up down the page.
 const CALC_COST_W = 96;
 const MAT_COL = { name: 190, unit: 46, price: 96, qty: Math.floor(CONTENT_WIDTH - 190 - 46 - 96 - CALC_COST_W), cost: CALC_COST_W };
-const LAB_COL = { role: MAT_COL.name + MAT_COL.unit, days: 60, rate: Math.floor(CONTENT_WIDTH - (MAT_COL.name + MAT_COL.unit) - 60 - CALC_COST_W), cost: CALC_COST_W };
+const LAB_COL = { qty: 56, unit: 44, rate: 90, cost: CALC_COST_W, role: Math.floor(CONTENT_WIDTH - 56 - 44 - 90 - CALC_COST_W) };
 
 export function generateCostCalcPdf(
   data: CostCalcPdfData,
@@ -669,21 +669,23 @@ export function generateCostCalcPdf(
           {
             let cx = MARGIN_PT;
             doc.text(CL().role, cx + 8, y + 6, { width: LAB_COL.role - 8 }); cx += LAB_COL.role;
-            doc.text(CL().days, cx, y + 6, { width: LAB_COL.days, align: 'right' }); cx += LAB_COL.days;
-            doc.text(CL().dailyRate, cx, y + 6, { width: LAB_COL.rate, align: 'right' }); cx += LAB_COL.rate;
+            doc.text(CL().qty, cx, y + 6, { width: LAB_COL.qty, align: 'right' }); cx += LAB_COL.qty;
+            doc.text(CL().unit, cx, y + 6, { width: LAB_COL.unit, align: 'right' }); cx += LAB_COL.unit;
+            doc.text(CL().rate, cx, y + 6, { width: LAB_COL.rate, align: 'right' }); cx += LAB_COL.rate;
             doc.text(CL().cost, cx, y + 6, { width: LAB_COL.cost - 4, align: 'right' });
           }
           y += HEADER_ROW_HEIGHT;
           data.labourItems.forEach((it) => {
             let cx = MARGIN_PT;
-            // A fixed-price line has no days/rate — show "—" instead of 0 / €0.00.
-            const fixedPrice = it.days === 0 && it.dailyRateEur === 0;
+            // A fixed-price line has no qty/rate — show "—" instead of 0 / €0.00.
+            const fixedPrice = it.quantity === 0 && it.ratePerUnit === 0;
             const cells: Array<{ text: string; x: number; w: number; align?: 'left' | 'right' }> = [
               { text: ellipsize(doc, it.role || '—', LAB_COL.role - 10), x: cx + 8, w: LAB_COL.role - 10 },
             ];
             cx += LAB_COL.role;
-            cells.push({ text: fixedPrice ? '—' : formatQtyPdf(it.days), x: cx, w: LAB_COL.days, align: 'right' }); cx += LAB_COL.days;
-            cells.push({ text: fixedPrice ? '—' : formatEurPdf(it.dailyRateEur), x: cx, w: LAB_COL.rate, align: 'right' }); cx += LAB_COL.rate;
+            cells.push({ text: fixedPrice ? '—' : formatQtyPdf(it.quantity), x: cx, w: LAB_COL.qty, align: 'right' }); cx += LAB_COL.qty;
+            cells.push({ text: fixedPrice ? '—' : unitLabelPdf(it.unit), x: cx, w: LAB_COL.unit, align: 'right' }); cx += LAB_COL.unit;
+            cells.push({ text: fixedPrice ? '—' : formatEurPdf(it.ratePerUnit), x: cx, w: LAB_COL.rate, align: 'right' }); cx += LAB_COL.rate;
             cells.push({ text: formatEurPdf(it.cost), x: cx, w: LAB_COL.cost - 4, align: 'right' });
             bodyRow(cells, rowIdx++);
           });

@@ -31,20 +31,24 @@ export interface MaterialLine {
 
 export interface LabourItem {
   role: string;
-  days: number;
-  dailyRateEur: number;
+  /** Amount of work — days, tons, m², m³, … (the `unit` labels it). */
+  quantity: number;
+  /** Unit the labour is measured in: 'day' | 'm²' | 'm³' | 'ton' | 'kg' | 'm' | 'adet'. Display only. */
+  unit: string;
+  /** € per unit (e.g. €/day, €/ton, €/m²). */
+  ratePerUnit: number;
   /**
    * Agreed fixed price for this line (€). When set, it's used as the line cost
-   * instead of days × daily rate — so a role can be priced by the day OR as a
-   * lump sum. null/undefined ⇒ fall back to days × dailyRate.
+   * instead of quantity × rate — so a role can be priced per unit OR as a lump
+   * sum. null/undefined ⇒ fall back to quantity × ratePerUnit.
    */
   finalPriceEur?: number | null;
 }
 
-/** Effective € cost of a labour line: the final price when given, else days × daily rate. */
+/** Effective € cost of a labour line: the final price when given, else quantity × rate. */
 export function labourLineCost(it: LabourItem): number {
   if (it.finalPriceEur != null && Number.isFinite(it.finalPriceEur)) return it.finalPriceEur;
-  return it.days * it.dailyRateEur;
+  return it.quantity * it.ratePerUnit;
 }
 
 export interface CostCalcInput {
