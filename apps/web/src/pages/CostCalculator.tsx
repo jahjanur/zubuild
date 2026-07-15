@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { Card, CardContent, CardHeader, Button, Input, Modal } from '../components/ui';
-import { Plus, Search, X, Trash2, Download } from 'lucide-react';
+import { Plus, Search, X, Trash2, Download, Info } from 'lucide-react';
 import { productName, categoryName } from '../lib/catalog';
 import { unitLabel } from '../lib/units';
 import { formatEUR, formatMKDPlain, formatPercent } from '../lib/formatMKD';
@@ -52,6 +52,7 @@ export default function CostCalculator() {
   const org = useOrg();
   const rate = org?.mkdToEurRate ?? 61.5;
   const [exporting, setExporting] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
 
   const [materials, setMaterials] = useState<MatRow[]>([]);
   const [lumpSumStr, setLumpSumStr] = useState('');
@@ -207,9 +208,20 @@ export default function CostCalculator() {
 
   return (
     <div className="mx-auto w-full max-w-[1500px] px-4 md:px-6 lg:px-8 space-y-4 md:space-y-6">
-      <div>
-        <h1 className="text-xl md:text-2xl font-semibold text-app-primary">{t('costCalc.title')}</h1>
-        <p className="text-app-secondary text-sm mt-1">{t('costCalc.subtitle')}</p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl md:text-2xl font-semibold text-app-primary">{t('costCalc.title')}</h1>
+          <p className="text-app-secondary text-sm mt-1">{t('costCalc.subtitle')}</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setInfoOpen(true)}
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 min-h-[40px] text-sm text-app-secondary hover:text-app-primary hover:bg-[var(--hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] transition"
+          aria-label={t('costCalc.howItWorks')}
+        >
+          <Info size={16} />
+          <span className="hidden sm:inline">{t('costCalc.howItWorks')}</span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] gap-4 md:gap-6 items-start">
@@ -406,6 +418,31 @@ export default function CostCalculator() {
       </div>
 
       {/* Product picker (reuses the products catalogue + catalog helpers) */}
+      <Modal open={infoOpen} onClose={() => setInfoOpen(false)} title={t('costCalc.infoTitle')}>
+        <div className="space-y-4 text-sm">
+          <p className="text-app-secondary">{t('costCalc.infoIntro')}</p>
+          <ol className="space-y-3">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <li key={n}>
+                <p className="font-semibold text-app-primary">{t(`costCalc.infoStep${n}Title`)}</p>
+                <p className="text-app-secondary mt-0.5">{t(`costCalc.infoStep${n}`, { rate })}</p>
+              </li>
+            ))}
+          </ol>
+          <div>
+            <p className="font-semibold text-app-primary mb-1.5">{t('costCalc.infoFormulas')}</p>
+            <pre className="text-xs text-app-secondary bg-app-surface-2 border border-[var(--border)] rounded-lg p-3 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed">
+{`lineCost   = €price × quantity
+totalCost  = materialsTotal + labourTotal
+costPerM²  = totalCost ÷ area
+saleTotal  = salePerM² × area
+profit     = saleTotal − totalCost
+margin %   = profit ÷ saleTotal × 100`}
+            </pre>
+          </div>
+        </div>
+      </Modal>
+
       <Modal open={pickerOpen} onClose={() => setPickerOpen(false)} title={t('costCalc.pickProduct')}>
         <div className="space-y-3">
           <div className="relative">
