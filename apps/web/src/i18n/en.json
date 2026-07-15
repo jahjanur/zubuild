@@ -299,7 +299,7 @@
     "infoStep2Title": "2. Line cost",
     "infoStep2": "Line cost = € price × quantity. Quantities can be fractional (e.g. 2.5 ton, 1.75 m³).",
     "infoStep3Title": "3. Add labour",
-    "infoStep3": "Materials total + labour (a lump sum plus optional role × days × daily rate lines) = total cost.",
+    "infoStep3": "Materials total + labour = total cost. Labour is a lump sum plus optional lines, each priced by quantity × rate per unit (day, ton, m²…) or a fixed price. A line can be linked to a material so its quantity follows it (e.g. rebar tons).",
     "infoStep4Title": "4. Divide once by the area",
     "infoStep4": "Cost per m² = total cost ÷ built area (m²). This is the only place a physical unit is divided.",
     "infoStep5Title": "5. Profit (optional)",

@@ -299,7 +299,7 @@
     "infoStep2Title": "2. Kostoja e rreshtit",
     "infoStep2": "Kostoja e rreshtit = çmimi në € × sasia. Sasitë mund të jenë me presje dhjetore (p.sh. 2,5 tonë, 1,75 m³).",
     "infoStep3Title": "3. Shto punën",
-    "infoStep3": "Totali i materialeve + puna (një shumë e përgjithshme plus rreshta opsionalë rol × ditë × pagë ditore) = kostoja totale.",
+    "infoStep3": "Totali i materialeve + puna = kostoja totale. Puna është një shumë e përgjithshme plus rreshta opsionalë, secili me sasi × tarifë për njësi (ditë, ton, m²…) ose çmim fiks. Një rresht mund të lidhet me një material që sasia ta ndjekë (p.sh. tonë hekur).",
     "infoStep4Title": "4. Pjesëto një herë me sipërfaqen",
     "infoStep4": "Kostoja për m² = kostoja totale ÷ sipërfaqja e ndërtuar (m²). Ky është vendi i vetëm ku pjesëtohet një njësi fizike.",
     "infoStep5Title": "5. Fitimi (opsionale)",

@@ -486,12 +486,14 @@ export default function CostCalculator() {
           <div>
             <p className="font-semibold text-app-primary mb-1.5">{t('costCalc.infoFormulas')}</p>
             <pre className="text-xs text-app-secondary bg-app-surface-2 border border-[var(--border)] rounded-lg p-3 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed">
-{`lineCost   = €price × quantity
-totalCost  = materialsTotal + labourTotal
-costPerM²  = totalCost ÷ area
-saleTotal  = salePerM² × area
-profit     = saleTotal − totalCost
-margin %   = profit ÷ saleTotal × 100`}
+{`lineCost       = €price × quantity
+materialsTotal = Σ lineCost
+labourTotal    = lumpSum + Σ (quantity × rate)
+totalCost      = materialsTotal + labourTotal
+costPerM²      = totalCost ÷ area
+saleTotal      = salePerM² × area
+profit         = saleTotal − totalCost
+margin %       = profit ÷ saleTotal × 100`}
             </pre>
           </div>
         </div>

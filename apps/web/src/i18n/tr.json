@@ -299,7 +299,7 @@
     "infoStep2Title": "2. Satır maliyeti",
     "infoStep2": "Satır maliyeti = € fiyat × miktar. Miktarlar ondalıklı olabilir (örn. 2,5 ton, 1,75 m³).",
     "infoStep3Title": "3. İşçiliği ekle",
-    "infoStep3": "Malzeme toplamı + işçilik (toplu tutar artı isteğe bağlı rol × gün × günlük ücret satırları) = toplam maliyet.",
+    "infoStep3": "Malzeme toplamı + işçilik = toplam maliyet. İşçilik, toplu tutar artı isteğe bağlı satırlardır; her biri miktar × birim başına ücret (gün, ton, m²…) veya sabit fiyatla. Bir satır bir malzemeye bağlanabilir, böylece miktar onu takip eder (ör. demir tonları).",
     "infoStep4Title": "4. Alana bir kez böl",
     "infoStep4": "m² başına maliyet = toplam maliyet ÷ inşa edilen alan (m²). Fiziksel bir birimin bölündüğü tek yer burasıdır.",
     "infoStep5Title": "5. Kâr (isteğe bağlı)",
