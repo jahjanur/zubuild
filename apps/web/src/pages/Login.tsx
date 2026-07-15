@@ -4,8 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, setApiErrorHandler } from '../lib/api';
 import { Button, Input } from '../components/ui';
-import { AemLogo } from '../components/AemLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
+import zubuildLogo from '../assets/zubuild-logo.svg';
 
 const languages = [
   { code: 'en', label: 'English' },
@@ -77,7 +77,10 @@ export default function Login() {
         <div className="flex justify-end mb-5">
           <ThemeToggle className="flex h-9 w-9 items-center justify-center rounded-full glass text-app-secondary hover:text-app-primary transition" />
         </div>
-        <AemLogo variant="full" className="h-12 text-app-primary mb-4" />
+        <div className="flex items-center gap-3 mb-4">
+          <img src={zubuildLogo} alt={t('login.title')} className="h-12 w-12 rounded-2xl" />
+          <span className="text-2xl font-bold text-app-primary">{t('login.title')}</span>
+        </div>
         <p className="text-app-secondary text-sm mb-6">{t('login.signInContinue')}</p>
         {toast && (
           <div className="mb-4 p-3 rounded-xl bg-app-danger-muted border border-app-danger/30 text-app-danger text-sm" role="alert">
