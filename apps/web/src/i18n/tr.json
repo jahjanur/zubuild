@@ -480,5 +480,10 @@
     "subtitle": "Bu sayfada beklenmeyen bir hata oluştu. Tekrar deneyin veya uygulamayı yeniden yükleyin.",
     "tryAgain": "Tekrar dene",
     "reload": "Yeniden yükle"
+  },
+  "search": {
+    "title": "Ara",
+    "placeholder": "Tedarikçi, ürün, sipariş ara…",
+    "noResults": "Sonuç bulunamadı."
   }
 }

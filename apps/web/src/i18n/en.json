@@ -480,5 +480,10 @@
     "subtitle": "This page hit an unexpected error. Try again, or reload the app.",
     "tryAgain": "Try again",
     "reload": "Reload"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search suppliers, products, orders…",
+    "noResults": "No results found."
   }
 }

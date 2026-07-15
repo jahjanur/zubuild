@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
@@ -73,7 +74,8 @@ export default function Suppliers() {
   const [deleteConfirm, setDeleteConfirm] = useState<Supplier | null>(null);
   const [deleteBlockedSupplier, setDeleteBlockedSupplier] = useState<Supplier | null>(null);
   const [phoneError, setPhoneError] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') ?? '');
   const [form, setForm] = useState({
     companyName: '',
     contactPerson: '',

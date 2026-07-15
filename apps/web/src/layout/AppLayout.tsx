@@ -7,9 +7,10 @@ import PageTransition, { RouteProgress } from '../components/PageTransition';
 import { AemLogo } from '../components/AemLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { PoweredBy } from '../components/PoweredBy';
+import { GlobalSearch } from '../components/GlobalSearch';
 import {
   LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
-  ShieldAlert, BarChart3, Users, UserCircle, LogOut, Menu, X, Globe, ChevronDown, Calculator,
+  ShieldAlert, BarChart3, Users, UserCircle, LogOut, Menu, X, Globe, ChevronDown, Calculator, Search,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { api } from '../lib/api';
@@ -117,6 +118,7 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const org = useOrg();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const outlet = useOutlet();
 
@@ -199,8 +201,26 @@ export default function AppLayout() {
         {/* Mobile top bar */}
         <header className="lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 h-14 bg-sidebar-bg safe-area-pt">
           <BrandLockup logoUrl={org?.logoUrl} logoHeight="h-9" />
-          <button type="button" onClick={() => setMenuOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-active" aria-label={t('nav.more')}>
-            <Menu size={22} />
+          <div className="flex items-center gap-1">
+            <button type="button" onClick={() => setSearchOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-active" aria-label={t('search.title')}>
+              <Search size={20} />
+            </button>
+            <button type="button" onClick={() => setMenuOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-active" aria-label={t('nav.more')}>
+              <Menu size={22} />
+            </button>
+          </div>
+        </header>
+
+        {/* Desktop top bar with the global search trigger. */}
+        <header className="hidden lg:flex sticky top-0 z-10 items-center h-14 px-6 xl:px-8 bg-app-bg border-b border-[var(--border)]">
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            className="flex h-9 w-full max-w-md items-center gap-2 rounded-xl border border-[var(--border)] bg-app-surface-1 px-3.5 text-app-muted transition hover:border-app-border-strong"
+          >
+            <Search size={16} className="shrink-0" />
+            <span className="truncate text-sm">{t('search.placeholder')}</span>
+            <kbd className="ml-auto shrink-0 rounded-md border border-[var(--border)] px-1.5 py-0.5 text-[11px] font-medium">⌘K</kbd>
           </button>
         </header>
 
@@ -237,6 +257,8 @@ export default function AppLayout() {
           </div>
         </>
       )}
+
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 }

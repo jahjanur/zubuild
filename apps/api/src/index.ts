@@ -21,6 +21,7 @@ import inventoryRoutes from './routes/inventory';
 import teamRoutes from './routes/team';
 import organizationRoutes from './routes/organization';
 import costCalcRoutes from './routes/costCalc';
+import searchRoutes from './routes/search';
 import debugRoutes from './routes/debug';
 import { sanitizeBody } from './middleware/sanitize';
 import { assertPdfFontsAvailable } from './lib/pdf';
@@ -86,6 +87,7 @@ app.use('/inventory', inventoryRoutes);
 app.use('/team', teamRoutes);
 app.use('/organization', organizationRoutes);
 app.use('/cost-calc', costCalcRoutes);
+app.use('/search', searchRoutes);
 
 // Health
 app.get('/health', (_req, res) => res.json({ ok: true }));

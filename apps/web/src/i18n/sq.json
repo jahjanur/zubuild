@@ -480,5 +480,10 @@
     "subtitle": "Kjo faqe hasi një gabim të papritur. Provoni sërish ose ringarkoni aplikacionin.",
     "tryAgain": "Provo sërish",
     "reload": "Ringarko"
+  },
+  "search": {
+    "title": "Kërko",
+    "placeholder": "Kërko furnitorë, produkte, porosi…",
+    "noResults": "Nuk u gjet asnjë rezultat."
   }
 }

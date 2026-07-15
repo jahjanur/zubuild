@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ShoppingCart } from 'lucide-react';
 import { api } from '../lib/api';
@@ -52,7 +52,8 @@ export default function Orders() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const toast = useToast();
-  const [search, setSearch] = useState('');
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [viewingOrder, setViewingOrder] = useState<OrderRow | null>(null);
