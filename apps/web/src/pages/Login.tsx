@@ -77,10 +77,7 @@ export default function Login() {
         <ThemeToggle className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full glass text-app-secondary hover:text-app-primary transition" />
 
         <div className="mb-7 flex flex-col items-center text-center">
-          <div className="mb-2.5 flex items-center gap-2.5">
-            <img src={zubuildLogo} alt="" aria-hidden="true" className="h-11 w-11 rounded-2xl shadow-button" />
-            <span className="text-[26px] font-bold tracking-tight text-app-primary">{t('login.title')}</span>
-          </div>
+          <img src={zubuildLogo} alt={t('login.title')} className="mb-3 h-14 w-14 rounded-2xl shadow-button" />
           <p className="text-sm text-app-secondary">{t('login.signInContinue')}</p>
         </div>
 
