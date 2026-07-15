@@ -406,6 +406,9 @@ function drawFooter(doc: Doc, pageNum: number, totalPages: number): void {
   doc.fillColor(colors.textMuted).fontSize(7).font(PDF_FONT);
   doc.text([PDF_COMPANY.name, PDF_COMPANY.regNo].filter(Boolean).join(' | '), MARGIN_PT, y - 8);
   doc.text(`${L().generated}: ${generatedStr}`, MARGIN_PT, y);
+  // Brand tagline, centered between the generated date (left) and page number (right).
+  // Not translated — it is a fixed brand mark shown on every PDF the platform produces.
+  doc.text('Powered by Zulbera', MARGIN_PT, y, { width: CONTENT_WIDTH, align: 'center', lineBreak: false });
   // Width 90 so "Страница 1 / 1" or "Страница 12 / 12" fits on one line and never wraps to a new page
   doc.text(`${L().page} ${pageNum} / ${totalPages}`, PAGE_WIDTH - MARGIN_PT - 90, y, { width: 90, align: 'right' });
 }
