@@ -94,7 +94,8 @@
     "noSuppliers": "No suppliers yet.",
     "location": "Location",
     "deleteSupplier": "Delete Supplier",
-    "deleteConfirm": "Delete \"{{name}}\"? This action cannot be undone."
+    "deleteConfirm": "Delete \"{{name}}\"? This action cannot be undone.",
+    "noSuppliersSub": "Add your first supplier to start creating orders."
   },
   "products": {
     "title": "Products",
@@ -109,7 +110,10 @@
     "deleteConfirm": "Delete \"{{name}}\"? This action cannot be undone.",
     "newCategory": "New category",
     "addAsNew": "Add “{{name}}” as new",
-    "pickOrType": "Pick or type a category"
+    "pickOrType": "Pick or type a category",
+    "noProducts": "No products yet",
+    "noProductsSub": "Add your first product to build your catalogue.",
+    "noMatch": "No products match your search."
   },
   "createOrder": {
     "selectSupplier": "Select supplier",
@@ -223,7 +227,8 @@
     "pending": "Pending",
     "pdf": "PDF",
     "view": "View",
-    "noOrders": "No orders found."
+    "noOrders": "No orders found.",
+    "noOrdersSub": "Create your first purchase order to get started."
   },
   "controlPanel": {
     "title": "Control Panel",
@@ -242,7 +247,8 @@
     "exportExcel": "Export to Excel",
     "incidentsWithLoss": "Incidents with loss",
     "incidentCount": "Incident count",
-    "noIncidents": "No incidents with loss."
+    "noIncidents": "No incidents with loss.",
+    "noIncidentsSub": "Every delivery matched its order — no losses flagged."
   },
   "inventory": {
     "title": "Inventory",

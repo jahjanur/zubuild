@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { ShoppingCart } from 'lucide-react';
 import { api } from '../lib/api';
 import {
   Card,
@@ -15,6 +17,7 @@ import {
   Badge,
   Modal,
   DatePicker,
+  EmptyState,
 } from '../components/ui';
 import { formatMKD, formatDate } from '../lib/formatMKD';
 import { useToast } from '../context/ToastContext';
@@ -47,6 +50,7 @@ const base = import.meta.env.VITE_API_BASE ?? '/api';
 
 export default function Orders() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const toast = useToast();
   const [search, setSearch] = useState('');
   const [from, setFrom] = useState('');
@@ -188,7 +192,12 @@ export default function Orders() {
         {isLoading ? (
           <div className="p-6 text-app-secondary text-sm">{t('common.loading')}</div>
         ) : orders.length === 0 ? (
-          <div className="p-6 text-app-secondary text-sm">{t('orders.noOrders')}</div>
+          <EmptyState
+            icon={<ShoppingCart size={26} />}
+            title={t('orders.noOrders')}
+            description={t('orders.noOrdersSub')}
+            action={{ label: t('dashboard.createOrder'), onClick: () => navigate('/app/create-order') }}
+          />
         ) : (
           <div className="overflow-x-auto">
             <Table>

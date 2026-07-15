@@ -7,9 +7,9 @@ import { EASE } from '../components/PageTransition';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
 } from 'recharts';
-import { ShoppingCart, TrendingDown, Clock, Truck, Package, FilePlus, ClipboardCheck, ArrowRight, ChevronRight } from 'lucide-react';
+import { ShoppingCart, TrendingDown, Clock, Truck, Package, FilePlus, ClipboardCheck, ArrowRight, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { api } from '../lib/api';
-import { StatCard, Card, CardHeader, CardContent, Modal, Button, Badge } from '../components/ui';
+import { StatCard, Card, CardHeader, CardContent, Modal, Button, Badge, EmptyState } from '../components/ui';
 import { formatMKD, formatDate } from '../lib/formatMKD';
 import { productName } from '../lib/catalog';
 import { unitLabel } from '../lib/units';
@@ -171,7 +171,7 @@ export default function Dashboard() {
         {recentLoading ? (
           <div className="p-6 text-app-secondary text-sm">{t('common.loading')}</div>
         ) : recent.length === 0 ? (
-          <div className="p-8 text-center text-app-muted text-sm">{t('dashboard.allClear')}</div>
+          <EmptyState compact icon={<CheckCircle2 size={24} />} title={t('dashboard.allClear')} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">

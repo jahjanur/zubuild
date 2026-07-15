@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus } from 'lucide-react';
+import { Plus, Package } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/useAuth';
@@ -21,6 +21,7 @@ import {
   TableRow,
   TableCell,
   TableActionButton,
+  EmptyState,
 } from '../components/ui';
 import { formatMKD } from '../lib/formatMKD';
 import { productName, categoryName } from '../lib/catalog';
@@ -300,6 +301,21 @@ export default function Products() {
             </Card>
           );
         })}
+
+      {Object.keys(byCategory).length === 0 && (
+        <Card>
+          {search.trim() || categoryFilter ? (
+            <EmptyState compact icon={<Package size={24} />} title={t('products.noMatch')} />
+          ) : (
+            <EmptyState
+              icon={<Package size={26} />}
+              title={t('products.noProducts')}
+              description={t('products.noProductsSub')}
+              action={canWrite ? { label: t('products.addProduct'), onClick: openCreate } : undefined}
+            />
+          )}
+        </Card>
+      )}
 
       {canWrite && (
       <Modal

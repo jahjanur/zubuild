@@ -94,7 +94,8 @@
     "noSuppliers": "Henüz tedarikçi yok.",
     "location": "Konum",
     "deleteSupplier": "Tedarikçiyi Sil",
-    "deleteConfirm": "\"{{name}}\" silinsin mi? Bu işlem geri alınamaz."
+    "deleteConfirm": "\"{{name}}\" silinsin mi? Bu işlem geri alınamaz.",
+    "noSuppliersSub": "Sipariş oluşturmaya başlamak için ilk tedarikçinizi ekleyin."
   },
   "products": {
     "title": "Ürünler",
@@ -109,7 +110,10 @@
     "deleteConfirm": "\"{{name}}\" silinsin mi? Bu işlem geri alınamaz.",
     "newCategory": "Yeni kategori",
     "addAsNew": "“{{name}}” yeni olarak ekle",
-    "pickOrType": "Kategori seçin veya yazın"
+    "pickOrType": "Kategori seçin veya yazın",
+    "noProducts": "Henüz ürün yok",
+    "noProductsSub": "Kataloğunuzu oluşturmak için ilk ürününüzü ekleyin.",
+    "noMatch": "Aramanızla eşleşen ürün yok."
   },
   "createOrder": {
     "selectSupplier": "Tedarikçi seçin",
@@ -223,7 +227,8 @@
     "pending": "Bekliyor",
     "pdf": "PDF",
     "view": "Görüntüle",
-    "noOrders": "Sipariş bulunamadı."
+    "noOrders": "Sipariş bulunamadı.",
+    "noOrdersSub": "Başlamak için ilk satın alma siparişinizi oluşturun."
   },
   "controlPanel": {
     "title": "Kontrol Paneli",
@@ -242,7 +247,8 @@
     "exportExcel": "Excel'e Aktar",
     "incidentsWithLoss": "Kayıplı olaylar",
     "incidentCount": "Olay sayısı",
-    "noIncidents": "Kayıplı olay yok."
+    "noIncidents": "Kayıplı olay yok.",
+    "noIncidentsSub": "Her teslimat siparişiyle eşleşti — işaretlenen kayıp yok."
   },
   "inventory": {
     "title": "Envanter",

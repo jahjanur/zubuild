@@ -5,7 +5,8 @@ import { api } from '../lib/api';
 import { useAuth } from '../lib/useAuth';
 import { useToast } from '../context/ToastContext';
 import { formatDate } from '../lib/formatMKD';
-import { Card, CardContent, CardHeader, Button, Input, Select, Badge } from '../components/ui';
+import { Mail } from 'lucide-react';
+import { Card, CardContent, CardHeader, Button, Input, Select, Badge, EmptyState } from '../components/ui';
 
 interface Member { id: string; email: string; role: string; createdAt: string; }
 interface Invite { id: string; email: string; role: string; token: string; expiresAt: string; }
@@ -104,7 +105,7 @@ export default function Team() {
         <CardHeader><h2 className="text-sm font-semibold text-app-primary">{t('team.pendingInvites')}</h2></CardHeader>
         <CardContent className="space-y-3">
           {invites.length === 0 ? (
-            <p className="text-app-muted text-sm">{t('team.noInvites')}</p>
+            <EmptyState compact icon={<Mail size={22} />} title={t('team.noInvites')} />
           ) : (
             invites.map((inv) => (
               <div key={inv.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-app-surface-2 p-3">

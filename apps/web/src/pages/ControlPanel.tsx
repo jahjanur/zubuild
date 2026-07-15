@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/useAuth';
+import { ShieldCheck } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -15,6 +16,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  EmptyState,
 } from '../components/ui';
 import { formatMKD, formatDate, formatDateTime } from '../lib/formatMKD';
 import { productName } from '../lib/catalog';
@@ -132,72 +134,70 @@ export default function ControlPanel() {
           )}
         </CardHeader>
         <CardContent className="p-0">
-          {/* Mobile: incident cards */}
-          <div className="md:hidden divide-y divide-[var(--border)]">
-            {incidents.length === 0 ? (
-              <div className="p-6 text-center text-app-muted">{t('controlPanel.noIncidents')}</div>
-            ) : (
-              incidents.map((r) => (
-                <div key={r.id} className="p-4 flex flex-col gap-2">
-                  <div className="flex justify-between items-start">
-                    <span className="font-medium text-app-primary">{r.order.orderNumber}</span>
-                    <span className="text-app-danger font-medium">{formatMKD(Number(r.totalLossValue))}</span>
+          {incidents.length === 0 ? (
+            <EmptyState
+              icon={<ShieldCheck size={26} />}
+              title={t('controlPanel.noIncidents')}
+              description={t('controlPanel.noIncidentsSub')}
+            />
+          ) : (
+            <>
+              {/* Mobile: incident cards */}
+              <div className="md:hidden divide-y divide-[var(--border)]">
+                {incidents.map((r) => (
+                  <div key={r.id} className="p-4 flex flex-col gap-2">
+                    <div className="flex justify-between items-start">
+                      <span className="font-medium text-app-primary">{r.order.orderNumber}</span>
+                      <span className="text-app-danger font-medium">{formatMKD(Number(r.totalLossValue))}</span>
+                    </div>
+                    <p className="text-app-secondary text-sm">{formatDate(r.reconciliationDate)}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDetailsId(r.id)}
+                      className="w-full min-h-[44px]"
+                    >
+                      {t('controlPanel.details')}
+                    </Button>
                   </div>
-                  <p className="text-app-secondary text-sm">{formatDate(r.reconciliationDate)}</p>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setDetailsId(r.id)}
-                    className="w-full min-h-[44px]"
-                  >
-                    {t('controlPanel.details')}
-                  </Button>
-                </div>
-              ))
-            )}
-          </div>
-          {/* Desktop: table */}
-          <div className="hidden md:block">
-            <Table>
-              <TableHeader>
-                <TableHead>{t('controlPanel.order')}</TableHead>
-                <TableHead>{t('controlPanel.date')}</TableHead>
-                <TableHead className="text-right">{t('controlPanel.loss')}</TableHead>
-                <TableHead className="text-right">{t('common.actions')}</TableHead>
-              </TableHeader>
-              <TableBody>
-                {incidents.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-app-muted py-8">
-                      {t('controlPanel.noIncidents')}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  incidents.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell className="text-app-primary">{r.order.orderNumber}</TableCell>
-                      <TableCell>{formatDate(r.reconciliationDate)}</TableCell>
-                      <TableCell className="text-right text-app-danger">
-                        {formatMKD(Number(r.totalLossValue))}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setDetailsId(r.id)}
-                          className="min-h-[44px]"
-                        >
-                          {t('controlPanel.details')}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                ))}
+              </div>
+              {/* Desktop: table */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableHead>{t('controlPanel.order')}</TableHead>
+                    <TableHead>{t('controlPanel.date')}</TableHead>
+                    <TableHead className="text-right">{t('controlPanel.loss')}</TableHead>
+                    <TableHead className="text-right">{t('common.actions')}</TableHead>
+                  </TableHeader>
+                  <TableBody>
+                    {incidents.map((r) => (
+                      <TableRow key={r.id}>
+                        <TableCell className="text-app-primary">{r.order.orderNumber}</TableCell>
+                        <TableCell>{formatDate(r.reconciliationDate)}</TableCell>
+                        <TableCell className="text-right text-app-danger">
+                          {formatMKD(Number(r.totalLossValue))}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDetailsId(r.id)}
+                            className="min-h-[44px]"
+                          >
+                            {t('controlPanel.details')}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 

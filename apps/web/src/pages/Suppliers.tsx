@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/useAuth';
 import { useToast } from '../context/ToastContext';
+import { Truck } from 'lucide-react';
 import {
   Button,
   Card,
@@ -13,6 +14,7 @@ import {
   Select,
   Badge,
   TableActionButton,
+  EmptyState,
 } from '../components/ui';
 
 interface Supplier {
@@ -246,9 +248,18 @@ export default function Suppliers() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {suppliers.length === 0 ? (
-          <p className="text-app-secondary text-sm col-span-full py-4">
-            {q ? t('suppliers.noSearchResults') : t('suppliers.noSuppliers')}
-          </p>
+          <div className="col-span-full">
+            {q ? (
+              <EmptyState compact icon={<Truck size={24} />} title={t('suppliers.noSearchResults')} />
+            ) : (
+              <EmptyState
+                icon={<Truck size={26} />}
+                title={t('suppliers.noSuppliers')}
+                description={t('suppliers.noSuppliersSub')}
+                action={canWrite ? { label: t('suppliers.addSupplier'), onClick: openCreate } : undefined}
+              />
+            )}
+          </div>
         ) : null}
         {suppliers.map((s) => (
           <Card key={s.id} className="p-0">

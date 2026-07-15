@@ -94,7 +94,8 @@
     "noSuppliers": "Ende nuk ka furnitorë.",
     "location": "Vendndodhja",
     "deleteSupplier": "Fshi furnitorin",
-    "deleteConfirm": "Të fshihet «{{name}}»? Ky veprim nuk mund të zhbëhet."
+    "deleteConfirm": "Të fshihet «{{name}}»? Ky veprim nuk mund të zhbëhet.",
+    "noSuppliersSub": "Shtoni furnitorin tuaj të parë për të filluar krijimin e porosive."
   },
   "products": {
     "title": "Produktet",
@@ -109,7 +110,10 @@
     "deleteConfirm": "Të fshihet «{{name}}»? Ky veprim nuk mund të zhbëhet.",
     "newCategory": "Kategori e re",
     "addAsNew": "Shto “{{name}}” si të re",
-    "pickOrType": "Zgjidhni ose shkruani një kategori"
+    "pickOrType": "Zgjidhni ose shkruani një kategori",
+    "noProducts": "Ende nuk ka produkte",
+    "noProductsSub": "Shtoni produktin tuaj të parë për të ndërtuar katalogun.",
+    "noMatch": "Asnjë produkt nuk përputhet me kërkimin tuaj."
   },
   "createOrder": {
     "selectSupplier": "Zgjidhni furnitorin",
@@ -223,7 +227,8 @@
     "pending": "Në pritje",
     "pdf": "PDF",
     "view": "Shiko",
-    "noOrders": "Nuk u gjetën porosi."
+    "noOrders": "Nuk u gjetën porosi.",
+    "noOrdersSub": "Krijoni porosinë tuaj të parë të furnizimit për të filluar."
   },
   "controlPanel": {
     "title": "Paneli i kontrollit",
@@ -242,7 +247,8 @@
     "exportExcel": "Eksporto në Excel",
     "incidentsWithLoss": "Incidente me humbje",
     "incidentCount": "Numri i incidenteve",
-    "noIncidents": "Nuk ka incidente me humbje."
+    "noIncidents": "Nuk ka incidente me humbje.",
+    "noIncidentsSub": "Çdo dorëzim përputhet me porosinë — asnjë humbje e shënuar."
   },
   "inventory": {
     "title": "Inventari",

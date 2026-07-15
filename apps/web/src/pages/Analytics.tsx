@@ -14,7 +14,8 @@ import {
   Legend,
 } from 'recharts';
 import { api } from '../lib/api';
-import { Card, CardContent } from '../components/ui';
+import { Inbox } from 'lucide-react';
+import { Card, CardContent, EmptyState } from '../components/ui';
 import { formatMKD } from '../lib/formatMKD';
 import { productName } from '../lib/catalog';
 
@@ -183,7 +184,7 @@ export default function Analytics() {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-app-muted">{t('analytics.noReconciliationData')}</p>
+                <EmptyState compact icon={<Inbox size={22} />} title={t('analytics.noReconciliationData')} />
               )}
             </div>
             <p className="text-app-secondary text-sm mt-2">
