@@ -73,51 +73,64 @@ export default function Login() {
       className="min-h-screen flex flex-col items-center justify-center px-4 py-6 safe-area-pt bg-app-bg"
       style={{ background: 'var(--app-bg-gradient, var(--app-bg))' }}
     >
-      <div className="w-full max-w-md glass rounded-2xl shadow-modal p-6 md:p-8">
-        <div className="flex justify-end mb-5">
-          <ThemeToggle className="flex h-9 w-9 items-center justify-center rounded-full glass text-app-secondary hover:text-app-primary transition" />
+      <div className="relative w-full max-w-md glass rounded-2xl shadow-modal p-7 md:p-8">
+        <ThemeToggle className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full glass text-app-secondary hover:text-app-primary transition" />
+
+        <div className="mb-7 flex flex-col items-center text-center">
+          <div className="mb-2.5 flex items-center gap-2.5">
+            <img src={zubuildLogo} alt="" aria-hidden="true" className="h-11 w-11 rounded-2xl shadow-button" />
+            <span className="text-[26px] font-bold tracking-tight text-app-primary">{t('login.title')}</span>
+          </div>
+          <p className="text-sm text-app-secondary">{t('login.signInContinue')}</p>
         </div>
-        <div className="flex items-center gap-3 mb-4">
-          <img src={zubuildLogo} alt={t('login.title')} className="h-12 w-12 rounded-2xl" />
-          <span className="text-2xl font-bold text-app-primary">{t('login.title')}</span>
-        </div>
-        <p className="text-app-secondary text-sm mb-6">{t('login.signInContinue')}</p>
+
         {toast && (
-          <div className="mb-4 p-3 rounded-xl bg-app-danger-muted border border-app-danger/30 text-app-danger text-sm" role="alert">
+          <div className="mb-5 rounded-xl border border-app-danger/30 bg-app-danger-muted p-3 text-sm text-app-danger" role="alert">
             {toast}
           </div>
         )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('login.email')}</label>
+            <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-app-secondary">{t('login.email')}</label>
             <Input
+              id="login-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@zubuild.com"
+              autoComplete="email"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('login.password')}</label>
+            <div className="mb-1.5 flex items-center justify-between gap-3">
+              <label htmlFor="login-password" className="block text-sm font-medium text-app-secondary">{t('login.password')}</label>
+              <Link to="/forgot-password" className="text-xs font-medium text-app-accent hover:underline">{t('login.forgotPassword')}</Link>
+            </div>
             <Input
+              id="login-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
               required
             />
           </div>
-          <Button type="submit" className="w-full min-h-[48px] rounded-full" disabled={login.isPending}>
+          <Button type="submit" className="mt-1 w-full min-h-[48px] rounded-full text-base" disabled={login.isPending}>
             {login.isPending ? t('login.signingIn') : t('login.signIn')}
           </Button>
-          <div className="text-center">
-            <Link to="/forgot-password" className="text-app-secondary text-sm hover:text-app-primary hover:underline">{t('login.forgotPassword')}</Link>
-          </div>
         </form>
-        <p className="text-app-secondary text-sm text-center mt-5">
-          {t('register.newHere')}{' '}
-          <Link to="/register" className="text-app-accent font-medium hover:underline">{t('register.createAccount')}</Link>
-        </p>
+
+        <div className="mt-6 border-t border-[var(--border)] pt-5 text-center">
+          <p className="mb-3 text-xs text-app-secondary">{t('register.newHere')}</p>
+          <Link
+            to="/register"
+            className="inline-flex w-full min-h-[46px] items-center justify-center rounded-full border border-[var(--border)] bg-app-surface-1 text-sm font-semibold text-app-primary transition-colors hover:border-app-border-strong hover:bg-app-surface-subtle"
+          >
+            {t('register.createAccount')}
+          </Link>
+        </div>
       </div>
       <div className="mt-6 flex justify-center">
         <LanguageSwitcher />
