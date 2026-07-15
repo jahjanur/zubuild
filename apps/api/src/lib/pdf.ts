@@ -483,3 +483,254 @@ export function generateOrderPdf(
     }
   });
 }
+
+// ─────────────────────────────  Cost-per-m² calculator PDF  ─────────────────────────────
+// Reuses the same pipeline as the order PDF (fonts, header, footer with
+// "Powered by Zulbera", A4 layout). The calculator is live/unsaved, so the
+// client sends the exact rows + results it is showing (all in euros) and we
+// render them faithfully — the PDF matches the screen.
+
+export type CostCalcPdfData = {
+  areaM2: number;
+  rate: number;
+  materials: Array<{ name: string; unit: string; priceEur: number; quantity: number; lineCost: number }>;
+  materialsTotal: number;
+  labourLumpSum: number;
+  labourItems: Array<{ role: string; days: number; dailyRateEur: number; cost: number }>;
+  labourTotal: number;
+  totalCost: number;
+  costPerM2: number | null;
+  sale: { salePricePerM2: number; saleTotal: number; profit: number; profitPerM2: number | null; margin: number | null } | null;
+};
+
+/** Euros with 2 decimals in the export locale (e.g. "€3,600.00" / "3.600,00 €"). */
+function formatEurPdf(n: number): string {
+  try {
+    return new Intl.NumberFormat(PDF_LOCALE, { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+  } catch {
+    return `€${n.toFixed(2)}`;
+  }
+}
+function formatPercentPdf(n: number): string {
+  try {
+    return `${new Intl.NumberFormat(PDF_LOCALE, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(n)}%`;
+  } catch {
+    return `${n.toFixed(1)}%`;
+  }
+}
+function formatQtyPdf(n: number): string {
+  try {
+    return new Intl.NumberFormat(PDF_LOCALE, { maximumFractionDigits: 3 }).format(n);
+  } catch {
+    return String(n);
+  }
+}
+
+type CalcLabels = {
+  title: string; area: string; exchangeRate: string;
+  materials: string; material: string; unit: string; unitPrice: string; qty: string; cost: string;
+  labour: string; lumpSum: string; role: string; days: string; dailyRate: string;
+  totalCost: string; costPerM2: string;
+  saleTotal: string; profit: string; loss: string; profitPerM2: string; margin: string;
+};
+const CALC_LABELS_BY_LANG: Record<CatalogLang, CalcLabels> = {
+  en: { title: 'Cost per m²', area: 'Area', exchangeRate: 'Exchange rate', materials: 'Materials', material: 'Material', unit: 'Unit', unitPrice: 'Price (€)', qty: 'Qty', cost: 'Cost', labour: 'Labour (punë dore)', lumpSum: 'Lump sum', role: 'Role', days: 'Days', dailyRate: 'Daily rate (€)', totalCost: 'Total cost', costPerM2: 'Cost per m²', saleTotal: 'Sale total', profit: 'Profit', loss: 'Loss', profitPerM2: 'Profit per m²', margin: 'Margin' },
+  mk: { title: 'Цена по m²', area: 'Површина', exchangeRate: 'Девизен курс', materials: 'Материјали', material: 'Материјал', unit: 'Ед.', unitPrice: 'Цена (€)', qty: 'Кол.', cost: 'Цена', labour: 'Работна рака (punë dore)', lumpSum: 'Паушал', role: 'Улога', days: 'Денови', dailyRate: 'Дневница (€)', totalCost: 'Вкупен трошок', costPerM2: 'Цена по m²', saleTotal: 'Вкупна продажба', profit: 'Профит', loss: 'Загуба', profitPerM2: 'Профит по m²', margin: 'Маржа' },
+  sq: { title: 'Kosto për m²', area: 'Sipërfaqja', exchangeRate: 'Kursi i këmbimit', materials: 'Materialet', material: 'Materiali', unit: 'Njësia', unitPrice: 'Çmimi (€)', qty: 'Sasia', cost: 'Kosto', labour: 'Punë dore', lumpSum: 'Shumë e plotë', role: 'Roli', days: 'Ditë', dailyRate: 'Tarifa ditore (€)', totalCost: 'Kosto totale', costPerM2: 'Kosto për m²', saleTotal: 'Totali i shitjes', profit: 'Fitimi', loss: 'Humbje', profitPerM2: 'Fitimi për m²', margin: 'Marzha' },
+  tr: { title: 'm² başına maliyet', area: 'Alan', exchangeRate: 'Döviz kuru', materials: 'Malzemeler', material: 'Malzeme', unit: 'Birim', unitPrice: 'Fiyat (€)', qty: 'Miktar', cost: 'Tutar', labour: 'İşçilik (punë dore)', lumpSum: 'Götürü tutar', role: 'Görev', days: 'Gün', dailyRate: 'Günlük ücret (€)', totalCost: 'Toplam maliyet', costPerM2: 'm² başına maliyet', saleTotal: 'Satış toplamı', profit: 'Kâr', loss: 'Zarar', profitPerM2: 'm² başına kâr', margin: 'Marj' },
+};
+function CL(): CalcLabels {
+  return CALC_LABELS_BY_LANG[PDF_LANG] ?? CALC_LABELS_BY_LANG.mk;
+}
+
+// Cost column is the rightmost in both tables; keep its width identical so the
+// materials and labour "Cost" columns line up down the page.
+const CALC_COST_W = 96;
+const MAT_COL = { name: 190, unit: 46, price: 96, qty: Math.floor(CONTENT_WIDTH - 190 - 46 - 96 - CALC_COST_W), cost: CALC_COST_W };
+const LAB_COL = { role: MAT_COL.name + MAT_COL.unit, days: 60, rate: Math.floor(CONTENT_WIDTH - (MAT_COL.name + MAT_COL.unit) - 60 - CALC_COST_W), cost: CALC_COST_W };
+
+export function generateCostCalcPdf(
+  data: CostCalcPdfData,
+  opts: { currency?: string; locale?: string; lang?: string; company?: PdfCompany } = {}
+): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    try {
+      assertPdfFontsAvailable();
+      PDF_LANG = normalizeLang(opts.lang || opts.locale || 'mk');
+      PDF_LOCALE = opts.lang || opts.locale || 'mk';
+      PDF_COMPANY = opts.company && opts.company.name ? opts.company : DEFAULT_COMPANY;
+
+      const doc = new PDFDocument({ margin: MARGIN_PT, size: 'A4', bufferPages: true }) as Doc;
+      const chunks: Buffer[] = [];
+      doc.on('data', (chunk) => chunks.push(chunk));
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+      doc.on('error', reject);
+      doc.registerFont(PDF_FONT, DEJAVU_REGULAR_PATH);
+      doc.registerFont(PDF_FONT_BOLD, DEJAVU_BOLD_PATH);
+      doc.font(PDF_FONT);
+
+      drawHeader(doc);
+      let pageCount = 1;
+      let y = BODY_TOP;
+
+      const ensure = (need: number): void => {
+        if (y + need > CONTENT_BOTTOM) {
+          doc.addPage({ size: 'A4', margin: MARGIN_PT });
+          pageCount += 1;
+          y = BODY_TOP;
+        }
+      };
+      const costRightX = MARGIN_PT + CONTENT_WIDTH - CALC_COST_W;
+
+      // Title + meta line.
+      doc.fillColor(colors.black).font(PDF_FONT_BOLD).fontSize(16).text(CL().title, MARGIN_PT, y);
+      y += 24;
+      doc.fillColor(colors.textMuted).font(PDF_FONT).fontSize(9);
+      const meta = [
+        `${CL().area}: ${formatQtyPdf(data.areaM2)} m²`,
+        `${CL().exchangeRate}: 1 € = ${formatQtyPdf(data.rate)} MKD`,
+        `${L().generated}: ${formatPdfDate(new Date())}`,
+      ].join('   ·   ');
+      doc.text(meta, MARGIN_PT, y);
+      y += 16;
+      doc.moveTo(MARGIN_PT, y).lineTo(PAGE_WIDTH - MARGIN_PT, y).strokeColor(colors.border).stroke();
+      y += 14;
+
+      const sectionTitle = (text: string): void => {
+        ensure(HEADER_ROW_HEIGHT + 24);
+        doc.fillColor(colors.black).font(PDF_FONT_BOLD).fontSize(11).text(text, MARGIN_PT, y);
+        y += 18;
+      };
+      const bodyRow = (cells: Array<{ text: string; x: number; w: number; align?: 'left' | 'right' }>, i: number): void => {
+        if (y + ROW_HEIGHT > CONTENT_BOTTOM) {
+          doc.addPage({ size: 'A4', margin: MARGIN_PT });
+          pageCount += 1;
+          y = BODY_TOP;
+        }
+        doc.rect(MARGIN_PT, y, CONTENT_WIDTH, ROW_HEIGHT).fill(i % 2 === 1 ? colors.rowAlt : '#fff').stroke(colors.border);
+        doc.fillColor(colors.text).font(PDF_FONT).fontSize(9);
+        for (const c of cells) doc.text(c.text, c.x, y + 5, { width: c.w, align: c.align ?? 'left', lineBreak: false });
+        y += ROW_HEIGHT;
+      };
+      const subtotalRow = (label: string, value: string): void => {
+        ensure(ROW_HEIGHT + 6);
+        doc.fillColor(colors.text).font(PDF_FONT_BOLD).fontSize(9);
+        doc.text(label, MARGIN_PT + 8, y + 6);
+        doc.text(value, costRightX - 4, y + 6, { width: CALC_COST_W, align: 'right' });
+        y += ROW_HEIGHT + 8;
+      };
+
+      // Materials.
+      sectionTitle(CL().materials);
+      doc.rect(MARGIN_PT, y, CONTENT_WIDTH, HEADER_ROW_HEIGHT).fill(colors.darkGray).stroke(colors.border);
+      doc.fillColor('#fff').font(PDF_FONT_BOLD).fontSize(9);
+      {
+        let cx = MARGIN_PT;
+        doc.text(CL().material, cx + 8, y + 6, { width: MAT_COL.name - 8 }); cx += MAT_COL.name;
+        doc.text(CL().unit, cx, y + 6, { width: MAT_COL.unit, align: 'right' }); cx += MAT_COL.unit;
+        doc.text(CL().unitPrice, cx, y + 6, { width: MAT_COL.price, align: 'right' }); cx += MAT_COL.price;
+        doc.text(CL().qty, cx, y + 6, { width: MAT_COL.qty, align: 'right' }); cx += MAT_COL.qty;
+        doc.text(CL().cost, cx, y + 6, { width: MAT_COL.cost - 4, align: 'right' });
+      }
+      y += HEADER_ROW_HEIGHT;
+      data.materials.forEach((m, i) => {
+        let cx = MARGIN_PT;
+        const cells: Array<{ text: string; x: number; w: number; align?: 'left' | 'right' }> = [
+          { text: ellipsize(doc, productLabel(m.name, PDF_LANG), MAT_COL.name - 10), x: cx + 8, w: MAT_COL.name - 10 },
+        ];
+        cx += MAT_COL.name;
+        cells.push({ text: unitLabelPdf(m.unit), x: cx, w: MAT_COL.unit, align: 'right' }); cx += MAT_COL.unit;
+        cells.push({ text: formatEurPdf(m.priceEur), x: cx, w: MAT_COL.price, align: 'right' }); cx += MAT_COL.price;
+        cells.push({ text: formatQtyPdf(m.quantity), x: cx, w: MAT_COL.qty, align: 'right' }); cx += MAT_COL.qty;
+        cells.push({ text: formatEurPdf(m.lineCost), x: cx, w: MAT_COL.cost - 4, align: 'right' });
+        bodyRow(cells, i);
+      });
+      subtotalRow(CL().materials, formatEurPdf(data.materialsTotal));
+
+      // Labour.
+      const hasLabour = data.labourLumpSum > 0 || data.labourItems.length > 0;
+      if (hasLabour) {
+        sectionTitle(CL().labour);
+        let rowIdx = 0;
+        if (data.labourLumpSum > 0) {
+          bodyRow(
+            [
+              { text: CL().lumpSum, x: MARGIN_PT + 8, w: LAB_COL.role - 8 },
+              { text: formatEurPdf(data.labourLumpSum), x: costRightX - 4, w: CALC_COST_W, align: 'right' },
+            ],
+            rowIdx++
+          );
+        }
+        if (data.labourItems.length > 0) {
+          // Column header for itemised labour.
+          if (y + HEADER_ROW_HEIGHT > CONTENT_BOTTOM) { doc.addPage({ size: 'A4', margin: MARGIN_PT }); pageCount += 1; y = BODY_TOP; }
+          doc.rect(MARGIN_PT, y, CONTENT_WIDTH, HEADER_ROW_HEIGHT).fill(colors.headerBg).stroke(colors.border);
+          doc.fillColor(colors.darkGray).font(PDF_FONT_BOLD).fontSize(9);
+          {
+            let cx = MARGIN_PT;
+            doc.text(CL().role, cx + 8, y + 6, { width: LAB_COL.role - 8 }); cx += LAB_COL.role;
+            doc.text(CL().days, cx, y + 6, { width: LAB_COL.days, align: 'right' }); cx += LAB_COL.days;
+            doc.text(CL().dailyRate, cx, y + 6, { width: LAB_COL.rate, align: 'right' }); cx += LAB_COL.rate;
+            doc.text(CL().cost, cx, y + 6, { width: LAB_COL.cost - 4, align: 'right' });
+          }
+          y += HEADER_ROW_HEIGHT;
+          data.labourItems.forEach((it) => {
+            let cx = MARGIN_PT;
+            const cells: Array<{ text: string; x: number; w: number; align?: 'left' | 'right' }> = [
+              { text: ellipsize(doc, it.role || '—', LAB_COL.role - 10), x: cx + 8, w: LAB_COL.role - 10 },
+            ];
+            cx += LAB_COL.role;
+            cells.push({ text: formatQtyPdf(it.days), x: cx, w: LAB_COL.days, align: 'right' }); cx += LAB_COL.days;
+            cells.push({ text: formatEurPdf(it.dailyRateEur), x: cx, w: LAB_COL.rate, align: 'right' }); cx += LAB_COL.rate;
+            cells.push({ text: formatEurPdf(it.cost), x: cx, w: LAB_COL.cost - 4, align: 'right' });
+            bodyRow(cells, rowIdx++);
+          });
+        }
+        subtotalRow(CL().labour, formatEurPdf(data.labourTotal));
+      }
+
+      // Summary + headline cost per m².
+      ensure(120);
+      y += 4;
+      const sumW = 260;
+      const sumX = PAGE_WIDTH - MARGIN_PT - sumW;
+      const sumRow = (label: string, value: string, bold = false): void => {
+        doc.font(bold ? PDF_FONT_BOLD : PDF_FONT).fontSize(10).fillColor(colors.text);
+        doc.text(label, sumX, y);
+        doc.text(value, sumX, y, { width: sumW, align: 'right' });
+        y += 16;
+      };
+      sumRow(CL().materials, formatEurPdf(data.materialsTotal));
+      sumRow(CL().labour, formatEurPdf(data.labourTotal));
+      doc.moveTo(sumX, y).lineTo(sumX + sumW, y).strokeColor(colors.border).stroke();
+      y += 6;
+      sumRow(CL().totalCost, formatEurPdf(data.totalCost), true);
+      y += 4;
+      // Headline cost per m².
+      const hlH = 42;
+      doc.rect(sumX, y, sumW, hlH).fill(colors.headerBg).stroke(colors.border);
+      doc.fillColor(colors.textMuted).font(PDF_FONT_BOLD).fontSize(8).text(CL().costPerM2.toUpperCase(), sumX + 10, y + 8);
+      doc.fillColor(colors.black).font(PDF_FONT_BOLD).fontSize(16).text(data.costPerM2 == null ? '—' : formatEurPdf(data.costPerM2), sumX + 10, y + 18, { width: sumW - 20, align: 'right' });
+      y += hlH + 12;
+
+      // Profit block (only when a sale price was given).
+      if (data.sale) {
+        ensure(80);
+        const s = data.sale;
+        const isLoss = s.profit < 0;
+        sumRow(CL().saleTotal, formatEurPdf(s.saleTotal));
+        sumRow(isLoss ? CL().loss : CL().profit, formatEurPdf(s.profit), true);
+        sumRow(CL().profitPerM2, s.profitPerM2 == null ? '—' : formatEurPdf(s.profitPerM2));
+        sumRow(CL().margin, s.margin == null ? '—' : formatPercentPdf(s.margin));
+      }
+
+      for (let i = 0; i < pageCount; i++) {
+        doc.switchToPage(i);
+        drawFooter(doc, i + 1, pageCount);
+      }
+      doc.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+}

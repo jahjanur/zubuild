@@ -322,7 +322,10 @@
     "notSaved": "Canlı önizleme — hiçbir şey kaydedilmez.",
     "pickProduct": "Malzeme ekle",
     "searchProducts": "Ürün ara…",
-    "noProducts": "Ürün bulunamadı."
+    "noProducts": "Ürün bulunamadı.",
+    "exportPdf": "PDF dışa aktar",
+    "exporting": "Dışa aktarılıyor…",
+    "pdfError": "PDF dışa aktarılamadı."
   },
   "status": {
     "pending": "Bekliyor",

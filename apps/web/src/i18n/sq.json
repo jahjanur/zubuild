@@ -322,7 +322,10 @@
     "notSaved": "Pamje e drejtpërdrejtë — asgjë nuk ruhet.",
     "pickProduct": "Shto një material",
     "searchProducts": "Kërko produkte…",
-    "noProducts": "Nuk u gjetën produkte."
+    "noProducts": "Nuk u gjetën produkte.",
+    "exportPdf": "Eksporto PDF",
+    "exporting": "Po eksportohet…",
+    "pdfError": "PDF-ja nuk mund të eksportohej."
   },
   "status": {
     "pending": "Në pritje",

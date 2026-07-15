@@ -4,12 +4,15 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { Card, CardContent, CardHeader, Button, Input, Modal } from '../components/ui';
-import { Plus, Search, X, Trash2 } from 'lucide-react';
+import { Plus, Search, X, Trash2, Download } from 'lucide-react';
 import { productName, categoryName } from '../lib/catalog';
 import { unitLabel } from '../lib/units';
 import { formatEUR, formatMKDPlain, formatPercent } from '../lib/formatMKD';
 import { useOrg } from '../lib/useOrg';
+import { useToast } from '../context/ToastContext';
 import { computeCost, mkdToEur, parseDecimal, type CostCalcInput } from '../lib/costCalc';
+
+const API_BASE = import.meta.env.VITE_API_BASE ?? '/api';
 
 interface Product {
   id: string;
@@ -44,9 +47,11 @@ interface LabourRow {
 }
 
 export default function CostCalculator() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const toast = useToast();
   const org = useOrg();
   const rate = org?.mkdToEurRate ?? 61.5;
+  const [exporting, setExporting] = useState(false);
 
   const [materials, setMaterials] = useState<MatRow[]>([]);
   const [lumpSumStr, setLumpSumStr] = useState('');
@@ -130,6 +135,66 @@ export default function CostCalculator() {
   const out = useMemo(() => computeCost(input), [input]);
 
   const money = (n: number | null) => (n == null ? '—' : formatEUR(n));
+
+  // Export the live calc to a PDF (server reuses the order PDF pipeline). Nothing
+  // is saved — we POST exactly what's on screen and stream back the PDF.
+  const canExport = materials.length > 0 || out.labourTotal > 0;
+  async function exportPdf() {
+    if (!canExport || exporting) return;
+    setExporting(true);
+    try {
+      const payload = {
+        lang: i18n.language,
+        areaM2: parseDecimal(areaStr) ?? 0,
+        rate,
+        materials: materials.map((r, i) => ({
+          name: r.name,
+          unit: r.unit,
+          priceEur: parseDecimal(r.priceEurStr) ?? 0,
+          quantity: parseDecimal(r.qtyStr) ?? 0,
+          lineCost: out.lineCosts[i] ?? 0,
+        })),
+        materialsTotal: out.materialsTotal,
+        labourLumpSum: parseDecimal(lumpSumStr) ?? 0,
+        labourItems: labour.map((l) => {
+          const days = parseDecimal(l.daysStr) ?? 0;
+          const dailyRateEur = parseDecimal(l.rateStr) ?? 0;
+          return { role: l.role, days, dailyRateEur, cost: Math.round(days * dailyRateEur * 100) / 100 };
+        }),
+        labourTotal: out.labourTotal,
+        totalCost: out.totalCost,
+        costPerM2: out.costPerM2,
+        sale:
+          out.saleTotal == null
+            ? null
+            : {
+                salePricePerM2: parseDecimal(saleStr) ?? 0,
+                saleTotal: out.saleTotal,
+                profit: out.profit ?? 0,
+                profitPerM2: out.profitPerM2,
+                margin: out.margin,
+              },
+      };
+      const res = await fetch(`${API_BASE}/cost-calc/pdf`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cost-per-m2.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.show(t('costCalc.pdfError'));
+    } finally {
+      setExporting(false);
+    }
+  }
 
   const pickerQuery = pickerSearch.trim().toLowerCase();
   const pickerProducts = pickerQuery
@@ -299,8 +364,11 @@ export default function CostCalculator() {
         {/* RIGHT: live results */}
         <div>
           <Card className="lg:sticky lg:top-6">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between gap-2">
               <h2 className="text-sm font-semibold text-app-primary">{t('costCalc.results')}</h2>
+              <Button type="button" size="sm" variant="secondary" onClick={exportPdf} disabled={!canExport || exporting}>
+                <Download size={16} /> {exporting ? t('costCalc.exporting') : t('costCalc.exportPdf')}
+              </Button>
             </CardHeader>
             <CardContent className="space-y-4">
               <dl className="space-y-2 text-sm">
