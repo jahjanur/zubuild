@@ -40,7 +40,8 @@
     "viewAll": "Прикажи ги сите",
     "close": "Затвори",
     "today": "Денес",
-    "clear": "Исчисти"
+    "clear": "Исчисти",
+    "searchCategories": "Пребарај категории"
   },
   "login": {
     "title": "Zubuild",

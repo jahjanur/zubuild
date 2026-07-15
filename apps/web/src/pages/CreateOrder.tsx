@@ -9,6 +9,7 @@ import { productName, categoryName } from '../lib/catalog';
 import { unitLabel } from '../lib/units';
 import { useAuth } from '../lib/useAuth';
 import { useToast } from '../context/ToastContext';
+import { CategoryFilter } from '../components/CategoryFilter';
 
 interface Supplier {
   id: string;
@@ -123,11 +124,18 @@ export default function CreateOrder() {
   const suppliers = (suppliersData?.data ?? []).filter((s) => s.status === 'ACTIVE');
   const activeProducts = (productsData?.data ?? []).filter((p) => p.status === 'ACTIVE');
 
-  // Distinct categories for the filter chips (data values — shown as-is, not translated)
-  const categories = useMemo(
-    () => Array.from(new Set(activeProducts.map((p) => p.category).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
-    [activeProducts]
-  );
+  // Distinct categories for the filter (data values — shown as-is, not translated),
+  // each with a count of active products so the rail/menu can show per-category totals.
+  const { categories, categoryCounts } = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of activeProducts) {
+      if (p.category) counts[p.category] = (counts[p.category] ?? 0) + 1;
+    }
+    return {
+      categories: Object.keys(counts).sort((a, b) => a.localeCompare(b)),
+      categoryCounts: counts,
+    };
+  }, [activeProducts]);
 
   // A search query filters across ALL categories (ignores the active chip); with
   // no query, the active category chip narrows the list.
@@ -314,11 +322,6 @@ export default function CreateOrder() {
     );
   }
 
-  const chipClass = (active: boolean) =>
-    `shrink-0 whitespace-nowrap px-3.5 py-2 rounded-full text-sm font-medium transition min-h-[36px] ${
-      active ? 'bg-app-accent text-app-accent-contrast shadow-button' : 'border border-[var(--border)] text-app-secondary hover:bg-app-surface-subtle'
-    }`;
-
   function openSupplierPicker() {
     setSupplierSearch('');
     setSupplierDropdownOpen(true);
@@ -459,7 +462,7 @@ export default function CreateOrder() {
 
             {/* Product list */}
             <Card className="overflow-hidden">
-              {/* Sticky search + chips (above the scrolling list) */}
+              {/* Product search + (mobile) category dropdown */}
               <div className="p-4 md:p-5 border-b border-[var(--border)] space-y-3">
                 <div className="relative">
                   <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted pointer-events-none" />
@@ -478,21 +481,44 @@ export default function CreateOrder() {
                   )}
                 </div>
                 {categories.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto scroll-thin pb-1 -mb-1" role="group" aria-label={t('products.category')}>
-                    <button type="button" onClick={() => setCategory('')} aria-pressed={category === ''} className={chipClass(category === '')}>
-                      {t('createOrder.allCategory')}
-                    </button>
-                    {categories.map((c) => (
-                      <button key={c} type="button" onClick={() => setCategory(c)} aria-pressed={category === c} className={chipClass(category === c)}>
-                        {categoryName(c)}
-                      </button>
-                    ))}
+                  <div className="md:hidden">
+                    <CategoryFilter
+                      layout="menu"
+                      categories={categories}
+                      counts={categoryCounts}
+                      total={activeProducts.length}
+                      value={category}
+                      onChange={setCategory}
+                      labelFor={categoryName}
+                      allLabel={t('createOrder.allCategory')}
+                      searchPlaceholder={t('common.searchCategories')}
+                      noResultsLabel={t('createOrder.noResults')}
+                      ariaLabel={t('products.category')}
+                    />
                   </div>
                 )}
               </div>
 
-              {/* Scrolling product rows */}
-              <div className="md:max-h-[560px] md:overflow-y-auto scroll-thin">
+              {/* Desktop: category rail beside the scrolling product rows */}
+              <div className="flex">
+                {categories.length > 1 && (
+                  <div className="hidden md:flex md:w-56 lg:w-60 shrink-0 flex-col border-r border-[var(--border)] md:max-h-[560px]">
+                    <CategoryFilter
+                      layout="rail"
+                      categories={categories}
+                      counts={categoryCounts}
+                      total={activeProducts.length}
+                      value={category}
+                      onChange={setCategory}
+                      labelFor={categoryName}
+                      allLabel={t('createOrder.allCategory')}
+                      searchPlaceholder={t('common.searchCategories')}
+                      noResultsLabel={t('createOrder.noResults')}
+                      ariaLabel={t('products.category')}
+                    />
+                  </div>
+                )}
+                <div className="min-w-0 flex-1 md:max-h-[560px] md:overflow-y-auto scroll-thin">
                 {productsLoading ? (
                   <p className="text-app-muted text-sm py-10 text-center">{t('common.loading')}</p>
                 ) : activeProducts.length === 0 ? (
@@ -539,6 +565,7 @@ export default function CreateOrder() {
                     })}
                   </ul>
                 )}
+                </div>
               </div>
             </Card>
 

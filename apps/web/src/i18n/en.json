@@ -40,7 +40,8 @@
     "viewAll": "View All",
     "close": "Close",
     "today": "Today",
-    "clear": "Clear"
+    "clear": "Clear",
+    "searchCategories": "Search categories"
   },
   "login": {
     "title": "Zubuild",
