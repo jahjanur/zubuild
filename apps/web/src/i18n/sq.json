@@ -416,5 +416,10 @@
     "notSet": "E pavendosur",
     "showPassword": "Shfaq fjalëkalimin",
     "hidePassword": "Fshih fjalëkalimin"
+  },
+  "theme": {
+    "light": "Modaliteti i çelët",
+    "dark": "Modaliteti i errët",
+    "toggle": "Ndrysho temën"
   }
 }

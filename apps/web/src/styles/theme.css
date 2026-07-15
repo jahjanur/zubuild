@@ -1,18 +1,33 @@
 /**
- * Design system — "Cosmic": dark, neomorphic, rose-gold.
- * Deep cosmic-navy canvas, translucent glass surfaces (white @ 6%), hairline
- * white borders, and a rose-gold (#C4836E) brand accent. Token NAMES are reused
- * across the app (bg-app-*, .glass, var(--*)), so restyling happens here.
+ * Design system — dual theme (Dark "Cosmic" + Light).
+ * All colours are CSS variables so the whole app re-skins by flipping
+ * data-theme on <html>. The JS ThemeProvider always sets data-theme
+ * ("light" | "dark"); :root holds the dark defaults as a safe fallback.
+ *
+ * Colours that take Tailwind opacity modifiers (accent, danger, success,
+ * warning) are exposed as space-separated RGB channels (--*-rgb) and wired in
+ * tailwind.config.js as rgb(var(--*-rgb) / <alpha-value>). Everything else is a
+ * full colour value.
  */
-:root {
-  /* Canvas + surfaces */
-  --app-bg: #1a1a22;          /* deep cosmic navy */
-  --app-bg-gradient: #16161c; /* deeper navy */
-  --surface-1: rgba(255, 255, 255, 0.06); /* glass card */
-  --surface-2: rgba(255, 255, 255, 0.035);
-  --surface-subtle: rgba(255, 255, 255, 0.05); /* tinted rows / wells */
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
 
-  /* "glass" translucent card; -strong is an opaque surface (modals/dropdowns) */
+  /* opacity-capable channels */
+  --accent-rgb: 196 131 110;
+  --danger-rgb: 248 113 113;
+  --success-rgb: 52 211 153;
+  --warning-rgb: 251 191 36;
+  /* theme-aware hover overlay */
+  --hover: rgba(255, 255, 255, 0.08);
+  --ring-offset: #1a1a22;
+
+  /* Canvas + surfaces */
+  --app-bg: #1a1a22;
+  --app-bg-gradient: #16161c;
+  --surface-1: rgba(255, 255, 255, 0.06);
+  --surface-2: rgba(255, 255, 255, 0.035);
+  --surface-subtle: rgba(255, 255, 255, 0.05);
   --glass-bg: rgba(255, 255, 255, 0.06);
   --glass-bg-strong: #20202a;
   --glass-border: rgba(255, 255, 255, 0.12);
@@ -23,21 +38,21 @@
   --border-strong: rgba(255, 255, 255, 0.22);
   --border-focus: #C4836E;
 
-  /* Text (white scale) */
+  /* Text */
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.65);
   --text-muted: rgba(255, 255, 255, 0.40);
 
-  /* Brand accent — rose gold / copper */
+  /* Rose-gold accent */
   --accent: #C4836E;
-  --accent-hover: #D3947F;      /* lighter on hover (dark ground) */
-  --accent-contrast: #1a1a22;   /* dark text on rose-gold fills */
+  --accent-hover: #D3947F;
+  --accent-contrast: #1a1a22;
   --accent-muted: rgba(196, 131, 110, 0.14);
   --accent-ring: rgba(196, 131, 110, 0.45);
-  --accent-light: #E8B4A2;      /* soft blush */
-  --accent-warm: #8B5A4A;       /* deep terracotta */
+  --accent-light: #E8B4A2;
+  --accent-warm: #8B5A4A;
 
-  /* Semantic — lightened so they read on the dark ground */
+  /* Semantic */
   --danger: #F87171;
   --danger-muted: rgba(248, 113, 113, 0.15);
   --success: #34D399;
@@ -45,7 +60,7 @@
   --warning: #FBBF24;
   --warning-muted: rgba(251, 191, 36, 0.15);
 
-  /* Dark sidebar (a touch deeper than the canvas) */
+  /* Sidebar */
   --sidebar-bg: #16161c;
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-text: rgba(255, 255, 255, 0.55);
@@ -56,9 +71,84 @@
 
   --overlay: rgba(9, 9, 14, 0.6);
 
-  /* Shadows — deeper for a dark, neomorphic ground */
+  /* Shadows */
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.30);
   --shadow-card-hover: 0 6px 20px rgba(0, 0, 0, 0.40);
   --shadow-modal: 0 24px 60px -12px rgba(0, 0, 0, 0.60);
   --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.30);
+
+  /* Chart helpers */
+  --chart-grid: rgba(255, 255, 255, 0.08);
+  --chart-tick: rgba(255, 255, 255, 0.45);
+  --chart-tooltip-bg: #20202a;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --accent-rgb: 196 131 110;
+  --danger-rgb: 220 38 38;
+  --success-rgb: 5 150 105;
+  --warning-rgb: 217 119 6;
+  --hover: rgba(17, 24, 39, 0.05);
+  --ring-offset: #ffffff;
+
+  /* Canvas + surfaces */
+  --app-bg: #F7F8FA;
+  --app-bg-gradient: #FFFFFF;
+  --surface-1: #FFFFFF;
+  --surface-2: #FFFFFF;
+  --surface-subtle: #F3F4F6;
+  --glass-bg: #FFFFFF;
+  --glass-bg-strong: #FFFFFF;
+  --glass-border: #E5E7EB;
+
+  /* Borders / focus */
+  --border: #E5E7EB;
+  --border-strong: #D1D5DB;
+  --border-focus: #C4836E;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
+
+  /* Rose-gold accent (darker hover on light ground) */
+  --accent: #C4836E;
+  --accent-hover: #B06E58;
+  --accent-contrast: #1a1a22;
+  --accent-muted: rgba(196, 131, 110, 0.12);
+  --accent-ring: rgba(196, 131, 110, 0.35);
+  --accent-light: #E8B4A2;
+  --accent-warm: #8B5A4A;
+
+  /* Semantic (deeper for the light ground) */
+  --danger: #DC2626;
+  --danger-muted: rgba(220, 38, 38, 0.10);
+  --success: #059669;
+  --success-muted: rgba(5, 150, 105, 0.10);
+  --warning: #D97706;
+  --warning-muted: rgba(217, 119, 6, 0.10);
+
+  /* Sidebar — light */
+  --sidebar-bg: #FFFFFF;
+  --sidebar-border: rgba(17, 24, 39, 0.08);
+  --sidebar-text: #4B5563;
+  --sidebar-text-active: #111827;
+  --sidebar-hover: rgba(17, 24, 39, 0.05);
+  --sidebar-active-bg: rgba(196, 131, 110, 0.12);
+  --sidebar-section: #6B7280;
+
+  --overlay: rgba(17, 24, 39, 0.45);
+
+  /* Shadows — subtle on light */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-modal: 0 20px 50px -12px rgba(0, 0, 0, 0.20);
+  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+  /* Chart helpers */
+  --chart-grid: #EEF0F3;
+  --chart-tick: #6B7280;
+  --chart-tooltip-bg: #FFFFFF;
 }

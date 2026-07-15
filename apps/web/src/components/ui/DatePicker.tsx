@@ -124,10 +124,10 @@ export function DatePicker({
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-app-primary capitalize">{monthLabel}</span>
             <div className="flex items-center gap-1">
-              <button type="button" onClick={() => shiftMonth(-1)} aria-label="Previous month" className="flex h-8 w-8 items-center justify-center rounded-lg text-app-secondary hover:bg-white/[0.08] hover:text-app-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]">
+              <button type="button" onClick={() => shiftMonth(-1)} aria-label="Previous month" className="flex h-8 w-8 items-center justify-center rounded-lg text-app-secondary hover:bg-[var(--hover)] hover:text-app-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]">
                 <ChevronLeft size={18} />
               </button>
-              <button type="button" onClick={() => shiftMonth(1)} aria-label="Next month" className="flex h-8 w-8 items-center justify-center rounded-lg text-app-secondary hover:bg-white/[0.08] hover:text-app-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]">
+              <button type="button" onClick={() => shiftMonth(1)} aria-label="Next month" className="flex h-8 w-8 items-center justify-center rounded-lg text-app-secondary hover:bg-[var(--hover)] hover:text-app-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]">
                 <ChevronRight size={18} />
               </button>
             </div>
@@ -156,8 +156,8 @@ export function DatePicker({
                     isSel
                       ? 'bg-app-accent text-app-accent-contrast font-semibold'
                       : inMonth
-                        ? 'text-app-primary hover:bg-white/[0.08]'
-                        : 'text-app-muted/70 hover:bg-white/[0.05]'
+                        ? 'text-app-primary hover:bg-[var(--hover)]'
+                        : 'text-app-muted/70 hover:bg-[var(--hover)]'
                   } ${isToday && !isSel ? 'ring-1 ring-inset ring-app-accent/60' : ''}`}
                 >
                   {day.getDate()}

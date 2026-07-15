@@ -416,5 +416,10 @@
     "notSet": "Not set",
     "showPassword": "Show password",
     "hidePassword": "Hide password"
+  },
+  "theme": {
+    "light": "Light mode",
+    "dark": "Dark mode",
+    "toggle": "Toggle theme"
   }
 }

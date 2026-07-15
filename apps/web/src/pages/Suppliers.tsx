@@ -268,7 +268,7 @@ export default function Suppliers() {
                   {phoneToTel(s.phone) ? (
                     <a
                       href={phoneToTel(s.phone)}
-                      className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-secondary hover:bg-white/[0.08] hover:text-app-primary focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]"
+                      className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-app-secondary hover:bg-[var(--hover)] hover:text-app-primary focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]"
                       aria-label="Ara"
                       title="Ara"
                     >

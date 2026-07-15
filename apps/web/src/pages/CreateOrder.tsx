@@ -82,8 +82,8 @@ function IconMinus({ size = 18 }: { size?: number }) {
 /** Compact inline stepper for a product/summary row: − value + */
 function InlineStepper({ value, onDec, onInc, decLabel, incLabel, tone = 'accent' }: { value: number; onDec: () => void; onInc: () => void; decLabel: string; incLabel: string; tone?: 'accent' | 'plain' }) {
   const wrap = tone === 'accent'
-    ? 'inline-flex items-center rounded-lg border border-app-accent/30 bg-white'
-    : 'inline-flex items-center rounded-lg border border-[var(--border)] bg-white';
+    ? 'inline-flex items-center rounded-lg border border-app-accent/30 bg-app-surface-1'
+    : 'inline-flex items-center rounded-lg border border-[var(--border)] bg-app-surface-1';
   const btn = 'flex h-9 w-9 items-center justify-center text-app-accent rounded-md transition hover:bg-app-accent/10 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]';
   return (
     <div className={wrap} role="group">
@@ -472,7 +472,7 @@ export default function CreateOrder() {
                     className="w-full rounded-xl border border-[var(--border)] bg-app-surface-1 pl-10 pr-10 text-app-primary min-h-[48px] focus:outline-none focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--accent-ring)]"
                   />
                   {filter && (
-                    <button type="button" onClick={() => setFilter('')} aria-label={t('common.close')} className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg text-app-muted hover:text-app-primary hover:bg-white/[0.06]">
+                    <button type="button" onClick={() => setFilter('')} aria-label={t('common.close')} className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg text-app-muted hover:text-app-primary hover:bg-[var(--hover)]">
                       <X size={16} />
                     </button>
                   )}

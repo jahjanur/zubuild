@@ -39,7 +39,7 @@ function avatar(name: string) {
   return { color, initials };
 }
 
-const chartTooltip = { background: '#20202a', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 8, fontSize: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.5)', padding: '6px 10px', color: '#fff' };
+const chartTooltip = { background: 'var(--chart-tooltip-bg)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12, boxShadow: 'var(--shadow-modal)', padding: '6px 10px', color: 'var(--text-primary)' };
 
 // KPI cards stagger in on the FIRST dashboard mount of the session only — this
 // module-level flag flips after that so navigating back doesn't re-stagger.
@@ -120,15 +120,15 @@ export default function Dashboard() {
                   <AreaChart data={monthly} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
                     <defs>
                       <linearGradient id="lossFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#F87171" stopOpacity={0.22} />
-                        <stop offset="100%" stopColor="#F87171" stopOpacity={0} />
+                        <stop offset="0%" stopColor="var(--danger)" stopOpacity={0.22} />
+                        <stop offset="100%" stopColor="var(--danger)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
-                    <XAxis dataKey="label" tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.45)' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.45)' }} axisLine={false} tickLine={false} width={44} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                    <XAxis dataKey="label" tick={{ fontSize: 12, fill: 'var(--chart-tick)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 12, fill: 'var(--chart-tick)' }} axisLine={false} tickLine={false} width={44} />
                     <Tooltip contentStyle={chartTooltip} formatter={(v: number) => [formatMKD(Number(v)), t('dashboard.loss')]} />
-                    <Area isAnimationActive={false} type="monotone" dataKey="total" stroke="#F87171" strokeWidth={2} fill="url(#lossFill)" />
+                    <Area isAnimationActive={false} type="monotone" dataKey="total" stroke="var(--danger)" strokeWidth={2} fill="url(#lossFill)" />
                   </AreaChart>
                 </ResponsiveContainer>
               )}
@@ -145,12 +145,12 @@ export default function Dashboard() {
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={bySupplier} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
-                    <XAxis dataKey="supplier" tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.45)' }} axisLine={false} tickLine={false} interval={0} tickFormatter={(v: string) => (v.length > 10 ? v.slice(0, 10) + '…' : v)} />
-                    <YAxis tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.45)' }} axisLine={false} tickLine={false} width={44} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                    <XAxis dataKey="supplier" tick={{ fontSize: 11, fill: 'var(--chart-tick)' }} axisLine={false} tickLine={false} interval={0} tickFormatter={(v: string) => (v.length > 10 ? v.slice(0, 10) + '…' : v)} />
+                    <YAxis tick={{ fontSize: 12, fill: 'var(--chart-tick)' }} axisLine={false} tickLine={false} width={44} />
                     <Tooltip contentStyle={chartTooltip} cursor={{ fill: 'rgba(196,131,110,0.12)' }} formatter={(v: number) => [formatMKD(Number(v)), t('dashboard.loss')]} />
                     <Bar isAnimationActive={false} dataKey="loss" radius={[6, 6, 0, 0]} maxBarSize={44}>
-                      {bySupplier.map((_, i) => <Cell key={i} fill="#F87171" fillOpacity={0.85} />)}
+                      {bySupplier.map((_, i) => <Cell key={i} fill="var(--danger)" fillOpacity={0.85} />)}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -219,7 +219,7 @@ export default function Dashboard() {
           <motion.button key={a.to} type="button" onClick={() => navigate(a.to)}
             whileTap={reduce ? undefined : { scale: 0.98 }}
             className="group flex items-center gap-4 p-5 rounded-card bg-app-surface-1 border border-[var(--border)] shadow-card hover:shadow-card-hover hover:border-app-accent hover:-translate-y-0.5 transition-all duration-150 text-left">
-            <span className="h-11 w-11 rounded-lg bg-app-accent-muted flex items-center justify-center text-app-accent group-hover:bg-app-accent group-hover:text-white transition-colors"><a.icon size={20} /></span>
+            <span className="h-11 w-11 rounded-lg bg-app-accent-muted flex items-center justify-center text-app-accent group-hover:bg-app-accent group-hover:text-app-accent-contrast transition-colors"><a.icon size={20} /></span>
             <div className="min-w-0">
               <h3 className="font-semibold text-app-primary">{a.title}</h3>
               <p className="text-sm text-app-secondary">{a.sub}</p>

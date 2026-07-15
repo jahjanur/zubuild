@@ -284,7 +284,7 @@ function OrgBrandingCard() {
               )}
             </div>
             <div className="flex items-center gap-2">
-              <label className="inline-flex items-center px-4 py-2.5 min-h-[44px] rounded-xl border border-[var(--border)] text-app-primary text-sm font-medium cursor-pointer hover:bg-white/[0.06]">
+              <label className="inline-flex items-center px-4 py-2.5 min-h-[44px] rounded-xl border border-[var(--border)] text-app-primary text-sm font-medium cursor-pointer hover:bg-[var(--hover)]">
                 {t('account.chooseLogo')}
                 <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onLogoFile} className="hidden" />
               </label>

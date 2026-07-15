@@ -5,6 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import PageTransition, { RouteProgress } from '../components/PageTransition';
 import { AemLogo } from '../components/AemLogo';
+import { ThemeToggle } from '../components/ThemeToggle';
 import {
   LayoutDashboard, ShoppingCart, FilePlus, ClipboardCheck, Truck, Package,
   ShieldAlert, BarChart3, Users, UserCircle, LogOut, Menu, X, Globe, ChevronDown,
@@ -81,7 +82,7 @@ function BrandLockup({
           className={collapsed ? 'h-9 w-9 object-contain' : `${logoHeight} w-auto max-w-[190px] object-contain`}
         />
       ) : (
-        <AemLogo variant={collapsed ? 'mark' : 'full'} className={`${collapsed ? 'h-9' : logoHeight} text-white`} />
+        <AemLogo variant={collapsed ? 'mark' : 'full'} className={`${collapsed ? 'h-9' : logoHeight} text-sidebar-active`} />
       )}
     </Link>
   );
@@ -98,10 +99,10 @@ function LanguageDropdown() {
         aria-label="Language"
         value={current}
         onChange={(e) => i18n.changeLanguage(e.target.value)}
-        className="w-full appearance-none bg-sidebar-hover text-white text-sm rounded-lg pl-8 pr-8 py-2 min-h-[40px] border border-sidebar-border hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[var(--accent-ring)] cursor-pointer"
+        className="w-full appearance-none bg-sidebar-hover text-sidebar-active text-sm rounded-lg pl-8 pr-8 py-2 min-h-[40px] border border-sidebar-border hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-[var(--accent-ring)] cursor-pointer"
       >
         {LANGS.map((l) => (
-          <option key={l.code} value={l.code} className="bg-sidebar-bg text-white">{l.label}</option>
+          <option key={l.code} value={l.code} className="bg-sidebar-bg text-sidebar-active">{l.label}</option>
         ))}
       </select>
     </div>
@@ -139,8 +140,8 @@ export default function AppLayout() {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `group flex items-center gap-3 pl-3.5 pr-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 border-l-2 ${
       isActive
-        ? 'bg-sidebar-active-bg text-white border-app-accent'
-        : 'text-sidebar-text border-transparent hover:bg-sidebar-hover hover:text-white'
+        ? 'bg-sidebar-active-bg text-sidebar-active border-app-accent'
+        : 'text-sidebar-text border-transparent hover:bg-sidebar-hover hover:text-sidebar-active'
     }`;
 
   const NavList = ({ onNavigate, prefix = '' }: { onNavigate?: () => void; prefix?: string }) => (
@@ -163,11 +164,16 @@ export default function AppLayout() {
 
   const Footer = () => (
     <div className="p-3 border-t border-sidebar-border space-y-2">
-      <LanguageDropdown />
+      <div className="flex items-center gap-2">
+        <div className="flex-1 min-w-0">
+          <LanguageDropdown />
+        </div>
+        <ThemeToggle />
+      </div>
       <button
         type="button"
         onClick={handleLogout}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium min-h-[40px] text-sidebar-text hover:bg-sidebar-hover hover:text-white transition-colors"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium min-h-[40px] text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-active transition-colors"
       >
         <LogOut size={16} /> {t('nav.logout')}
       </button>
@@ -178,7 +184,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-app-bg flex">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 left-0 bg-sidebar-bg z-20">
-        <div className="relative flex items-center justify-center px-4 pt-4 pb-5 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-white/[0.06] after:to-transparent">
+        <div className="relative flex items-center justify-center px-4 pt-4 pb-5 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-sidebar-border after:to-transparent">
           <BrandLockup logoUrl={org?.logoUrl} />
         </div>
         <NavList />
@@ -190,7 +196,7 @@ export default function AppLayout() {
         {/* Mobile top bar */}
         <header className="lg:hidden sticky top-0 z-10 flex items-center justify-between px-4 h-14 bg-sidebar-bg safe-area-pt">
           <BrandLockup logoUrl={org?.logoUrl} logoHeight="h-9" />
-          <button type="button" onClick={() => setMenuOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('nav.more')}>
+          <button type="button" onClick={() => setMenuOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-active" aria-label={t('nav.more')}>
             <Menu size={22} />
           </button>
         </header>
@@ -214,7 +220,7 @@ export default function AppLayout() {
           <div className="lg:hidden fixed top-0 right-0 bottom-0 z-50 w-full max-w-xs bg-sidebar-bg flex flex-col safe-area-pt" role="dialog" aria-label={t('nav.more')}>
             <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border">
               <BrandLockup logoUrl={org?.logoUrl} logoHeight="h-9" onClick={() => setMenuOpen(false)} />
-              <button type="button" onClick={() => setMenuOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-white" aria-label={t('common.close')}>
+              <button type="button" onClick={() => setMenuOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-lg text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-active" aria-label={t('common.close')}>
                 <X size={22} />
               </button>
             </div>

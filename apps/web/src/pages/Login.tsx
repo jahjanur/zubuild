@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, setApiErrorHandler } from '../lib/api';
 import { Button, Input } from '../components/ui';
 import { AemLogo } from '../components/AemLogo';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 const languages = [
   { code: 'en', label: 'English' },
@@ -29,7 +30,7 @@ function LanguageSwitcher() {
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
               active
                 ? 'bg-app-accent text-app-accent-contrast shadow-button'
-                : 'glass text-app-secondary hover:bg-white/[0.06]'
+                : 'glass text-app-secondary hover:bg-[var(--hover)]'
             }`}
           >
             {label}
@@ -73,7 +74,8 @@ export default function Login() {
       style={{ background: 'var(--app-bg-gradient, var(--app-bg))' }}
     >
       <div className="w-full max-w-md glass rounded-2xl shadow-modal p-6 md:p-8">
-        <div className="flex justify-end mb-5">
+        <div className="flex items-center justify-between mb-5">
+          <ThemeToggle className="flex h-9 w-9 items-center justify-center rounded-full glass text-app-secondary hover:text-app-primary transition" />
           <LanguageSwitcher />
         </div>
         <AemLogo variant="full" className="h-12 text-app-primary mb-4" />

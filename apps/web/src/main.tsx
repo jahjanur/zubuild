@@ -6,6 +6,7 @@ import { MotionConfig } from 'framer-motion';
 import './i18n';
 import App from './App';
 import { ToastProvider } from './context/ToastContext';
+import { ThemeProvider } from './context/ThemeContext';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -17,13 +18,15 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <MotionConfig reducedMotion="user">
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </MotionConfig>
-      </ToastProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <MotionConfig reducedMotion="user">
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </MotionConfig>
+        </ToastProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

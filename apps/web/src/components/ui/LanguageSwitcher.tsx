@@ -28,7 +28,7 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
               active
                 ? 'bg-app-accent text-app-accent-contrast shadow-button'
-                : 'glass text-app-secondary hover:bg-white/[0.06]'
+                : 'glass text-app-secondary hover:bg-[var(--hover)]'
             }`}
           >
             {label}

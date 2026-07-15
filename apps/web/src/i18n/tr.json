@@ -416,5 +416,10 @@
     "notSet": "Ayarlanmadı",
     "showPassword": "Şifreyi göster",
     "hidePassword": "Şifreyi gizle"
+  },
+  "theme": {
+    "light": "Açık tema",
+    "dark": "Koyu tema",
+    "toggle": "Temayı değiştir"
   }
 }

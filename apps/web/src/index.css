@@ -12,11 +12,11 @@ html {
 
 body {
   @apply text-app-primary font-sans antialiased;
-  /* Subtle cosmic gradient over the deep navy canvas. */
-  background: radial-gradient(120% 90% at 50% -10%, #20202c 0%, var(--app-bg) 45%, var(--app-bg-gradient) 100%);
+  /* Subtle gradient over the canvas (cosmic on dark, airy on light). */
+  background: radial-gradient(120% 90% at 50% -10%, var(--app-bg-gradient) 0%, var(--app-bg) 55%);
   background-attachment: fixed;
-  color-scheme: dark;
   padding-top: env(safe-area-inset-top, 0);
+  transition: background-color 200ms ease;
 }
 
 /* Accent focus ring (rose gold) */
@@ -39,9 +39,9 @@ body {
   -webkit-backdrop-filter: blur(4px);
 }
 .modal-panel {
-  background: var(--glass-bg-strong); /* opaque dark — never see-through */
+  background: var(--glass-bg-strong); /* opaque — never see-through */
   border: 1px solid var(--border);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  box-shadow: var(--shadow-modal);
 }
 
 /* Page container: responsive padding */
