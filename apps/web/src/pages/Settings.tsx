@@ -2,7 +2,7 @@ import { useState, useEffect, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Building2, Coins, Users, CreditCard, ShieldCheck, Eye, EyeOff, type LucideIcon } from 'lucide-react';
+import { Building2, Coins, Users, CreditCard, UserCircle, Eye, EyeOff, type LucideIcon } from 'lucide-react';
 import { api } from '../lib/api';
 import { Card, CardContent, CardHeader, Button, Input, Textarea, Select, Badge, LanguageSwitcher } from '../components/ui';
 import { useAuth } from '../lib/useAuth';
@@ -40,11 +40,11 @@ export default function Settings() {
   const [params, setParams] = useSearchParams();
 
   const sections: SectionDef[] = [
+    { key: 'profile', label: t('settings.profile'), icon: UserCircle, render: () => <SecuritySection /> },
     { key: 'organization', label: t('settings.organization'), icon: Building2, adminOnly: true, render: () => <OrganizationSection /> },
     { key: 'exchange-rate', label: t('settings.exchangeRate'), icon: Coins, adminOnly: true, render: () => <ExchangeRateSection /> },
     { key: 'members', label: t('settings.members'), icon: Users, adminOnly: true, render: () => <TeamContent /> },
     { key: 'billing', label: t('settings.billing'), icon: CreditCard, adminOnly: true, render: () => <BillingSection /> },
-    { key: 'security', label: t('settings.security'), icon: ShieldCheck, render: () => <SecuritySection /> },
   ].filter((s) => isAdmin || !s.adminOnly);
 
   const requested = params.get('section');

@@ -502,6 +502,7 @@
     "delete": "Delete"
   },
   "settings": {
+    "profile": "Profile",
     "title": "Settings",
     "subtitle": "Manage your organization, team and account.",
     "organization": "Organization",

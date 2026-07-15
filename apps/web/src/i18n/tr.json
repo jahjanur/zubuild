@@ -502,6 +502,7 @@
     "delete": "Sil"
   },
   "settings": {
+    "profile": "Profil",
     "title": "Ayarlar",
     "subtitle": "Kuruluşunuzu, ekibinizi ve hesabınızı yönetin.",
     "organization": "Kuruluş",
