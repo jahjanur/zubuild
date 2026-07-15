@@ -13,6 +13,7 @@ export interface Org {
   invoiceRegNo?: string | null;
   currency: string;
   locale: string;
+  mkdToEurRate: number;
   plan: string;
 }
 

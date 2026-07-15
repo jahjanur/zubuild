@@ -380,6 +380,8 @@
     "contactEmail": "E-posta",
     "contactPhone": "Telefon",
     "regNo": "Sicil no.",
+    "mkdEurRate": "MKD → € kuru",
+    "mkdEurRateHint": "1 euro için denar. Maliyet hesaplayıcısı MKD tutarlarını dönüştürmek için kullanır.",
     "logo": "Logo",
     "chooseLogo": "Görsel seç",
     "removeLogo": "Kaldır",

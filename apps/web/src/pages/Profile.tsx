@@ -219,7 +219,7 @@ function OrgBrandingCard() {
   const queryClient = useQueryClient();
   const org = useOrg();
 
-  const [form, setForm] = useState({ name: '', invoiceName: '', invoiceAddress: '', invoiceEmail: '', invoicePhone: '', invoiceRegNo: '' });
+  const [form, setForm] = useState({ name: '', invoiceName: '', invoiceAddress: '', invoiceEmail: '', invoicePhone: '', invoiceRegNo: '', mkdToEurRate: '' });
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -231,6 +231,7 @@ function OrgBrandingCard() {
       invoiceEmail: org.invoiceEmail ?? '',
       invoicePhone: org.invoicePhone ?? '',
       invoiceRegNo: org.invoiceRegNo ?? '',
+      mkdToEurRate: org.mkdToEurRate != null ? String(org.mkdToEurRate) : '',
     });
     setLogoUrl(org.logoUrl ?? null);
   }, [org?.id]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -250,7 +251,16 @@ function OrgBrandingCard() {
   }
 
   const save = useMutation({
-    mutationFn: () => api.put('/organization', { ...form, logoUrl: logoUrl ?? '' }),
+    mutationFn: () => {
+      const { mkdToEurRate, ...rest } = form;
+      const rate = parseFloat(mkdToEurRate);
+      // Only send the rate when it's a valid positive number; otherwise leave it unchanged.
+      return api.put('/organization', {
+        ...rest,
+        logoUrl: logoUrl ?? '',
+        ...(Number.isFinite(rate) && rate > 0 ? { mkdToEurRate: rate } : {}),
+      });
+    },
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ['organization'] });
@@ -304,6 +314,22 @@ function OrgBrandingCard() {
           <div>
             <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('account.address')}</label>
             <Textarea value={form.invoiceAddress} onChange={set('invoiceAddress')} />
+          </div>
+
+          <div className="border-t border-[var(--border)] pt-4">
+            <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('account.mkdEurRate')}</label>
+            <div className="max-w-[220px]">
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                inputMode="decimal"
+                value={form.mkdToEurRate}
+                onChange={set('mkdToEurRate')}
+                placeholder="61.5"
+              />
+            </div>
+            <p className="text-app-muted text-xs mt-1.5">{t('account.mkdEurRateHint')}</p>
           </div>
 
           <Button type="submit" className="min-h-[48px]" disabled={save.isPending}>

@@ -380,6 +380,8 @@
     "contactEmail": "Email",
     "contactPhone": "Phone",
     "regNo": "Registration no.",
+    "mkdEurRate": "MKD → € exchange rate",
+    "mkdEurRateHint": "Denars per 1 euro. Used by the cost calculator to convert MKD amounts.",
     "logo": "Logo",
     "chooseLogo": "Choose image",
     "removeLogo": "Remove",

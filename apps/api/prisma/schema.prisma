@@ -26,6 +26,7 @@ model Organization {
   invoiceRegNo   String? // company registration number (e.g. "Mat. Br. ...")
   currency       String   @default("MKD") // ISO 4217, e.g. MKD, EUR
   locale         String   @default("mk") // en | mk | sq
+  mkdToEurRate   Float    @default(61.5) // MKD per 1 EUR; used by the cost calculator
   plan           String   @default("FREE") // FREE | PRO | ENTERPRISE (extensible)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

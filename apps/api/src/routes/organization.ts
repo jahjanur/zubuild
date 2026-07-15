@@ -21,6 +21,7 @@ const BRANDING_SELECT = {
   invoiceRegNo: true,
   currency: true,
   locale: true,
+  mkdToEurRate: true,
   plan: true,
 } as const;
 

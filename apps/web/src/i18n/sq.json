@@ -380,6 +380,8 @@
     "contactEmail": "Email",
     "contactPhone": "Telefoni",
     "regNo": "Nr. i regjistrimit",
+    "mkdEurRate": "Kursi MKD → €",
+    "mkdEurRateHint": "Denarë për 1 euro. Përdoret nga llogaritësi i kostos për të konvertuar shumat në MKD.",
     "logo": "Logoja",
     "chooseLogo": "Zgjidh imazhin",
     "removeLogo": "Hiq",

@@ -12,6 +12,8 @@ export const updateOrganizationSchema = z.object({
   logoUrl: z.string().trim().max(500_000).optional(),
   currency: z.string().trim().length(3).toUpperCase().optional(),
   locale: z.string().trim().min(2).max(5).optional(),
+  // MKD per 1 EUR — must be a sane positive rate (used by the cost calculator).
+  mkdToEurRate: z.number().positive().max(10_000).optional(),
 });
 
 export type UpdateOrganizationInput = z.infer<typeof updateOrganizationSchema>;
