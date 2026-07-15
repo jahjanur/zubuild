@@ -103,7 +103,10 @@ export default function Login() {
           <div>
             <div className="mb-1.5 flex items-center justify-between gap-3">
               <label htmlFor="login-password" className="block text-sm font-medium text-app-secondary">{t('login.password')}</label>
-              <Link to="/forgot-password" className="text-xs font-medium text-app-accent hover:underline">{t('login.forgotPassword')}</Link>
+              {/* Only surface the recovery link once a sign-in attempt has failed. */}
+              {toast && (
+                <Link to="/forgot-password" className="text-xs font-medium text-app-accent hover:underline">{t('login.forgotPassword')}</Link>
+              )}
             </div>
             <Input
               id="login-password"
