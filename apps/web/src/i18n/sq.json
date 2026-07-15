@@ -495,16 +495,6 @@
     "tryAgain": "Provo sërish",
     "reload": "Ringarko"
   },
-  "search": {
-    "title": "Kërko",
-    "placeholder": "Kërko furnitorë, produkte, porosi…",
-    "noResults": "Nuk u gjet asnjë rezultat.",
-    "hint": "Gjeni furnitorë, produkte dhe porosi sipas emrit ose numrit.",
-    "noResultsHint": "Provoni një emër ose numër tjetër porosie.",
-    "navigate": "Lëviz",
-    "open": "Hap",
-    "close": "Mbyll"
-  },
   "table": {
     "export": "Eksporto CSV",
     "exportSelected": "Eksporto të zgjedhurat",
