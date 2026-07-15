@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -127,8 +127,8 @@ export function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChan
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-[12vh]" role="dialog" aria-modal="true" aria-label={t('search.title')}>
-      <div className="modal-backdrop absolute inset-0" onClick={() => onOpenChange(false)} aria-hidden />
-      <div className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--glass-bg-strong)] shadow-modal">
+      <div className="modal-backdrop absolute inset-0 cmd-fade" onClick={() => onOpenChange(false)} aria-hidden />
+      <div className="cmd-pop relative w-full max-w-xl overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--glass-bg-strong)] shadow-modal">
         <div className="flex items-center gap-3 border-b border-[var(--border)] px-4">
           <Search size={18} className="shrink-0 text-app-muted" />
           <input
@@ -139,16 +139,24 @@ export function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChan
             onKeyDown={onKeyDown}
             placeholder={t('search.placeholder')}
             aria-label={t('search.placeholder')}
-            className="w-full bg-transparent py-4 text-app-primary placeholder-app-muted focus:outline-none"
+            className="w-full bg-transparent py-4 text-[15px] text-app-primary placeholder-app-muted focus:outline-none"
           />
-          <kbd className="hidden shrink-0 rounded-md border border-[var(--border)] px-1.5 py-0.5 text-[11px] font-medium text-app-muted sm:inline">esc</kbd>
+          {isFetching && debounced.length >= 2 && (
+            <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-app-muted border-t-transparent" aria-hidden />
+          )}
         </div>
 
-        <div ref={listRef} className="max-h-[60vh] overflow-y-auto scroll-thin p-2">
+        <div ref={listRef} className="max-h-[56vh] min-h-[132px] overflow-y-auto scroll-thin p-2">
           {debounced.length < 2 ? (
-            <p className="px-3 py-6 text-center text-sm text-app-muted">{t('search.placeholder')}</p>
+            <div className="flex flex-col items-center justify-center gap-2 px-4 py-9 text-center">
+              <Search size={20} className="text-app-muted opacity-50" />
+              <p className="text-sm text-app-muted">{t('search.hint')}</p>
+            </div>
           ) : showEmpty ? (
-            <p className="px-3 py-6 text-center text-sm text-app-muted">{t('search.noResults')}</p>
+            <div className="flex flex-col items-center justify-center gap-1 px-4 py-9 text-center">
+              <p className="text-sm font-medium text-app-primary">{t('search.noResults')}</p>
+              <p className="text-xs text-app-muted">{t('search.noResultsHint')}</p>
+            </div>
           ) : (
             groups.map((g) => {
               const items = flat.filter((r) => r.type === g.type);
@@ -187,7 +195,22 @@ export function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChan
             })
           )}
         </div>
+
+        {/* Keyboard legend */}
+        <div className="flex items-center gap-4 border-t border-[var(--border)] px-4 py-2.5 text-[11px] text-app-muted">
+          <span className="flex items-center gap-1.5"><Kbd>↑</Kbd><Kbd>↓</Kbd> {t('search.navigate')}</span>
+          <span className="flex items-center gap-1.5"><Kbd>↵</Kbd> {t('search.open')}</span>
+          <span className="flex items-center gap-1.5"><Kbd>esc</Kbd> {t('search.close')}</span>
+        </div>
       </div>
     </div>
+  );
+}
+
+function Kbd({ children }: { children: ReactNode }) {
+  return (
+    <kbd className="inline-flex min-w-[18px] items-center justify-center rounded border border-[var(--border)] bg-app-surface-1 px-1 py-0.5 text-[10px] font-medium text-app-secondary">
+      {children}
+    </kbd>
   );
 }

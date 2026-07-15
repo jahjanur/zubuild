@@ -484,7 +484,12 @@
   "search": {
     "title": "Ara",
     "placeholder": "Tedarikçi, ürün, sipariş ara…",
-    "noResults": "Sonuç bulunamadı."
+    "noResults": "Sonuç bulunamadı.",
+    "hint": "Tedarikçi, ürün ve siparişleri ada veya numaraya göre bulun.",
+    "noResultsHint": "Farklı bir ad veya sipariş numarası deneyin.",
+    "navigate": "Gezin",
+    "open": "Aç",
+    "close": "Kapat"
   },
   "table": {
     "export": "CSV dışa aktar",

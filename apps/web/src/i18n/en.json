@@ -484,7 +484,12 @@
   "search": {
     "title": "Search",
     "placeholder": "Search suppliers, products, orders…",
-    "noResults": "No results found."
+    "noResults": "No results found.",
+    "hint": "Find suppliers, products and orders by name or number.",
+    "noResultsHint": "Try a different name or order number.",
+    "navigate": "Navigate",
+    "open": "Open",
+    "close": "Close"
   },
   "table": {
     "export": "Export CSV",

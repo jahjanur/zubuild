@@ -211,15 +211,15 @@ export default function AppLayout() {
         </header>
 
         {/* Desktop top bar with the global search trigger. */}
-        <header className="hidden lg:flex sticky top-0 z-10 items-center h-14 px-6 xl:px-8 bg-app-bg border-b border-[var(--border)]">
+        <header className="hidden lg:flex sticky top-0 z-10 items-center h-14 page-container bg-app-bg border-b border-[var(--border)]">
           <button
             type="button"
             onClick={() => setSearchOpen(true)}
-            className="flex h-9 w-full max-w-md items-center gap-2 rounded-xl border border-[var(--border)] bg-app-surface-1 px-3.5 text-app-muted transition hover:border-app-border-strong"
+            className="flex h-9 w-full max-w-[300px] items-center gap-2.5 rounded-lg border border-[var(--border)] bg-app-surface-1 pl-3 pr-2 text-app-muted transition hover:border-app-border-strong hover:bg-app-surface-subtle"
           >
-            <Search size={16} className="shrink-0" />
-            <span className="truncate text-sm">{t('search.placeholder')}</span>
-            <kbd className="ml-auto shrink-0 rounded-md border border-[var(--border)] px-1.5 py-0.5 text-[11px] font-medium">⌘K</kbd>
+            <Search size={15} className="shrink-0" />
+            <span className="truncate text-sm">{t('search.title')}…</span>
+            <kbd className="ml-auto shrink-0 rounded border border-[var(--border)] bg-app-surface-2 px-1.5 py-0.5 text-[11px] font-medium">⌘K</kbd>
           </button>
         </header>
 
