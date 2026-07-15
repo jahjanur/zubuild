@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Package } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import { snapshotList, patchList, restoreList, type ListCache } from '../lib/optimistic';
 import { useAuth } from '../lib/useAuth';
 import { MEASUREMENT_UNITS } from '../constants/measurementUnits';
 import {
@@ -106,33 +107,74 @@ export default function Products() {
     return acc;
   }, {});
 
+  const KEY = ['products'] as const;
+  // The failed request already surfaces a global error toast (api.ts); onError
+  // here only rolls the optimistic write back.
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: KEY });
+    queryClient.invalidateQueries({ queryKey: ['products', 'recent'] });
+  };
+
   const create = useMutation({
-    mutationFn: (body: typeof form) => api.post<Product>('/products', body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['products', 'recent'] });
+    mutationFn: async (body: typeof form) => {
+      const res = await api.post<Product>('/products', body);
+      if (!res.success) throw res;
+      return res;
+    },
+    onMutate: async (body: typeof form) => {
+      const prev = await snapshotList<Product>(queryClient, KEY);
+      const now = new Date().toISOString();
+      const optimistic: Product = {
+        id: `temp-${Date.now()}`,
+        name: body.name,
+        category: body.category,
+        measurementUnit: body.measurementUnit,
+        price: body.price,
+        status: body.status,
+        createdAt: now,
+        updatedAt: now,
+      };
+      patchList<Product>(queryClient, KEY, (list) => [optimistic, ...list]);
       setModalOpen(false);
       resetForm();
+      return { prev };
     },
+    onError: (_err, _vars, ctx?: { prev: ListCache<Product> }) => restoreList(queryClient, KEY, ctx?.prev),
+    onSettled: invalidate,
   });
   const update = useMutation({
-    mutationFn: ({ id, body }: { id: string; body: Partial<typeof form> }) =>
-      api.put<Product>(`/products/${id}`, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['products', 'recent'] });
+    mutationFn: async ({ id, body }: { id: string; body: Partial<typeof form> }) => {
+      const res = await api.put<Product>(`/products/${id}`, body);
+      if (!res.success) throw res;
+      return res;
+    },
+    onMutate: async ({ id, body }: { id: string; body: Partial<typeof form> }) => {
+      const prev = await snapshotList<Product>(queryClient, KEY);
+      patchList<Product>(queryClient, KEY, (list) =>
+        list.map((p) => (p.id === id ? { ...p, ...body, updatedAt: new Date().toISOString() } : p))
+      );
       setModalOpen(false);
       setEditing(null);
       resetForm();
+      return { prev };
     },
+    onError: (_err, _vars, ctx?: { prev: ListCache<Product> }) => restoreList(queryClient, KEY, ctx?.prev),
+    onSettled: invalidate,
   });
   const remove = useMutation({
-    mutationFn: (id: string) => api.delete(`/products/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['products', 'recent'] });
-      setDeleteConfirm(null);
+    mutationFn: async (id: string) => {
+      const res = await api.delete(`/products/${id}`);
+      if (!res.success) throw res;
+      return res;
     },
+    onMutate: async (id: string) => {
+      const prev = await snapshotList<Product>(queryClient, KEY);
+      patchList<Product>(queryClient, KEY, (list) => list.filter((p) => p.id !== id));
+      setDeleteConfirm(null);
+      return { prev };
+    },
+    onError: (_err, _vars, ctx?: { prev: ListCache<Product> }) => restoreList(queryClient, KEY, ctx?.prev),
+    onSettled: invalidate,
   });
 
   function resetForm() {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import { snapshotList, patchList, restoreList, type ListCache } from '../lib/optimistic';
 import { useAuth } from '../lib/useAuth';
 import { useToast } from '../context/ToastContext';
 import { Truck } from 'lucide-react';
@@ -112,21 +113,39 @@ export default function Suppliers() {
       )
     : allSuppliers;
 
+  const KEY = ['suppliers'] as const;
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: KEY });
+
   const create = useMutation({
     mutationFn: async (body: typeof form) => {
       const res = await api.post<Supplier>('/suppliers', body);
       if (!res.success) throw res;
       return res;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['suppliers'] });
-      setModalOpen(false);
+    onMutate: async (body: typeof form) => {
+      const prev = await snapshotList<Supplier>(queryClient, KEY);
+      const now = new Date().toISOString();
+      const optimistic: Supplier = {
+        id: `temp-${Date.now()}`,
+        companyName: body.companyName,
+        contactPerson: body.contactPerson || null,
+        phone: body.phone || null,
+        location: body.location || null,
+        status: body.status,
+        createdAt: now,
+        updatedAt: now,
+      };
+      patchList<Supplier>(queryClient, KEY, (list) => [optimistic, ...list]);
+      setModalOpen(false); // close instantly — the row is already in the list
       resetForm();
+      return { prev };
     },
-    onError: (err: { error?: string; code?: string }) => {
+    onError: (err: { error?: string; code?: string }, _vars, ctx?: { prev: ListCache<Supplier> }) => {
+      restoreList(queryClient, KEY, ctx?.prev);
       const msg = err.code === 'INVALID_PHONE' ? t('suppliers.phoneInvalid') : err.error ?? TOAST.deleteFail;
       toast.show(msg, 'error');
     },
+    onSettled: invalidate,
   });
   const update = useMutation({
     mutationFn: async ({ id, body }: { id: string; body: Partial<typeof form> }) => {
@@ -134,16 +153,22 @@ export default function Suppliers() {
       if (!res.success) throw res;
       return res;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['suppliers'] });
+    onMutate: async ({ id, body }: { id: string; body: Partial<typeof form> }) => {
+      const prev = await snapshotList<Supplier>(queryClient, KEY);
+      patchList<Supplier>(queryClient, KEY, (list) =>
+        list.map((s) => (s.id === id ? { ...s, ...body, updatedAt: new Date().toISOString() } : s))
+      );
       setModalOpen(false);
       setEditing(null);
       resetForm();
+      return { prev };
     },
-    onError: (err: { error?: string; code?: string }) => {
+    onError: (err: { error?: string; code?: string }, _vars, ctx?: { prev: ListCache<Supplier> }) => {
+      restoreList(queryClient, KEY, ctx?.prev);
       const msg = err.code === 'INVALID_PHONE' ? t('suppliers.phoneInvalid') : err.error ?? TOAST.deleteFail;
       toast.show(msg, 'error');
     },
+    onSettled: invalidate,
   });
   const remove = useMutation({
     mutationFn: async (payload: { supplier: Supplier }) => {
@@ -151,13 +176,18 @@ export default function Suppliers() {
       if (!res.success) throw { ...res, __supplier: payload.supplier };
       return res;
     },
+    onMutate: async ({ supplier }: { supplier: Supplier }) => {
+      const prev = await snapshotList<Supplier>(queryClient, KEY);
+      patchList<Supplier>(queryClient, KEY, (list) => list.filter((s) => s.id !== supplier.id));
+      setDeleteConfirm(null); // the row is already gone from the list
+      return { prev };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['suppliers'] });
-      setDeleteConfirm(null);
       setDeleteBlockedSupplier(null);
       toast.show(TOAST.deleteSuccess, 'success');
     },
-    onError: (err: { error?: string; status?: number; code?: string; __supplier?: Supplier }) => {
+    onError: (err: { error?: string; status?: number; code?: string; __supplier?: Supplier }, _vars, ctx?: { prev: ListCache<Supplier> }) => {
+      restoreList(queryClient, KEY, ctx?.prev); // put the supplier back
       const supplier = err.__supplier;
       const msg =
         err.status === 409 || err.code === 'SUPPLIER_HAS_ORDERS'
@@ -168,19 +198,28 @@ export default function Suppliers() {
       toast.show(msg, 'error');
       if (err.code === 'SUPPLIER_HAS_ORDERS' && supplier) setDeleteBlockedSupplier(supplier);
     },
+    onSettled: invalidate,
   });
   const setPassive = useMutation({
     mutationFn: (supplier: Supplier) =>
       api.put<Supplier>(`/suppliers/${supplier.id}`, { status: 'INACTIVE' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['suppliers'] });
+    onMutate: async (supplier: Supplier) => {
+      const prev = await snapshotList<Supplier>(queryClient, KEY);
+      patchList<Supplier>(queryClient, KEY, (list) =>
+        list.map((s) => (s.id === supplier.id ? { ...s, status: 'INACTIVE' } : s))
+      );
       setDeleteConfirm(null);
       setDeleteBlockedSupplier(null);
+      return { prev };
+    },
+    onSuccess: () => {
       toast.show(TOAST.setPassiveSuccess, 'success');
     },
-    onError: () => {
+    onError: (_err, _vars, ctx?: { prev: ListCache<Supplier> }) => {
+      restoreList(queryClient, KEY, ctx?.prev);
       toast.show(TOAST.deleteFail, 'error');
     },
+    onSettled: invalidate,
   });
 
   function resetForm() {
