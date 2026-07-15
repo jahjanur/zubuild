@@ -18,7 +18,7 @@ function LanguageSwitcher() {
   const { i18n } = useTranslation();
   const current = i18n.language;
   return (
-    <div className="flex items-center gap-1.5" role="group" aria-label="Language">
+    <div className="flex items-center gap-1" role="group" aria-label="Language">
       {languages.map(({ code, label }) => {
         const active = current === code;
         return (
@@ -27,10 +27,10 @@ function LanguageSwitcher() {
             type="button"
             onClick={() => i18n.changeLanguage(code)}
             aria-pressed={active}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
+            className={`px-2.5 py-1 rounded-full text-xs font-medium transition ${
               active
-                ? 'bg-app-accent text-app-accent-contrast shadow-button'
-                : 'glass text-app-secondary hover:bg-[var(--hover)]'
+                ? 'bg-[var(--hover)] text-app-primary'
+                : 'text-app-secondary/70 hover:text-app-primary'
             }`}
           >
             {label}
@@ -74,9 +74,8 @@ export default function Login() {
       style={{ background: 'var(--app-bg-gradient, var(--app-bg))' }}
     >
       <div className="w-full max-w-md glass rounded-2xl shadow-modal p-6 md:p-8">
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex justify-end mb-5">
           <ThemeToggle className="flex h-9 w-9 items-center justify-center rounded-full glass text-app-secondary hover:text-app-primary transition" />
-          <LanguageSwitcher />
         </div>
         <AemLogo variant="full" className="h-12 text-app-primary mb-4" />
         <p className="text-app-secondary text-sm mb-6">{t('login.signInContinue')}</p>
@@ -116,6 +115,9 @@ export default function Login() {
           {t('register.newHere')}{' '}
           <Link to="/register" className="text-app-accent font-medium hover:underline">{t('register.createAccount')}</Link>
         </p>
+      </div>
+      <div className="mt-6 flex justify-center">
+        <LanguageSwitcher />
       </div>
     </div>
   );
