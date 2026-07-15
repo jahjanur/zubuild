@@ -17,9 +17,16 @@ export function setApiErrorHandler(handler: (message: string) => void) {
   onError = handler;
 }
 
+/** Per-call options that aren't part of the fetch RequestInit. */
+export interface ApiOptions {
+  /** Skip the global error handler (toast) for this call — handle the error locally. */
+  silent?: boolean;
+}
+
 async function request<T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  { silent = false }: ApiOptions = {}
 ): Promise<ApiResponse<T>> {
   const url = path.startsWith('http') ? path : `${BASE}${path}`;
   const res = await fetch(url, {
@@ -33,7 +40,7 @@ async function request<T>(
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {
     const msg = json?.error ?? res.statusText ?? 'Request failed';
-    onError?.(msg);
+    if (!silent) onError?.(msg);
     return {
       success: false,
       error: msg,
@@ -45,8 +52,8 @@ async function request<T>(
 }
 
 export const api = {
-  get<T>(path: string): Promise<ApiResponse<T>> {
-    return request<T>(path, { method: 'GET' });
+  get<T>(path: string, opts?: ApiOptions): Promise<ApiResponse<T>> {
+    return request<T>(path, { method: 'GET' }, opts);
   },
   post<T>(path: string, body?: unknown): Promise<ApiResponse<T>> {
     return request<T>(path, { method: 'POST', body: body ? JSON.stringify(body) : undefined });

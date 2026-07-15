@@ -16,7 +16,8 @@ export interface AuthUser {
 export function useAuth() {
   const { data } = useQuery({
     queryKey: ['auth', 'me'],
-    queryFn: () => api.get<AuthUser>('/auth/me'),
+    // A 401 means "not logged in", not an error — never toast it.
+    queryFn: () => api.get<AuthUser>('/auth/me', { silent: true }),
     retry: false,
   });
   const user = data?.data;

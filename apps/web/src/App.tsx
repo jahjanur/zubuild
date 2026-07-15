@@ -25,7 +25,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ['auth', 'me'],
-    queryFn: () => api.get<{ id: string; email: string; role: string }>('/auth/me'),
+    // A 401 here just means "not logged in" — handle it via the redirect below,
+    // not the global error toast.
+    queryFn: () => api.get<{ id: string; email: string; role: string }>('/auth/me', { silent: true }),
     retry: false,
   });
   if (isLoading) {
