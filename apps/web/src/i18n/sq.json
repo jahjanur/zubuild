@@ -468,5 +468,11 @@
     "light": "Modaliteti i çelët",
     "dark": "Modaliteti i errët",
     "toggle": "Ndrysho temën"
+  },
+  "errorBoundary": {
+    "title": "Diçka shkoi keq",
+    "subtitle": "Kjo faqe hasi një gabim të papritur. Provoni sërish ose ringarkoni aplikacionin.",
+    "tryAgain": "Provo sërish",
+    "reload": "Ringarko"
   }
 }

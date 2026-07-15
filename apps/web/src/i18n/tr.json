@@ -468,5 +468,11 @@
     "light": "Açık tema",
     "dark": "Koyu tema",
     "toggle": "Temayı değiştir"
+  },
+  "errorBoundary": {
+    "title": "Bir şeyler ters gitti",
+    "subtitle": "Bu sayfada beklenmeyen bir hata oluştu. Tekrar deneyin veya uygulamayı yeniden yükleyin.",
+    "tryAgain": "Tekrar dene",
+    "reload": "Yeniden yükle"
   }
 }

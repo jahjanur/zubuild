@@ -1,9 +1,10 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from './lib/api';
 import AppLayout from './layout/AppLayout';
+import { ErrorBoundary, RouteErrorBoundary } from './components/ErrorBoundary';
 
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
@@ -51,41 +52,49 @@ function PageFallback() {
   );
 }
 
+// Wrap each lazy page in its own route-scoped boundary, so one crashing page
+// shows the fallback in-place (sidebar stays usable) instead of white-screening.
+const page = (el: ReactElement) => <RouteErrorBoundary>{el}</RouteErrorBoundary>;
+
 export default function App() {
   return (
-    <Suspense fallback={<PageFallback />}>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/accept-invite/:token" element={<AcceptInvite />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route
-          path="/app"
-          element={
-            <ProtectedRoute>
-              <AppLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="suppliers" element={<Suppliers />} />
-          <Route path="products" element={<Products />} />
-          <Route path="create-order" element={<CreateOrder />} />
-          <Route path="reconciliation" element={<Reconciliation />} />
-          <Route path="control-panel" element={<ControlPanel />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="cost-calculator" element={<CostCalculator />} />
-          <Route path="team" element={<Team />} />
-          <Route path="profile" element={<Profile />} />
-          {/* Account merged into Profile — redirect old links. */}
-          <Route path="account" element={<Navigate to="/app/profile" replace />} />
-        </Route>
-        <Route path="/" element={<Navigate to="/app" replace />} />
-        <Route path="*" element={<Navigate to="/app" replace />} />
-      </Routes>
-    </Suspense>
+    // App-wide net: catches crashes in the layout/providers that a per-route
+    // boundary can't (full-screen fallback).
+    <ErrorBoundary fullScreen>
+      <Suspense fallback={<PageFallback />}>
+        <Routes>
+          <Route path="/login" element={page(<Login />)} />
+          <Route path="/register" element={page(<Register />)} />
+          <Route path="/accept-invite/:token" element={page(<AcceptInvite />)} />
+          <Route path="/forgot-password" element={page(<ForgotPassword />)} />
+          <Route path="/reset-password/:token" element={page(<ResetPassword />)} />
+          <Route
+            path="/app"
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={page(<Dashboard />)} />
+            <Route path="suppliers" element={page(<Suppliers />)} />
+            <Route path="products" element={page(<Products />)} />
+            <Route path="create-order" element={page(<CreateOrder />)} />
+            <Route path="reconciliation" element={page(<Reconciliation />)} />
+            <Route path="control-panel" element={page(<ControlPanel />)} />
+            <Route path="orders" element={page(<Orders />)} />
+            <Route path="analytics" element={page(<Analytics />)} />
+            <Route path="cost-calculator" element={page(<CostCalculator />)} />
+            <Route path="team" element={page(<Team />)} />
+            <Route path="profile" element={page(<Profile />)} />
+            {/* Account merged into Profile — redirect old links. */}
+            <Route path="account" element={<Navigate to="/app/profile" replace />} />
+          </Route>
+          <Route path="/" element={<Navigate to="/app" replace />} />
+          <Route path="*" element={<Navigate to="/app" replace />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 }

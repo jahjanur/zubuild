@@ -468,5 +468,11 @@
     "light": "Light mode",
     "dark": "Dark mode",
     "toggle": "Toggle theme"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "subtitle": "This page hit an unexpected error. Try again, or reload the app.",
+    "tryAgain": "Try again",
+    "reload": "Reload"
   }
 }
