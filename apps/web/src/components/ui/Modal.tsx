@@ -27,6 +27,15 @@ export function Modal({
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
 
+  // Keep the latest onClose in a ref so the effect below can depend on `open`
+  // ALONE. If it depended on onClose too (typically an inline arrow that changes
+  // identity every render), the effect would re-run on each keystroke and steal
+  // focus back to the first focusable element (the × button).
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
   useEffect(() => {
     if (!open) return;
     // Remember the trigger so focus can return to it on close.
@@ -34,7 +43,7 @@ export function Modal({
 
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key === 'Tab' && panelRef.current) {
@@ -60,10 +69,12 @@ export function Modal({
     document.body.style.overflow = 'hidden';
     if (scrollComp > 0) document.body.style.paddingRight = `${scrollComp}px`;
 
-    // Move focus into the dialog.
+    // Move focus into the dialog — prefer the first form field over the × button.
     const focusTimer = window.setTimeout(() => {
-      const first = panelRef.current?.querySelector<HTMLElement>(FOCUSABLE);
-      (first ?? panelRef.current)?.focus();
+      const panel = panelRef.current;
+      if (!panel) return;
+      const firstField = panel.querySelector<HTMLElement>('input:not([disabled]),textarea:not([disabled]),select:not([disabled])');
+      (firstField ?? panel.querySelector<HTMLElement>(FOCUSABLE) ?? panel).focus();
     }, 0);
 
     return () => {
@@ -74,7 +85,7 @@ export function Modal({
       // Return focus to whatever opened the modal.
       triggerRef.current?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   const maxWidthClass = size === 'wide' ? 'sm:max-w-[80vw]' : 'sm:max-w-lg';
 
