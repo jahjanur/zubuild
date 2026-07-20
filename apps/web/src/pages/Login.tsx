@@ -6,7 +6,7 @@ import { api, setApiErrorHandler } from '../lib/api';
 import { Button, Input } from '../components/ui';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { PoweredBy } from '../components/PoweredBy';
-import zubuildLogo from '../assets/zubuild-logo.svg';
+import { AemLogo } from '../components/AemLogo';
 
 const languages = [
   { code: 'en', label: 'English' },
@@ -78,7 +78,7 @@ export default function Login() {
         <ThemeToggle className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full glass text-app-secondary hover:text-app-primary transition" />
 
         <div className="mb-7 flex flex-col items-center text-center">
-          <img src={zubuildLogo} alt={t('login.title')} className="mb-3 h-14 w-14 rounded-2xl shadow-button" />
+          <AemLogo variant="full" className="mb-4 h-12 text-app-primary" />
           <p className="text-sm text-app-secondary">{t('login.signInContinue')}</p>
         </div>
 
@@ -122,16 +122,6 @@ export default function Login() {
             {login.isPending ? t('login.signingIn') : t('login.signIn')}
           </Button>
         </form>
-
-        <div className="mt-6 border-t border-[var(--border)] pt-5 text-center">
-          <p className="mb-3 text-xs text-app-secondary">{t('register.newHere')}</p>
-          <Link
-            to="/register"
-            className="inline-flex w-full min-h-[46px] items-center justify-center rounded-full border border-[var(--border)] bg-app-surface-1 text-sm font-semibold text-app-primary transition-colors hover:border-app-border-strong hover:bg-app-surface-subtle"
-          >
-            {t('register.createAccount')}
-          </Link>
-        </div>
       </div>
       <div className="mt-6 flex justify-center">
         <LanguageSwitcher />
