@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { customAlphabet } from 'nanoid';
 import { prisma } from '../lib/prisma';
-import { requireAuth, requireManager, tenantContext } from '../middleware/auth';
+import { requireAuth, requireManager, requireInspector, tenantContext } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { createOrderSchema } from '@aem/shared';
 import { logError } from '../lib/logger';
@@ -196,11 +196,16 @@ router.get('/:id/pdf', async (req: Request, res: Response): Promise<void> => {
 });
 
 /** PUT /orders/:id/status */
-router.put('/:id/status', requireManager, async (req: Request, res: Response): Promise<void> => {
+router.put('/:id/status', requireInspector, async (req: Request, res: Response): Promise<void> => {
   try {
     const { status } = req.body;
     if (!['PENDING', 'DELIVERED', 'RECONCILED'].includes(status)) {
       res.status(400).json({ success: false, error: 'Invalid status' });
+      return;
+    }
+    // Inspectors may only mark an order DELIVERED; any other transition is MANAGER+.
+    if (req.user?.role === 'INSPECTOR' && status !== 'DELIVERED') {
+      res.status(403).json({ success: false, error: 'Manager access required' });
       return;
     }
     const order = await prisma.order.update({

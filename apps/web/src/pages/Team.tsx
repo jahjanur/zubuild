@@ -56,7 +56,7 @@ export function TeamContent() {
     }
   }
 
-  const roleLabel = (r: string) => (r === 'ADMIN' ? t('team.roleAdmin') : r === 'MANAGER' ? t('team.roleManager') : t('team.roleViewer'));
+  const roleLabel = (r: string) => (r === 'ADMIN' ? t('team.roleAdmin') : r === 'MANAGER' ? t('team.roleManager') : r === 'INSPECTOR' ? t('team.roleInspector') : t('team.roleViewer'));
 
   if (!isAdmin) {
     return <Card><CardContent className="p-6"><p className="text-app-secondary">{t('team.adminOnly')}</p></CardContent></Card>;
@@ -83,6 +83,7 @@ export function TeamContent() {
               <label className="block text-sm font-medium text-app-secondary mb-1.5">{t('team.role')}</label>
               <Select value={role} onChange={(e) => setRole(e.target.value)}>
                 <option value="VIEWER">{t('team.roleViewer')}</option>
+                <option value="INSPECTOR">{t('team.roleInspector')}</option>
                 <option value="MANAGER">{t('team.roleManager')}</option>
                 <option value="ADMIN">{t('team.roleAdmin')}</option>
               </Select>

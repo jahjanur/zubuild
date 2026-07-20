@@ -26,7 +26,7 @@ const PASSWORD = 'secret123';
 
 let app: Express;
 let prisma: PrismaClient;
-const agents: Record<'VIEWER' | 'MANAGER' | 'ADMIN', ReturnType<typeof request.agent>> = {} as never;
+const agents: Record<'VIEWER' | 'INSPECTOR' | 'MANAGER' | 'ADMIN', ReturnType<typeof request.agent>> = {} as never;
 
 beforeAll(async () => {
   process.env.DATABASE_URL = dbUrl;
@@ -40,7 +40,7 @@ beforeAll(async () => {
 
   await prisma.organization.create({ data: { id: ORG, name: 'Roles Org', slug: 'roles-org' } });
   const hash = await bcrypt.hash(PASSWORD, 12);
-  for (const role of ['VIEWER', 'MANAGER', 'ADMIN'] as const) {
+  for (const role of ['VIEWER', 'INSPECTOR', 'MANAGER', 'ADMIN'] as const) {
     await prisma.user.create({ data: { email: `${role.toLowerCase()}@test.com`, passwordHash: hash, role, organizationId: ORG } });
     const agent = request.agent(app);
     await agent.post('/auth/login').send({ email: `${role.toLowerCase()}@test.com`, password: PASSWORD }).expect(200);
@@ -54,7 +54,9 @@ afterAll(async () => {
 });
 
 // [role, method, path, body, expectedStatus]
-type Case = ['VIEWER' | 'MANAGER' | 'ADMIN', 'get' | 'post', string, object | undefined, number];
+type Case = ['VIEWER' | 'INSPECTOR' | 'MANAGER' | 'ADMIN', 'get' | 'post' | 'put', string, object | undefined, number];
+
+const MISSING_ORDER = '/orders/00000000-0000-0000-0000-000000000000/status';
 
 describe('role matrix (server-enforced)', () => {
   const reads: Case[] = [
@@ -84,8 +86,26 @@ describe('role matrix (server-enforced)', () => {
     ['ADMIN', 'get', '/team/members', undefined, 200],
     ['ADMIN', 'post', '/team/invitations', { email: 'z@test.com', role: 'MANAGER' }, 201],
   ];
+  // INSPECTOR: reads like a viewer, plus delivery checks (reconcile + mark delivered),
+  // but no other operational writes and no team administration.
+  const inspectorCan: Case[] = [
+    ['INSPECTOR', 'get', '/orders', undefined, 200],
+    ['INSPECTOR', 'get', '/reconciliations', undefined, 200],
+    // Past the reconcile auth gate: 400 (body validation) proves it wasn't a 403.
+    ['INSPECTOR', 'post', '/reconciliations', {}, 400],
+    // May mark an order delivered: 404 (order missing) proves auth + status check passed.
+    ['INSPECTOR', 'put', MISSING_ORDER, { status: 'DELIVERED' }, 404],
+  ];
+  const inspectorDenied: Case[] = [
+    ['INSPECTOR', 'post', '/suppliers', { companyName: 'X' }, 403],
+    ['INSPECTOR', 'post', '/products', { name: 'X', category: 'C', measurementUnit: 'adet', price: 1 }, 403],
+    ['INSPECTOR', 'post', '/inventory/adjust', {}, 403],
+    ['INSPECTOR', 'get', '/team/members', undefined, 403],
+    // The status endpoint is delivered-only for inspectors; other transitions are 403.
+    ['INSPECTOR', 'put', MISSING_ORDER, { status: 'PENDING' }, 403],
+  ];
 
-  for (const [role, method, url, body, status] of [...reads, ...viewerDenied, ...managerCan, ...managerDenied, ...adminCan]) {
+  for (const [role, method, url, body, status] of [...reads, ...viewerDenied, ...managerCan, ...managerDenied, ...adminCan, ...inspectorCan, ...inspectorDenied]) {
     it(`${role} ${method.toUpperCase()} ${url} -> ${status}`, async () => {
       const req = agents[role][method](url);
       const res = await (body ? req.send(body) : req);

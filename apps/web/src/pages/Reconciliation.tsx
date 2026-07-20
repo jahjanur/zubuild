@@ -34,7 +34,7 @@ interface SavedResult {
 
 export default function Reconciliation() {
   const { t } = useTranslation();
-  const { canWrite } = useAuth();
+  const { canReconcile } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -379,9 +379,9 @@ export default function Reconciliation() {
           ) : (
             <ul className="divide-y divide-[var(--border)]">
               {listOrders.map((o) => {
-                const canReconcile = canWrite && (o.status === 'PENDING' || o.status === 'DELIVERED');
+                const rowReconcilable = canReconcile && (o.status === 'PENDING' || o.status === 'DELIVERED');
                 const loss = lossByOrder.get(o.id) ?? 0;
-                const rowClass = `w-full text-left flex items-center gap-3 px-4 md:px-5 py-3.5 min-h-[64px] transition-colors ${canReconcile ? 'hover:bg-app-surface-subtle cursor-pointer' : ''}`;
+                const rowClass = `w-full text-left flex items-center gap-3 px-4 md:px-5 py-3.5 min-h-[64px] transition-colors ${rowReconcilable ? 'hover:bg-app-surface-subtle cursor-pointer' : ''}`;
                 const content = (
                   <>
                     <div className="min-w-0 flex-1">
@@ -397,12 +397,12 @@ export default function Reconciliation() {
                         <p className="text-app-danger text-xs tabular-nums">−{formatMKD(loss)}</p>
                       )}
                     </div>
-                    {canReconcile && <ChevronRight size={18} className="text-app-muted shrink-0" />}
+                    {rowReconcilable && <ChevronRight size={18} className="text-app-muted shrink-0" />}
                   </>
                 );
                 return (
                   <li key={o.id}>
-                    {canReconcile ? (
+                    {rowReconcilable ? (
                       <button type="button" onClick={() => openOrder(o)} className={rowClass}>{content}</button>
                     ) : (
                       <div className={rowClass}>{content}</div>

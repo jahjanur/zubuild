@@ -47,15 +47,22 @@ export function tenantContext(req: Request, res: Response, next: NextFunction): 
 
 /**
  * Role matrix (enforced server-side — never trust the client's role for authz):
- *   VIEWER  — read-only: may GET every resource, no writes.
- *   MANAGER — VIEWER + operational writes: suppliers, products, orders,
- *             reconciliations, inventory, and CSV export.
- *   ADMIN   — MANAGER + org administration: team members & invitations.
- * Higher rank includes everything below it.
+ *   VIEWER    — read-only: may GET every resource, no writes.
+ *   INSPECTOR — VIEWER + delivery checks: create reconciliations and mark an
+ *               order DELIVERED. No other writes (cannot edit suppliers,
+ *               products, orders, inventory) and no org administration.
+ *   MANAGER   — VIEWER + operational writes: suppliers, products, orders,
+ *               reconciliations, inventory, and CSV export.
+ *   ADMIN     — MANAGER + org administration: team members & invitations.
+ * MANAGER/ADMIN are a rank ladder (higher includes everything below). INSPECTOR
+ * is a side capability, not a rung: it reads like VIEWER and adds only the
+ * delivery-check writes via `requireInspector`, so it never gains MANAGER writes.
  */
-export const ROLES = ['VIEWER', 'MANAGER', 'ADMIN'] as const;
+export const ROLES = ['VIEWER', 'INSPECTOR', 'MANAGER', 'ADMIN'] as const;
 export type Role = (typeof ROLES)[number];
-const ROLE_RANK: Record<string, number> = { VIEWER: 1, MANAGER: 2, ADMIN: 3 };
+// INSPECTOR ranks with VIEWER so the MANAGER/ADMIN gates reject it; its extra
+// powers come from the explicit capability gate below, not from rank.
+const ROLE_RANK: Record<string, number> = { VIEWER: 1, INSPECTOR: 1, MANAGER: 2, ADMIN: 3 };
 
 /** Gate a route on a minimum role. Responds 401 if unauthenticated, 403 if under-ranked. */
 function requireMinRole(min: Role, label: string) {
@@ -72,8 +79,28 @@ function requireMinRole(min: Role, label: string) {
   };
 }
 
+/** Gate a route on membership in an explicit set of roles (a capability, not a
+ * rank). Responds 401 if unauthenticated, 403 if the role is not allowed. */
+function requireAnyRole(allowed: readonly string[], label: string) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      res.status(401).json({ success: false, error: 'Authentication required' });
+      return;
+    }
+    if (!allowed.includes(req.user.role)) {
+      res.status(403).json({ success: false, error: `${label} access required` });
+      return;
+    }
+    next();
+  };
+}
+
 /** MANAGER or ADMIN — operational writes. Use after requireAuth. */
 export const requireManager = requireMinRole('MANAGER', 'Manager');
 
 /** ADMIN only — org administration. Use after requireAuth. */
 export const requireAdmin = requireMinRole('ADMIN', 'Admin');
+
+/** INSPECTOR, MANAGER or ADMIN — delivery checks (reconciliations, mark
+ * delivered). Use after requireAuth. */
+export const requireInspector = requireAnyRole(['INSPECTOR', 'MANAGER', 'ADMIN'], 'Inspector');

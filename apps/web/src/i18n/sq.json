@@ -385,6 +385,7 @@
     "role": "Roli",
     "roleAdmin": "Administrator",
     "roleViewer": "Shikues",
+    "roleInspector": "Inspektor",
     "createInvite": "Krijo ftesë",
     "inviting": "Po krijohet…",
     "inviteReady": "Ftesa është gati — kopjoni lidhjen për ta ndarë.",

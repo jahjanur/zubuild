@@ -385,6 +385,7 @@
     "role": "Rol",
     "roleAdmin": "Yönetici",
     "roleViewer": "Görüntüleyici",
+    "roleInspector": "Denetçi",
     "createInvite": "Davet oluştur",
     "inviting": "Oluşturuluyor…",
     "inviteReady": "Davet hazır — paylaşmak için bağlantıyı kopyalayın.",

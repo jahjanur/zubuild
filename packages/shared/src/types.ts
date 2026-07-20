@@ -2,7 +2,7 @@
  * Shared domain types for AEM Residence Operations
  */
 
-export type UserRole = 'ADMIN' | 'MANAGER' | 'VIEWER';
+export type UserRole = 'ADMIN' | 'MANAGER' | 'INSPECTOR' | 'VIEWER';
 
 export type SupplierStatus = 'ACTIVE' | 'INACTIVE';
 export type ProductStatus = 'ACTIVE' | 'INACTIVE';

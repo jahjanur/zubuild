@@ -13,6 +13,7 @@ const DEFAULT_ORG_ID = '00000000-0000-0000-0000-000000000001';
 
 const USERS = [
   { email: 'viewer@aem-residence.com', password: 'viewer', role: 'VIEWER' as const },
+  { email: 'inspector@aem-residence.com', password: 'inspector', role: 'INSPECTOR' as const },
   { email: 'admin@aem-residence.com', password: 'admin', role: 'ADMIN' as const },
   { email: 'admin2@aem-residence.com', password: 'admin2', role: 'ADMIN' as const },
 ];

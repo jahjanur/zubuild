@@ -385,6 +385,7 @@
     "role": "Role",
     "roleAdmin": "Admin",
     "roleViewer": "Viewer",
+    "roleInspector": "Inspector",
     "createInvite": "Create invite",
     "inviting": "Creating…",
     "inviteReady": "Invite ready — copy the link to share it.",

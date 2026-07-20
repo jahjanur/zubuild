@@ -309,7 +309,7 @@ function SecuritySection() {
   const [confirm, setConfirm] = useState('');
 
   const email = user?.email ?? '';
-  const roleLabel = (r?: string) => (r === 'ADMIN' ? t('team.roleAdmin') : r === 'MANAGER' ? t('team.roleManager') : t('team.roleViewer'));
+  const roleLabel = (r?: string) => (r === 'ADMIN' ? t('team.roleAdmin') : r === 'MANAGER' ? t('team.roleManager') : r === 'INSPECTOR' ? t('team.roleInspector') : t('team.roleViewer'));
   const initials = (email || '?').replace(/[^A-Za-zА-Яа-я0-9]/g, ' ').trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('') || '?';
 
   const change = useMutation({

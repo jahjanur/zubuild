@@ -29,10 +29,14 @@ export function useAuth() {
 
   const role = user?.role;
   // UI gating mirrors the server matrix (server is the source of truth):
-  //   canWrite = MANAGER or ADMIN (operational writes); isAdmin = ADMIN (org admin).
+  //   canWrite      = MANAGER or ADMIN (operational writes); isAdmin = ADMIN (org admin).
+  //   canReconcile  = INSPECTOR, MANAGER or ADMIN (delivery checks: reconcile an
+  //                   order and mark it delivered). INSPECTOR gets only this.
+  const canWrite = role === 'ADMIN' || role === 'MANAGER';
   return {
     user,
     isAdmin: role === 'ADMIN',
-    canWrite: role === 'ADMIN' || role === 'MANAGER',
+    canWrite,
+    canReconcile: canWrite || role === 'INSPECTOR',
   };
 }

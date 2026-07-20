@@ -50,7 +50,7 @@ export default function AcceptInvite() {
     accept.mutate();
   }
 
-  const roleLabel = invite?.role === 'ADMIN' ? t('team.roleAdmin') : t('team.roleViewer');
+  const roleLabel = invite?.role === 'ADMIN' ? t('team.roleAdmin') : invite?.role === 'MANAGER' ? t('team.roleManager') : invite?.role === 'INSPECTOR' ? t('team.roleInspector') : t('team.roleViewer');
 
   return (
     <div
